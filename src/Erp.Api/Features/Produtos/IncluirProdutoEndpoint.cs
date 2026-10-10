@@ -7,6 +7,7 @@ namespace Erp.Api.Features.Produtos;
 
 [HttpPost("api/produtos")]
 [AllowAnonymous()]
+[Tags("Produtos")]
 public class IncluirProdutoEndpoint : EndpointBase<IncluirProdutoRequest>
 {
     private readonly IProdutosService _produtosService;

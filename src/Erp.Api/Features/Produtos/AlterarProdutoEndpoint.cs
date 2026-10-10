@@ -7,6 +7,7 @@ namespace Erp.Api.Features.Produtos;
 
 [HttpPut("api/produtos/{Codigo}")]
 [AllowAnonymous()]
+[Tags("Produtos")]
 public class AlterarProdutoEndpoint : EndpointBase<AlterarProdutoRequest>
 {
     private readonly IProdutosService _produtosService;

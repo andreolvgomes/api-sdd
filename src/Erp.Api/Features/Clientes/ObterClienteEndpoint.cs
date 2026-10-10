@@ -7,6 +7,7 @@ namespace Erp.Api.Features.Clientes;
 
 [HttpGet("api/clientes/{Id}")]
 [AllowAnonymous()]
+[Tags("Clientes")]
 public class ObterClienteEndpoint : EndpointBase<ObterClienteRequest>
 {
     private readonly IClientesService _clientesService;

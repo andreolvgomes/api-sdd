@@ -7,6 +7,7 @@ namespace Erp.Api.Features.Produtos;
 
 [HttpDelete("api/produtos/{Codigo}")]
 [AllowAnonymous()]
+[Tags("Produtos")]
 public class ExcluirProdutoEndpoint : EndpointBase<ExcluirProdutoRequest>
 {
     private readonly IProdutosService _produtosService;

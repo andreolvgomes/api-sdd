@@ -7,6 +7,7 @@ namespace Erp.Api.Features.Clientes;
 
 [HttpPost("api/clientes")]
 [AllowAnonymous()]
+[Tags("Clientes")]
 public class IncluirClienteEndpoint : EndpointBase<IncluirClienteRequest>
 {
     private readonly IClientesService _clientesService;

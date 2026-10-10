@@ -7,6 +7,7 @@ namespace Erp.Api.Features.Clientes;
 
 [HttpGet("api/clientes")]
 [AllowAnonymous()]
+[Tags("Clientes")]
 public class ListarClientesEndpoint : EndpointBase
 {
     private readonly IClientesService _clientesService;

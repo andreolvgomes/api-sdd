@@ -7,6 +7,7 @@ namespace Erp.Api.Features.Clientes;
 
 [HttpPut("api/clientes/{Id}")]
 [AllowAnonymous()]
+[Tags("Clientes")]
 public class AlterarClienteEndpoint : EndpointBase<AlterarClienteRequest>
 {
     private readonly IClientesService _clientesService;
