@@ -1,10 +1,13 @@
 using Erp.Api.Common;
 using Erp.Application.Abstractions.Clientes;
+using FastEndpoints;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.Clientes;
 
 [HttpDelete("api/clientes/{Id}")]
-public class ExcluirClienteEndpoint : EndpointBase<ExcluirClienteRequest, FastEndpoints.EmptyResponse>
+[AllowAnonymous()]
+public class ExcluirClienteEndpoint : EndpointBase<ExcluirClienteRequest>
 {
     private readonly IClientesService _clientesService;
 
@@ -13,10 +16,10 @@ public class ExcluirClienteEndpoint : EndpointBase<ExcluirClienteRequest, FastEn
         _clientesService = clientesService;
     }
 
-    public override async Task<object?> ExecutarAsync(ExcluirClienteRequest req, CancellationToken ct)
+    public override async Task<object?> ExecuteAsync(ExcluirClienteRequest req, CancellationToken ct)
     {
         await _clientesService.ExcluirAsync(req);
 
-        return await NoContent(ct);
+        return await NoContent(ct: ct);
     }
 }

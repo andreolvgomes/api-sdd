@@ -1,10 +1,13 @@
 using Erp.Api.Common;
 using Erp.Application.Abstractions.Produtos;
+using FastEndpoints;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.Produtos;
 
 [HttpDelete("api/produtos/{Codigo}")]
-public class ExcluirProdutoEndpoint : EndpointBase<ExcluirProdutoRequest, FastEndpoints.EmptyResponse>
+[AllowAnonymous()]
+public class ExcluirProdutoEndpoint : EndpointBase<ExcluirProdutoRequest>
 {
     private readonly IProdutosService _produtosService;
 
@@ -13,10 +16,10 @@ public class ExcluirProdutoEndpoint : EndpointBase<ExcluirProdutoRequest, FastEn
         _produtosService = produtosService;
     }
 
-    public override async Task<object?> ExecutarAsync(ExcluirProdutoRequest req, CancellationToken ct)
+    public override async Task<object?> ExecuteAsync(ExcluirProdutoRequest req, CancellationToken ct)
     {
         await _produtosService.ExcluirAsync(req);
 
-        return await NoContent(ct);
+        return await NoContent(ct: ct);
     }
 }

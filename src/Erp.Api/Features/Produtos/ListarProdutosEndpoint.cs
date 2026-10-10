@@ -1,11 +1,13 @@
 using Erp.Api.Common;
 using Erp.Application.Abstractions.Produtos;
-using Erp.Core.Entities;
+using FastEndpoints;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.Produtos;
 
 [HttpGet("api/produtos")]
-public class ListarProdutosEndpoint : EndpointBase<ListarProdutosRequest, List<Produto>>
+[AllowAnonymous()]
+public class ListarProdutosEndpoint : EndpointBase<ListarProdutosRequest>
 {
     private readonly IProdutosService _produtosService;
 
@@ -14,10 +16,8 @@ public class ListarProdutosEndpoint : EndpointBase<ListarProdutosRequest, List<P
         _produtosService = produtosService;
     }
 
-    public override async Task<object?> ExecutarAsync(ListarProdutosRequest req, CancellationToken ct)
+    public override async Task<object?> ExecuteAsync(ListarProdutosRequest req, CancellationToken ct)
     {
-        List<Produto> produtos = await _produtosService.ListarAsync(req);
-
-        return await Ok(produtos, ct);
+        return await Ok(await _produtosService.ListarAsync(req), ct);
     }
 }

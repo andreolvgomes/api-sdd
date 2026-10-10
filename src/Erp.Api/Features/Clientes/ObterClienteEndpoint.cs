@@ -1,11 +1,13 @@
 using Erp.Api.Common;
 using Erp.Application.Abstractions.Clientes;
-using Erp.Core.Entities;
+using FastEndpoints;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.Clientes;
 
 [HttpGet("api/clientes/{Id}")]
-public class ObterClienteEndpoint : EndpointBase<ObterClienteRequest, Cliente>
+[AllowAnonymous()]
+public class ObterClienteEndpoint : EndpointBase<ObterClienteRequest>
 {
     private readonly IClientesService _clientesService;
 
@@ -14,10 +16,8 @@ public class ObterClienteEndpoint : EndpointBase<ObterClienteRequest, Cliente>
         _clientesService = clientesService;
     }
 
-    public override async Task<object?> ExecutarAsync(ObterClienteRequest req, CancellationToken ct)
+    public override async Task<object?> ExecuteAsync(ObterClienteRequest req, CancellationToken ct)
     {
-        Cliente cliente = await _clientesService.ObterAsync(req);
-
-        return await Ok(cliente, ct);
+        return await Ok(await _clientesService.ObterAsync(req), ct);
     }
 }

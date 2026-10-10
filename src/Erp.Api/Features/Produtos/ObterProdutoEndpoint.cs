@@ -1,11 +1,13 @@
 using Erp.Api.Common;
 using Erp.Application.Abstractions.Produtos;
-using Erp.Core.Entities;
+using FastEndpoints;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.Produtos;
 
 [HttpGet("api/produtos/{Codigo}")]
-public class ObterProdutoEndpoint : EndpointBase<ObterProdutoRequest, Produto>
+[AllowAnonymous()]
+public class ObterProdutoEndpoint : EndpointBase<ObterProdutoRequest>
 {
     private readonly IProdutosService _produtosService;
 
@@ -14,10 +16,8 @@ public class ObterProdutoEndpoint : EndpointBase<ObterProdutoRequest, Produto>
         _produtosService = produtosService;
     }
 
-    public override async Task<object?> ExecutarAsync(ObterProdutoRequest req, CancellationToken ct)
+    public override async Task<object?> ExecuteAsync(ObterProdutoRequest req, CancellationToken ct)
     {
-        Produto produto = await _produtosService.ObterAsync(req);
-
-        return await Ok(produto, ct);
+        return await Ok(await _produtosService.ObterAsync(req), ct);
     }
 }
