@@ -14,7 +14,7 @@ public class ProdutosService : IProdutosService
         _repositorio = repositorio;
     }
 
-    public ProdutoResponse Incluir(IncluirProdutoRequest request)
+    public async Task<ProdutoResponse> IncluirAsync(IncluirProdutoRequest request)
     {
         string status = request.Status ?? ProdutoValidacao.StatusAtivo;
 
@@ -23,7 +23,7 @@ public class ProdutosService : IProdutosService
         if (erro != null)
             throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
 
-        if (_repositorio.ExisteCodigo(request.Codigo!))
+        if (await _repositorio.ExisteCodigoAsync(request.Codigo!))
             throw new ErroDeNegocio("Código já cadastrado", TipoErroDeNegocio.Conflito);
 
         Produto produto = new Produto
@@ -34,14 +34,14 @@ public class ProdutosService : IProdutosService
             Status = status
         };
 
-        _repositorio.Inserir(produto);
+        await _repositorio.InserirAsync(produto);
 
         return ProdutoMapeamento.ParaResposta(produto);
     }
 
-    public ProdutoResponse Alterar(AlterarProdutoRequest request)
+    public async Task<ProdutoResponse> AlterarAsync(AlterarProdutoRequest request)
     {
-        if (!_repositorio.ExisteCodigo(request.Codigo))
+        if (!await _repositorio.ExisteCodigoAsync(request.Codigo))
             throw new ErroDeNegocio("Produto não encontrado", TipoErroDeNegocio.NaoEncontrado);
 
         string? erro = ProdutoValidacao.ValidarAlteracao(request.Descricao, request.PrecoVenda, request.Status);
@@ -57,20 +57,20 @@ public class ProdutosService : IProdutosService
             Status = request.Status!
         };
 
-        _repositorio.Atualizar(produto);
+        await _repositorio.AtualizarAsync(produto);
 
         return ProdutoMapeamento.ParaResposta(produto);
     }
 
-    public void Excluir(ExcluirProdutoRequest request)
+    public async Task ExcluirAsync(ExcluirProdutoRequest request)
     {
-        if (!_repositorio.Excluir(request.Codigo))
+        if (!await _repositorio.ExcluirAsync(request.Codigo))
             throw new ErroDeNegocio("Produto não encontrado", TipoErroDeNegocio.NaoEncontrado);
     }
 
-    public Produto Obter(ObterProdutoRequest request)
+    public async Task<Produto> ObterAsync(ObterProdutoRequest request)
     {
-        Produto? produto = _repositorio.ObterPorCodigo(request.Codigo);
+        Produto? produto = await _repositorio.ObterPorCodigoAsync(request.Codigo);
 
         if (produto == null)
             throw new ErroDeNegocio("Produto não encontrado", TipoErroDeNegocio.NaoEncontrado);
@@ -78,7 +78,7 @@ public class ProdutosService : IProdutosService
         return produto;
     }
 
-    public List<Produto> Listar(ListarProdutosRequest request)
+    public async Task<List<Produto>> ListarAsync(ListarProdutosRequest request)
     {
         if (request.Status != null)
         {
@@ -88,6 +88,6 @@ public class ProdutosService : IProdutosService
                 throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
         }
 
-        return _repositorio.Listar(request.Status);
+        return await _repositorio.ListarAsync(request.Status);
     }
 }

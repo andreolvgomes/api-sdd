@@ -14,10 +14,10 @@ public class ListarProdutosEndpoint : EndpointBase<ListarProdutosRequest, List<P
         _produtosService = produtosService;
     }
 
-    public override async Task HandleAsync(ListarProdutosRequest req, CancellationToken ct)
+    public override async Task<object?> ExecutarAsync(ListarProdutosRequest req, CancellationToken ct)
     {
-        List<Produto> produtos = ExecutarCasoDeUso(() => _produtosService.Listar(req));
+        List<Produto> produtos = await _produtosService.ListarAsync(req);
 
-        await Send.ResponseAsync(produtos, 200, ct);
+        return await Ok(produtos, ct);
     }
 }

@@ -13,10 +13,10 @@ public class AlterarProdutoEndpoint : EndpointBase<AlterarProdutoRequest, Produt
         _produtosService = produtosService;
     }
 
-    public override async Task HandleAsync(AlterarProdutoRequest req, CancellationToken ct)
+    public override async Task<object?> ExecutarAsync(AlterarProdutoRequest req, CancellationToken ct)
     {
-        ProdutoResponse produto = ExecutarCasoDeUso(() => _produtosService.Alterar(req));
+        ProdutoResponse produto = await _produtosService.AlterarAsync(req);
 
-        await Send.ResponseAsync(produto, 200, ct);
+        return await Ok(produto, ct);
     }
 }

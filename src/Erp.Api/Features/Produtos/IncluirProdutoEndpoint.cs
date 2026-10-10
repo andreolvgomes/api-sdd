@@ -13,10 +13,10 @@ public class IncluirProdutoEndpoint : EndpointBase<IncluirProdutoRequest, Produt
         _produtosService = produtosService;
     }
 
-    public override async Task HandleAsync(IncluirProdutoRequest req, CancellationToken ct)
+    public override async Task<object?> ExecutarAsync(IncluirProdutoRequest req, CancellationToken ct)
     {
-        ProdutoResponse produto = ExecutarCasoDeUso(() => _produtosService.Incluir(req));
+        ProdutoResponse produto = await _produtosService.IncluirAsync(req);
 
-        await Send.ResponseAsync(produto, 201, ct);
+        return await Created(produto, ct);
     }
 }

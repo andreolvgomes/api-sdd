@@ -4,13 +4,13 @@ namespace Erp.Application.Abstractions.Produtos;
 
 public interface IProdutosService
 {
-    ProdutoResponse Incluir(IncluirProdutoRequest request);
+    Task<ProdutoResponse> IncluirAsync(IncluirProdutoRequest request);
 
-    ProdutoResponse Alterar(AlterarProdutoRequest request);
+    Task<ProdutoResponse> AlterarAsync(AlterarProdutoRequest request);
 
-    void Excluir(ExcluirProdutoRequest request);
+    Task ExcluirAsync(ExcluirProdutoRequest request);
 
-    Produto Obter(ObterProdutoRequest request);
+    Task<Produto> ObterAsync(ObterProdutoRequest request);
 
-    List<Produto> Listar(ListarProdutosRequest request);
+    Task<List<Produto>> ListarAsync(ListarProdutosRequest request);
 }

@@ -14,10 +14,10 @@ public class ObterProdutoEndpoint : EndpointBase<ObterProdutoRequest, Produto>
         _produtosService = produtosService;
     }
 
-    public override async Task HandleAsync(ObterProdutoRequest req, CancellationToken ct)
+    public override async Task<object?> ExecutarAsync(ObterProdutoRequest req, CancellationToken ct)
     {
-        Produto produto = ExecutarCasoDeUso(() => _produtosService.Obter(req));
+        Produto produto = await _produtosService.ObterAsync(req);
 
-        await Send.ResponseAsync(produto, 200, ct);
+        return await Ok(produto, ct);
     }
 }

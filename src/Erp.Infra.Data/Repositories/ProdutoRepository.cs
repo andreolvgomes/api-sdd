@@ -1,7 +1,7 @@
+using System.Data;
 using Dapper;
 using Erp.Core.Entities;
 using Erp.Core.Repositories;
-using Microsoft.Data.Sqlite;
 
 namespace Erp.Infra.Data.Repositories;
 
@@ -9,40 +9,36 @@ public class ProdutoRepository : IProdutoRepository
 {
     private const string Colunas = "codigo, descricao, precovenda, status";
 
-    private readonly string _connectionString;
+    private readonly IDbConnection _conexao;
 
-    public ProdutoRepository(string connectionString)
+    public ProdutoRepository(IDbConnection conexao)
     {
-        _connectionString = connectionString;
+        _conexao = conexao;
     }
 
-    public bool ExisteCodigo(string codigo)
+    public async Task<bool> ExisteCodigoAsync(string codigo)
     {
-        using var conexao = new SqliteConnection(_connectionString);
-        int quantidade = conexao.ExecuteScalar<int>(
+        int quantidade = await _conexao.ExecuteScalarAsync<int>(
             "select count(1) from produto where codigo = @codigo", new { codigo });
 
         return quantidade > 0;
     }
 
-    public void Inserir(Produto produto)
+    public async Task InserirAsync(Produto produto)
     {
-        using var conexao = new SqliteConnection(_connectionString);
-        conexao.Execute(
+        await _conexao.ExecuteAsync(
             "insert into produto (codigo, descricao, precovenda, status) values (@Codigo, @Descricao, @PrecoVenda, @Status)",
             produto);
     }
 
-    public Produto? ObterPorCodigo(string codigo)
+    public async Task<Produto?> ObterPorCodigoAsync(string codigo)
     {
-        using var conexao = new SqliteConnection(_connectionString);
-        return conexao.QueryFirstOrDefault<Produto>(
+        return await _conexao.QueryFirstOrDefaultAsync<Produto>(
             $"select {Colunas} from produto where codigo = @codigo", new { codigo });
     }
 
-    public List<Produto> Listar(string? status)
+    public async Task<List<Produto>> ListarAsync(string? status)
     {
-        using var conexao = new SqliteConnection(_connectionString);
         string sql = $"select {Colunas} from produto";
 
         if (status != null)
@@ -50,23 +46,23 @@ public class ProdutoRepository : IProdutoRepository
 
         sql = sql + " order by codigo";
 
-        return conexao.Query<Produto>(sql, new { status }).AsList();
+        IEnumerable<Produto> produtos = await _conexao.QueryAsync<Produto>(sql, new { status });
+
+        return produtos.ToList();
     }
 
-    public bool Atualizar(Produto produto)
+    public async Task<bool> AtualizarAsync(Produto produto)
     {
-        using var conexao = new SqliteConnection(_connectionString);
-        int linhas = conexao.Execute(
+        int linhas = await _conexao.ExecuteAsync(
             "update produto set descricao = @Descricao, precovenda = @PrecoVenda, status = @Status where codigo = @Codigo",
             produto);
 
         return linhas > 0;
     }
 
-    public bool Excluir(string codigo)
+    public async Task<bool> ExcluirAsync(string codigo)
     {
-        using var conexao = new SqliteConnection(_connectionString);
-        int linhas = conexao.Execute("delete from produto where codigo = @codigo", new { codigo });
+        int linhas = await _conexao.ExecuteAsync("delete from produto where codigo = @codigo", new { codigo });
 
         return linhas > 0;
     }

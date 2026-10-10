@@ -5,10 +5,10 @@ namespace Erp.Infra.Data;
 
 public static class Banco
 {
-    public static void CriarTabelas(string connectionString)
+    public static async Task CriarTabelasAsync(string connectionString)
     {
-        using var conexao = new SqliteConnection(connectionString);
-        conexao.Execute(@"
+        await using var conexao = new SqliteConnection(connectionString);
+        await conexao.ExecuteAsync(@"
             create table if not exists produto (
                 codigo text primary key,
                 descricao text not null,

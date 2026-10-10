@@ -4,15 +4,15 @@ namespace Erp.Core.Repositories;
 
 public interface IProdutoRepository
 {
-    bool ExisteCodigo(string codigo);
+    Task<bool> ExisteCodigoAsync(string codigo);
 
-    void Inserir(Produto produto);
+    Task InserirAsync(Produto produto);
 
-    Produto? ObterPorCodigo(string codigo);
+    Task<Produto?> ObterPorCodigoAsync(string codigo);
 
-    List<Produto> Listar(string? status);
+    Task<List<Produto>> ListarAsync(string? status);
 
-    bool Atualizar(Produto produto);
+    Task<bool> AtualizarAsync(Produto produto);
 
-    bool Excluir(string codigo);
+    Task<bool> ExcluirAsync(string codigo);
 }

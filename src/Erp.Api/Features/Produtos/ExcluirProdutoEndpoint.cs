@@ -13,10 +13,10 @@ public class ExcluirProdutoEndpoint : EndpointBase<ExcluirProdutoRequest, FastEn
         _produtosService = produtosService;
     }
 
-    public override async Task HandleAsync(ExcluirProdutoRequest req, CancellationToken ct)
+    public override async Task<object?> ExecutarAsync(ExcluirProdutoRequest req, CancellationToken ct)
     {
-        ExecutarCasoDeUsoSemRetorno(() => _produtosService.Excluir(req));
+        await _produtosService.ExcluirAsync(req);
 
-        await Send.NoContentAsync(ct);
+        return await NoContent(ct);
     }
 }

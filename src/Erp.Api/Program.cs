@@ -7,7 +7,7 @@ using FastEndpoints.Swagger;
 var builder = WebApplication.CreateBuilder(args);
 
 string connectionString = builder.Configuration.GetConnectionString("Erp") ?? "Data Source=erp.db";
-Banco.CriarTabelas(connectionString);
+await Banco.CriarTabelasAsync(connectionString);
 
 bool abrirSwagger = builder.Configuration.GetValue("AbrirSwaggerNoNavegador", true);
 
@@ -20,13 +20,11 @@ app.UseFastEndpoints();
 app.UseSwaggerGen();
 
 if (abrirSwagger)
-{
     app.Lifetime.ApplicationStarted.Register(() =>
     {
         string enderecoBase = app.Urls.FirstOrDefault(url => url.StartsWith("http://")) ?? app.Urls.First();
         Process.Start(new ProcessStartInfo($"{enderecoBase}/swagger") { UseShellExecute = true });
     });
-}
 
 app.Run();
 
