@@ -12,7 +12,8 @@ public static class ClienteMapeamento
             Id = cliente.Id,
             Nome = cliente.Nome,
             Endereco = cliente.Endereco,
-            Telefone = cliente.Telefone
+            Telefone = cliente.Telefone,
+            Status = cliente.Status
         };
     }
 }

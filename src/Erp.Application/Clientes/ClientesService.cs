@@ -22,7 +22,12 @@ public class ClientesService : IClientesService
         string? endereco = Limpar(request.Endereco);
         string? telefone = Limpar(request.Telefone);
 
+        string? status = Limpar(request.Status) ?? "ativo";
+
         string? erro = ClienteValidacao.Validar(nome, endereco, telefone);
+
+        if (erro == null)
+            erro = ClienteValidacao.ValidarStatus(status);
 
         if (erro != null)
             throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
@@ -31,7 +36,8 @@ public class ClientesService : IClientesService
         {
             Nome = nome!,
             Endereco = endereco!,
-            Telefone = telefone!
+            Telefone = telefone!,
+            Status = status
         };
 
         cliente.Id = await _repositorio.InserirAsync(cliente);
@@ -41,14 +47,20 @@ public class ClientesService : IClientesService
 
     public async Task<ClienteResponse> AlterarAsync(AlterarClienteRequest request)
     {
-        if (await _repositorio.ObterPorIdAsync(request.Id) == null)
+        Cliente? existente = await _repositorio.ObterPorIdAsync(request.Id);
+
+        if (existente == null)
             throw new ErroDeNegocio("Cliente não encontrado", TipoErroDeNegocio.NaoEncontrado);
 
         string? nome = Limpar(request.Nome);
         string? endereco = Limpar(request.Endereco);
         string? telefone = Limpar(request.Telefone);
+        string? status = Limpar(request.Status) ?? existente.Status;
 
         string? erro = ClienteValidacao.Validar(nome, endereco, telefone);
+
+        if (erro == null)
+            erro = ClienteValidacao.ValidarStatus(status);
 
         if (erro != null)
             throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
@@ -58,7 +70,8 @@ public class ClientesService : IClientesService
             Id = request.Id,
             Nome = nome!,
             Endereco = endereco!,
-            Telefone = telefone!
+            Telefone = telefone!,
+            Status = status
         };
 
         await _repositorio.AtualizarAsync(cliente);
@@ -68,8 +81,17 @@ public class ClientesService : IClientesService
 
     public async Task ExcluirAsync(ExcluirClienteRequest request)
     {
-        if (!await _repositorio.ExcluirAsync(request.Id))
+        Cliente? cliente = await _repositorio.ObterPorIdAsync(request.Id);
+
+        if (cliente == null)
             throw new ErroDeNegocio("Cliente não encontrado", TipoErroDeNegocio.NaoEncontrado);
+
+        if (cliente.Status == "inativo")
+            throw new ErroDeNegocio("Cliente já está inativo", TipoErroDeNegocio.Validacao);
+
+        cliente.Status = "inativo";
+
+        await _repositorio.AtualizarAsync(cliente);
     }
 
     public async Task<Cliente> ObterAsync(ObterClienteRequest request)
@@ -82,9 +104,19 @@ public class ClientesService : IClientesService
         return cliente;
     }
 
-    public async Task<List<Cliente>> ListarAsync()
+    public async Task<List<Cliente>> ListarAsync(ListarClientesRequest request)
     {
+        string status = Limpar(request.Status) ?? "ativo";
+
+        string? erro = ClienteValidacao.ValidarFiltroStatus(status);
+
+        if (erro != null)
+            throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+
         List<Cliente> clientes = await _repositorio.ListarAsync();
+
+        if (status != "todos")
+            clientes = clientes.Where(cliente => cliente.Status == status).ToList();
 
         return clientes.OrderBy(cliente => ChaveDeOrdenacao(cliente.Nome)).ToList();
     }

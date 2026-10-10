@@ -11,6 +11,4 @@ public interface IClienteRepository
     Task<List<Cliente>> ListarAsync();
 
     Task<bool> AtualizarAsync(Cliente cliente);
-
-    Task<bool> ExcluirAsync(int id);
 }

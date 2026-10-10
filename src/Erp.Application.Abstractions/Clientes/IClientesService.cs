@@ -12,5 +12,5 @@ public interface IClientesService
 
     Task<Cliente> ObterAsync(ObterClienteRequest request);
 
-    Task<List<Cliente>> ListarAsync();
+    Task<List<Cliente>> ListarAsync(ListarClientesRequest request);
 }

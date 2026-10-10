@@ -47,4 +47,20 @@ public static class ClienteValidacao
 
         return null;
     }
+
+    public static string? ValidarStatus(string? status)
+    {
+        if (status != "ativo" && status != "inativo")
+            return "Status deve ser ativo ou inativo";
+
+        return null;
+    }
+
+    public static string? ValidarFiltroStatus(string? status)
+    {
+        if (status != "ativo" && status != "inativo" && status != "todos")
+            return "Status deve ser ativo, inativo ou todos";
+
+        return null;
+    }
 }

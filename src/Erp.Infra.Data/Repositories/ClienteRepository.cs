@@ -7,7 +7,7 @@ namespace Erp.Infra.Data.Repositories;
 
 public class ClienteRepository : IClienteRepository
 {
-    private const string Colunas = "id, nome, endereco, telefone";
+    private const string Colunas = "id, nome, endereco, telefone, status";
 
     private readonly IDbConnection _conexao;
 
@@ -19,7 +19,7 @@ public class ClienteRepository : IClienteRepository
     public async Task<int> InserirAsync(Cliente cliente)
     {
         return await _conexao.QuerySingleAsync<int>(
-            "insert into cliente (nome, endereco, telefone) values (@Nome, @Endereco, @Telefone) returning id",
+            "insert into cliente (nome, endereco, telefone, status) values (@Nome, @Endereco, @Telefone, @Status) returning id",
             cliente);
     }
 
@@ -40,15 +40,8 @@ public class ClienteRepository : IClienteRepository
     public async Task<bool> AtualizarAsync(Cliente cliente)
     {
         int linhas = await _conexao.ExecuteAsync(
-            "update cliente set nome = @Nome, endereco = @Endereco, telefone = @Telefone where id = @Id",
+            "update cliente set nome = @Nome, endereco = @Endereco, telefone = @Telefone, status = @Status where id = @Id",
             cliente);
-
-        return linhas > 0;
-    }
-
-    public async Task<bool> ExcluirAsync(int id)
-    {
-        int linhas = await _conexao.ExecuteAsync("delete from cliente where id = @id", new { id });
 
         return linhas > 0;
     }
