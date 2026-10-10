@@ -13,5 +13,8 @@
     if (produto == null)
         return;
 
+## Endpoints
+- Todo endpoint tem o atributo `[Tags("<Área>")]` na classe, com o nome da área no plural (ex.: `[Tags("Produtos")]`, `[Tags("Clientes")]`), para agrupar no Swagger.
+
 ## Arquitetura
 @docs/arquitetura.md
