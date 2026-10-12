@@ -10,6 +10,10 @@ public interface IProdutosService
 
     Task ExcluirAsync(ExcluirProdutoRequest request);
 
+    Task DesativarAsync(DesativarProdutoRequest request);
+
+    Task AtivarAsync(AtivarProdutoRequest request);
+
     Task<Produto> ObterAsync(ObterProdutoRequest request);
 
     Task<List<Produto>> ListarAsync(ListarProdutosRequest request);

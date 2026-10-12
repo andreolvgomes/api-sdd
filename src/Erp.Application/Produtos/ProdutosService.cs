@@ -68,6 +68,36 @@ public class ProdutosService : IProdutosService
             throw new ErroDeNegocio("Produto não encontrado", TipoErroDeNegocio.NaoEncontrado);
     }
 
+    public async Task DesativarAsync(DesativarProdutoRequest request)
+    {
+        Produto? produto = await _repositorio.ObterPorCodigoAsync(request.Codigo);
+
+        if (produto == null)
+            throw new ErroDeNegocio("Produto não encontrado", TipoErroDeNegocio.NaoEncontrado);
+
+        if (produto.Status == ProdutoValidacao.StatusInativo)
+            throw new ErroDeNegocio("Produto já está inativo", TipoErroDeNegocio.Validacao);
+
+        produto.Status = ProdutoValidacao.StatusInativo;
+
+        await _repositorio.AtualizarAsync(produto);
+    }
+
+    public async Task AtivarAsync(AtivarProdutoRequest request)
+    {
+        Produto? produto = await _repositorio.ObterPorCodigoAsync(request.Codigo);
+
+        if (produto == null)
+            throw new ErroDeNegocio("Produto não encontrado", TipoErroDeNegocio.NaoEncontrado);
+
+        if (produto.Status == ProdutoValidacao.StatusAtivo)
+            throw new ErroDeNegocio("Produto já está ativo", TipoErroDeNegocio.Validacao);
+
+        produto.Status = ProdutoValidacao.StatusAtivo;
+
+        await _repositorio.AtualizarAsync(produto);
+    }
+
     public async Task<Produto> ObterAsync(ObterProdutoRequest request)
     {
         Produto? produto = await _repositorio.ObterPorCodigoAsync(request.Codigo);
