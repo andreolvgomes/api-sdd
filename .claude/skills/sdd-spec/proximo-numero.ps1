@@ -18,6 +18,7 @@ if ($pastas.Count -eq 0) {
 }
 
 $numeros = $pastas |
+    Where-Object { $_.Name -notlike '_*' } |
     Where-Object { $_.Name -match '^\d{3}-' } |
     ForEach-Object { [int]$_.Name.Substring(0, 3) }
 
