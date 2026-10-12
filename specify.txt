@@ -1,0 +1,38 @@
+constitution → specify → (clarify) → plan → (checklist) → tasks → (analyze) → implement ⇄ converge
+
+--------------------------------------------------------
+/speckit-constitution: define as regras do projeto que valem para todas as features (padrão de código, testes, o que é proibido).
+/speckit-specify: descreve o que a feature faz e por que existe, em linguagem de negócio, sem falar de tecnologia.
+**/speckit-clarify (opcional): o agente faz perguntas sobre o que ficou ambíguo na spec e atualiza o documento com as respostas.
+/speckit-plan: define como construir: stack, arquitetura, modelo de dados e contratos da API.
+**/speckit-checklist (opcional): gera uma checklist de qualidade para validar se os requisitos estão completos e claros.
+/speckit-tasks:	quebra o plano em tarefas pequenas e ordenadas, prontas para executar.
+**/speckit-analyze (opcional): cruza spec, plano e tarefas procurando inconsistências ou lacunas antes de codar.
+/speckit-implement: o agente executa as tarefas e escreve o código.
+/speckit-converge: confere o código contra a spec e o plano e aponta o que ainda falta. Repita os passos 8 e 9 até ele dizer "Converged".
+
+constitution (uma vez por projeto)
+     │
+     ▼
+specify ───────────┐
+     │             │
+     ▼             │
+(clarify)          │ pula
+     │             │
+     ▼             │
+plan ◄─────────────┘
+     │ ────────────┐
+     ▼             │
+(checklist)        │ pula
+     │             │
+     ▼             │
+tasks ◄────────────┘
+     │ ────────────┐
+     ▼             │
+(analyze)          │ pula
+     │             │
+     ▼             │
+implement ◄────────┘
+     │   ▲
+     ▼   │ até "Converged"
+converge ┘
