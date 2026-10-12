@@ -43,6 +43,13 @@ public static class Banco
                 foreign key (cliente_id) references cliente (id)
             )");
 
+        await conexao.ExecuteAsync(@"
+            create table if not exists vendedor (
+                id integer primary key autoincrement,
+                nome text not null,
+                status text not null default 'Ativo'
+            )");
+
         IEnumerable<string> colunasStatus = await conexao.QueryAsync<string>(
             "select name from pragma_table_info('cliente') where name = 'status'");
 

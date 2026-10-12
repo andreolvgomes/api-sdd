@@ -3,6 +3,8 @@ using Erp.Application.Abstractions.Clientes;
 using Erp.Application.Abstractions.Produtos;
 using Erp.Application.Clientes;
 using Erp.Application.Produtos;
+using Erp.Application.Abstractions.Vendedores;
+using Erp.Application.Vendedores;
 using Erp.Core.Repositories;
 using Erp.Infra.Data.Repositories;
 using Microsoft.Data.Sqlite;
@@ -19,9 +21,11 @@ public static class DependencyInjection
         services.AddScoped<IProdutoRepository, ProdutoRepository>();
         services.AddScoped<IClienteRepository, ClienteRepository>();
         services.AddScoped<IEnderecoAdicionalRepository, EnderecoAdicionalRepository>();
+        services.AddScoped<IVendedorRepository, VendedorRepository>();
 
         services.AddTransient<IProdutosService, ProdutosService>();
         services.AddTransient<IClientesService, ClientesService>();
+        services.AddTransient<IVendedoresService, VendedoresService>();
 
         return services;
     }
