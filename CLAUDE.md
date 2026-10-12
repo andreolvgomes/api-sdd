@@ -18,6 +18,7 @@
 
 ## Git
 - Nunca executar comandos git (commit, branch, add, push, checkout, etc.), mesmo que o usuário peça. Quem faz essas operações é o próprio usuário.
+- Comandos permitidos: git (status)
 
 ## Arquitetura
 @docs/arquitetura.md
