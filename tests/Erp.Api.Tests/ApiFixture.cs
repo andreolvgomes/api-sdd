@@ -1,7 +1,6 @@
 using Erp.Api;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Data.Sqlite;
 
 namespace Erp.Api.Tests;
 
@@ -13,7 +12,7 @@ public class ApiFixture : WebApplicationFactory<Program>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.UseSetting("ConnectionStrings:Erp", $"Data Source={_arquivoBanco}");
+        builder.UseSetting("ConnectionStrings:Erp", $"Data Source={_arquivoBanco};Pooling=False");
         builder.UseSetting("AbrirSwaggerNoNavegador", "false");
     }
 
@@ -21,7 +20,23 @@ public class ApiFixture : WebApplicationFactory<Program>
     {
         base.Dispose(disposing);
 
-        SqliteConnection.ClearAllPools();
-        File.Delete(_arquivoBanco);
+        ApagarArquivoBanco();
+    }
+
+    // O host pode ainda segurar o arquivo por um instante logo após o Dispose; tenta de novo antes de desistir.
+    private void ApagarArquivoBanco()
+    {
+        for (int tentativa = 1; tentativa <= 10; tentativa++)
+        {
+            try
+            {
+                File.Delete(_arquivoBanco);
+                return;
+            }
+            catch (IOException)
+            {
+                Thread.Sleep(100);
+            }
+        }
     }
 }

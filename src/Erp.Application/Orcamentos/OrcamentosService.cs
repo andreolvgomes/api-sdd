@@ -45,7 +45,7 @@ public class OrcamentosService : IOrcamentosService
 
         Cliente cliente = await ValidarClienteAsync(request.ClienteId.Value);
         Vendedor vendedor = await ValidarVendedorAsync(request.VendedorId.Value);
-        Produto produto = await ValidarProdutoAsync(request.CodigoProduto!);
+        Produto produto = await ValidarProdutoAsync(request.CodigoProduto!, "Produto inativo não pode ser incluído.");
 
         Orcamento orcamento = new Orcamento
         {
@@ -63,29 +63,121 @@ public class OrcamentosService : IOrcamentosService
 
     public async Task<OrcamentoResponse> IncluirItemAsync(IncluirItemOrcamentoRequest request)
     {
-        Orcamento? orcamento = await _repositorio.ObterPorIdAsync(request.Id);
-
-        if (orcamento == null)
-            throw new ErroDeNegocio("Orçamento não encontrado.", TipoErroDeNegocio.NaoEncontrado);
+        Orcamento orcamento = await ObterOrcamentoAbertoAsync(request.Id);
 
         string? erro = OrcamentoValidacao.ValidarItem(request.CodigoProduto, request.Quantidade);
 
         if (erro != null)
             throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
 
-        Produto produto = await ValidarProdutoAsync(request.CodigoProduto!);
+        Produto produto = await ValidarProdutoAsync(request.CodigoProduto!, "Produto inativo não pode ser incluído.");
 
         await GravarItemAsync(orcamento.Id, produto, request.Quantidade!.Value);
 
         return await MontarRespostaAsync(orcamento);
     }
 
+    public async Task<OrcamentoResponse> AlterarAsync(AlterarOrcamentoRequest request)
+    {
+        Orcamento orcamento = await ObterOrcamentoAbertoAsync(request.Id);
+
+        if (request.ClienteId == null && request.VendedorId == null)
+            throw new ErroDeNegocio("Informe o cliente ou o vendedor para alterar.", TipoErroDeNegocio.Validacao);
+
+        if (request.ClienteId != null)
+        {
+            Cliente cliente = await ValidarClienteAsync(request.ClienteId.Value);
+            orcamento.ClienteId = cliente.Id;
+        }
+
+        if (request.VendedorId != null)
+        {
+            Vendedor vendedor = await ValidarVendedorAsync(request.VendedorId.Value);
+            orcamento.VendedorId = vendedor.Id;
+        }
+
+        await _repositorio.AtualizarAsync(orcamento);
+
+        return await MontarRespostaAsync(orcamento);
+    }
+
+    public async Task<OrcamentoResponse> AlterarItemAsync(AlterarItemOrcamentoRequest request)
+    {
+        Orcamento orcamento = await ObterOrcamentoAbertoAsync(request.Id);
+        OrcamentoItem item = await ObterItemExistenteAsync(orcamento.Id, request.NumeroItem);
+
+        if (item.Cancelado)
+            throw new ErroDeNegocio("Item cancelado não pode ser alterado.", TipoErroDeNegocio.Validacao);
+
+        if (request.CodigoProduto == null && request.Quantidade == null)
+            throw new ErroDeNegocio("Informe a quantidade ou o produto para alterar.", TipoErroDeNegocio.Validacao);
+
+        if (request.CodigoProduto != null && string.IsNullOrWhiteSpace(request.CodigoProduto))
+            throw new ErroDeNegocio("Produto é obrigatório.", TipoErroDeNegocio.Validacao);
+
+        if (request.Quantidade != null)
+        {
+            string? erro = OrcamentoValidacao.ValidarQuantidade(request.Quantidade);
+
+            if (erro != null)
+                throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+        }
+
+        decimal quantidade = request.Quantidade ?? item.Quantidade;
+        string codigoProduto = item.CodigoProduto;
+        decimal preco = item.Preco;
+
+        if (request.CodigoProduto != null)
+        {
+            Produto produto = await ValidarProdutoAsync(request.CodigoProduto, "Produto inativo não pode ser usado.");
+
+            if (produto.Codigo != item.CodigoProduto)
+                preco = produto.PrecoVenda;
+
+            codigoProduto = produto.Codigo;
+        }
+
+        item.CodigoProduto = codigoProduto;
+        item.Quantidade = quantidade;
+        item.Preco = preco;
+        item.Total = OrcamentoValidacao.Arredondar(quantidade * preco);
+
+        await _repositorio.AtualizarItemAsync(item);
+
+        return await MontarRespostaAsync(orcamento);
+    }
+
+    public async Task<OrcamentoResponse> CancelarItemAsync(CancelarItemOrcamentoRequest request)
+    {
+        Orcamento orcamento = await ObterOrcamentoAbertoAsync(request.Id);
+        OrcamentoItem item = await ObterItemExistenteAsync(orcamento.Id, request.NumeroItem);
+
+        if (item.Cancelado)
+            throw new ErroDeNegocio("Item já está cancelado.", TipoErroDeNegocio.Validacao);
+
+        await _repositorio.DefinirCanceladoItemAsync(orcamento.Id, item.NumeroItem, true);
+
+        return await MontarRespostaAsync(orcamento);
+    }
+
+    public async Task<OrcamentoResponse> ReativarItemAsync(ReativarItemOrcamentoRequest request)
+    {
+        Orcamento orcamento = await ObterOrcamentoAbertoAsync(request.Id);
+        OrcamentoItem item = await ObterItemExistenteAsync(orcamento.Id, request.NumeroItem);
+
+        if (!item.Cancelado)
+            throw new ErroDeNegocio("Item não está cancelado.", TipoErroDeNegocio.Validacao);
+
+        await ValidarProdutoAsync(item.CodigoProduto, "Produto inativo não pode ser usado.");
+
+        await _repositorio.DefinirCanceladoItemAsync(orcamento.Id, item.NumeroItem, false);
+
+        return await MontarRespostaAsync(orcamento);
+    }
+
     public async Task<OrcamentoResponse> ObterAsync(ObterOrcamentoRequest request)
     {
-        Orcamento? orcamento = await _repositorio.ObterPorIdAsync(request.Id);
-
-        if (orcamento == null)
-            throw new ErroDeNegocio("Orçamento não encontrado.", TipoErroDeNegocio.NaoEncontrado);
+        Orcamento orcamento = await ObterOrcamentoExistenteAsync(request.Id);
 
         return await MontarRespostaAsync(orcamento);
     }
@@ -105,6 +197,36 @@ public class OrcamentosService : IOrcamentosService
         }
 
         return resposta;
+    }
+
+    private async Task<Orcamento> ObterOrcamentoExistenteAsync(int id)
+    {
+        Orcamento? orcamento = await _repositorio.ObterPorIdAsync(id);
+
+        if (orcamento == null)
+            throw new ErroDeNegocio("Orçamento não encontrado.", TipoErroDeNegocio.NaoEncontrado);
+
+        return orcamento;
+    }
+
+    private async Task<Orcamento> ObterOrcamentoAbertoAsync(int id)
+    {
+        Orcamento orcamento = await ObterOrcamentoExistenteAsync(id);
+
+        if (orcamento.Cancelado)
+            throw new ErroDeNegocio("Orçamento cancelado não pode ser alterado.", TipoErroDeNegocio.Validacao);
+
+        return orcamento;
+    }
+
+    private async Task<OrcamentoItem> ObterItemExistenteAsync(int orcamentoId, string numeroItem)
+    {
+        OrcamentoItem? item = await _repositorio.ObterItemAsync(orcamentoId, numeroItem);
+
+        if (item == null)
+            throw new ErroDeNegocio("Item não encontrado.", TipoErroDeNegocio.NaoEncontrado);
+
+        return item;
     }
 
     private async Task<Cliente> ValidarClienteAsync(int id)
@@ -133,7 +255,7 @@ public class OrcamentosService : IOrcamentosService
         return vendedor;
     }
 
-    private async Task<Produto> ValidarProdutoAsync(string codigo)
+    private async Task<Produto> ValidarProdutoAsync(string codigo, string mensagemInativo)
     {
         Produto? produto = await _produtos.ObterPorCodigoAsync(codigo);
 
@@ -141,7 +263,7 @@ public class OrcamentosService : IOrcamentosService
             throw new ErroDeNegocio("Produto não encontrado.", TipoErroDeNegocio.NaoEncontrado);
 
         if (!OrcamentoValidacao.EhAtivo(produto.Status))
-            throw new ErroDeNegocio("Produto inativo não pode ser incluído.", TipoErroDeNegocio.Validacao);
+            throw new ErroDeNegocio(mensagemInativo, TipoErroDeNegocio.Validacao);
 
         return produto;
     }

@@ -11,10 +11,11 @@ public static class OrcamentoMapeamento
         {
             Id = orcamento.Id,
             Data = orcamento.Data,
+            Cancelado = orcamento.Cancelado,
             Cliente = ParaCliente(cliente),
             Vendedor = ParaVendedor(vendedor),
             Itens = itens.Select(ParaItem).ToList(),
-            Subtotal = itens.Sum(item => item.Total)
+            Subtotal = itens.Where(item => !item.Cancelado).Sum(item => item.Total)
         };
     }
 
@@ -33,10 +34,12 @@ public static class OrcamentoMapeamento
     {
         return new ItemOrcamentoResponse
         {
+            NumeroItem = item.NumeroItem,
             CodigoProduto = item.CodigoProduto,
             Quantidade = item.Quantidade,
             Preco = item.Preco,
-            Total = item.Total
+            Total = item.Total,
+            Cancelado = item.Cancelado
         };
     }
 

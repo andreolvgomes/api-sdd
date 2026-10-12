@@ -71,6 +71,7 @@ public static class Banco
                 data text not null,
                 cliente_id integer not null,
                 vendedor_id integer not null,
+                cancelado integer not null default 0,
                 foreign key (cliente_id) references cliente (id),
                 foreign key (vendedor_id) references vendedor (id)
             )");
@@ -79,10 +80,13 @@ public static class Banco
             create table if not exists orcamento_item (
                 id integer primary key autoincrement,
                 orcamento_id integer not null,
+                numero_item text not null,
                 codigo_produto text not null,
                 quantidade text not null,
                 preco text not null,
                 total text not null,
+                cancelado integer not null default 0,
+                unique (orcamento_id, numero_item),
                 foreign key (orcamento_id) references orcamento (id),
                 foreign key (codigo_produto) references produto (codigo)
             )");

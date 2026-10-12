@@ -4,6 +4,7 @@ public class OrcamentoResponse
 {
     public int Id { get; set; }
     public string Data { get; set; } = "";
+    public bool Cancelado { get; set; }
     public OrcamentoClienteResponse Cliente { get; set; } = new();
     public OrcamentoVendedorResponse Vendedor { get; set; } = new();
     public List<ItemOrcamentoResponse> Itens { get; set; } = new();

@@ -7,6 +7,11 @@ public static class OrcamentoValidacao
         if (string.IsNullOrWhiteSpace(codigoProduto))
             return "Produto é obrigatório.";
 
+        return ValidarQuantidade(quantidade);
+    }
+
+    public static string? ValidarQuantidade(decimal? quantidade)
+    {
         if (quantidade == null)
             return "Quantidade é obrigatória.";
 

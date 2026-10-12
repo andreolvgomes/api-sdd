@@ -10,7 +10,15 @@ public interface IOrcamentoRepository
 
     Task<List<Orcamento>> ListarAsync(int? clienteId, int? vendedorId);
 
-    Task InserirItemAsync(OrcamentoItem item);
+    Task AtualizarAsync(Orcamento orcamento);
+
+    Task<string> InserirItemAsync(OrcamentoItem item);
+
+    Task<OrcamentoItem?> ObterItemAsync(int orcamentoId, string numeroItem);
+
+    Task AtualizarItemAsync(OrcamentoItem item);
+
+    Task DefinirCanceladoItemAsync(int orcamentoId, string numeroItem, bool cancelado);
 
     Task<List<OrcamentoItem>> ListarItensAsync(int orcamentoId);
 }

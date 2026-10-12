@@ -6,4 +6,5 @@ public class Orcamento
     public string Data { get; set; } = "";
     public int ClienteId { get; set; }
     public int VendedorId { get; set; }
+    public bool Cancelado { get; set; }
 }

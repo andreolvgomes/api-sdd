@@ -622,7 +622,7 @@ public class S008IncluirItensOrcamentoTests : IDisposable
 
     private void CriarGatilhoDeFalhaParaProduto(string codigoProduto)
     {
-        using var conexao = new SqliteConnection($"Data Source={_api.ArquivoBanco}");
+        using var conexao = new SqliteConnection($"Data Source={_api.ArquivoBanco};Pooling=False");
         conexao.Open();
 
         using var comando = conexao.CreateCommand();

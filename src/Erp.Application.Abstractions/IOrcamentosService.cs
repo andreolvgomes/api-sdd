@@ -8,6 +8,14 @@ public interface IOrcamentosService
 
     Task<OrcamentoResponse> IncluirItemAsync(IncluirItemOrcamentoRequest request);
 
+    Task<OrcamentoResponse> AlterarAsync(AlterarOrcamentoRequest request);
+
+    Task<OrcamentoResponse> AlterarItemAsync(AlterarItemOrcamentoRequest request);
+
+    Task<OrcamentoResponse> CancelarItemAsync(CancelarItemOrcamentoRequest request);
+
+    Task<OrcamentoResponse> ReativarItemAsync(ReativarItemOrcamentoRequest request);
+
     Task<OrcamentoResponse> ObterAsync(ObterOrcamentoRequest request);
 
     Task<List<OrcamentoResumoResponse>> ListarAsync(ListarOrcamentosRequest request);

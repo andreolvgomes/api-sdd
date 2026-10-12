@@ -12,6 +12,9 @@ var builder = WebApplication.CreateBuilder(args);
 string connectionString = builder.Configuration.GetConnectionString("Erp") ?? "Data Source=erp.db";
 await Banco.CriarTabelasAsync(connectionString);
 
+if (builder.Configuration.GetValue("Seed", false))
+    await Seed.PopularAsync(connectionString);
+
 bool abrirSwagger = builder.Configuration.GetValue("AbrirSwaggerNoNavegador", true);
 
 builder.Services.AddErp(connectionString);

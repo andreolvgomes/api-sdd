@@ -15,7 +15,8 @@
       "launchBrowser": false,
       "applicationUrl": "http://localhost:5157",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Seed": "true"
       }
     },
     "https": {
@@ -24,7 +25,8 @@
       "launchBrowser": false,
       "applicationUrl": "https://localhost:7173;http://localhost:5157",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Seed": "true"
       }
     },
     "IIS Express": {
