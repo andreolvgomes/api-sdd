@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
-using Microsoft.Data.Sqlite;
 using Xunit;
 
 namespace Erp.Api.Tests;
@@ -61,7 +60,7 @@ public class S009AlterarCancelarOrcamentoTests : IDisposable
     }
 
     [Fact]
-    public async Task S009_R1_SemQuantidadeNemProduto_RecusadoENaoGrava()
+    public async Task S009_R20_SemQuantidadeNemProduto_RecusadoENaoGrava()
     {
         int orcamentoId = await CriarOrcamentoComTresItensAsync();
 
@@ -366,7 +365,7 @@ public class S009AlterarCancelarOrcamentoTests : IDisposable
     }
 
     [Fact]
-    public async Task S009_R14_AlterarOrcamentoSemClienteNemVendedor_Recusado()
+    public async Task S009_R21_AlterarOrcamentoSemClienteNemVendedor_Recusado()
     {
         int orcamentoId = await CriarOrcamentoComTresItensAsync();
 
@@ -395,7 +394,7 @@ public class S009AlterarCancelarOrcamentoTests : IDisposable
     public async Task S009_R17_OrcamentoCancelado_NaoAceitaInclusaoDeItem()
     {
         int orcamentoId = await CriarOrcamentoComTresItensAsync();
-        CancelarOrcamentoNoBanco(orcamentoId);
+        await CancelarOrcamentoAsync(orcamentoId);
 
         var resposta = await IncluirItemAsync(orcamentoId, "P002", 1);
 
@@ -407,7 +406,7 @@ public class S009AlterarCancelarOrcamentoTests : IDisposable
     public async Task S009_R17_OrcamentoCancelado_NaoAceitaAlteracaoDeItem()
     {
         int orcamentoId = await CriarOrcamentoComTresItensAsync();
-        CancelarOrcamentoNoBanco(orcamentoId);
+        await CancelarOrcamentoAsync(orcamentoId);
 
         var resposta = await AlterarItemAsync(orcamentoId, "001", new { quantidade = 3 });
 
@@ -420,7 +419,7 @@ public class S009AlterarCancelarOrcamentoTests : IDisposable
     {
         int orcamentoId = await CriarOrcamentoComTresItensAsync();
         await CancelarItemAsync(orcamentoId, "002");
-        CancelarOrcamentoNoBanco(orcamentoId);
+        await CancelarOrcamentoAsync(orcamentoId);
 
         var resposta = await ReativarItemAsync(orcamentoId, "002");
 
@@ -433,12 +432,58 @@ public class S009AlterarCancelarOrcamentoTests : IDisposable
     {
         int orcamentoId = await CriarOrcamentoComTresItensAsync();
         int vendedorNovo = await CriarVendedorAsync("Paulo Souza");
-        CancelarOrcamentoNoBanco(orcamentoId);
+        await CancelarOrcamentoAsync(orcamentoId);
 
         var resposta = await AlterarOrcamentoAsync(orcamentoId, new { vendedorId = vendedorNovo });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Orçamento cancelado não pode ser alterado.", await TextoErroAsync(resposta));
+    }
+
+    // ----- Cancelar orçamento (R15) -----
+
+    [Fact]
+    public async Task S009_R15_CancelarOrcamento_GravaCanceladoEItensMantemEstado()
+    {
+        int orcamentoId = await CriarOrcamentoComTresItensAsync();
+        await CancelarItemAsync(orcamentoId, "002");
+
+        var resposta = await CancelarOrcamentoAsync(orcamentoId);
+
+        Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
+        using var doc = await LerAsync(resposta);
+        Assert.True(doc.RootElement.GetProperty("cancelado").GetBoolean());
+        Assert.True(Item(doc, "002").GetProperty("cancelado").GetBoolean());
+        Assert.False(Item(doc, "001").GetProperty("cancelado").GetBoolean());
+        Assert.Equal(3, doc.RootElement.GetProperty("itens").GetArrayLength());
+    }
+
+    // ----- Orçamento já cancelado (R16) -----
+
+    [Fact]
+    public async Task S009_R16_CancelarOrcamentoJaCancelado_Recusado()
+    {
+        int orcamentoId = await CriarOrcamentoComTresItensAsync();
+        await CancelarOrcamentoAsync(orcamentoId);
+
+        var resposta = await CancelarOrcamentoAsync(orcamentoId);
+
+        Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
+        Assert.Contains("Orçamento já está cancelado.", await TextoErroAsync(resposta));
+    }
+
+    // ----- Consulta mostra itens cancelados (R22) -----
+
+    [Fact]
+    public async Task S009_R22_ConsultaMostraItemCanceladoComIndicacao()
+    {
+        int orcamentoId = await CriarOrcamentoComTresItensAsync();
+        await CancelarItemAsync(orcamentoId, "002");
+
+        using var doc = await LerAsync(await ObterAsync(orcamentoId));
+
+        Assert.True(Item(doc, "002").GetProperty("cancelado").GetBoolean());
+        Assert.Equal(10.50m, doc.RootElement.GetProperty("subtotal").GetDecimal());
     }
 
     // ----- Cancelar item não altera estoque (R19) -----
@@ -527,17 +572,9 @@ public class S009AlterarCancelarOrcamentoTests : IDisposable
         return _cliente.GetAsync($"/api/orcamentos/{orcamentoId}");
     }
 
-    // Cancelar o orçamento pela API ainda não está implementado (aguarda decisão da R16/R17).
-    // Este helper só prepara o cenário de orçamento cancelado para testar a R17.
-    private void CancelarOrcamentoNoBanco(int orcamentoId)
+    private Task<HttpResponseMessage> CancelarOrcamentoAsync(int orcamentoId)
     {
-        using var conexao = new SqliteConnection($"Data Source={_api.ArquivoBanco};Pooling=False");
-        conexao.Open();
-
-        using var comando = conexao.CreateCommand();
-        comando.CommandText = "update orcamento set cancelado = 1 where id = $id";
-        comando.Parameters.AddWithValue("$id", orcamentoId);
-        comando.ExecuteNonQuery();
+        return _cliente.PostAsync($"/api/orcamentos/{orcamentoId}/cancelar", null);
     }
 
     private static JsonElement Item(JsonDocument doc, string numeroItem)

@@ -175,6 +175,19 @@ public class OrcamentosService : IOrcamentosService
         return await MontarRespostaAsync(orcamento);
     }
 
+    public async Task<OrcamentoResponse> CancelarAsync(CancelarOrcamentoRequest request)
+    {
+        Orcamento orcamento = await ObterOrcamentoExistenteAsync(request.Id);
+
+        if (orcamento.Cancelado)
+            throw new ErroDeNegocio("Orçamento já está cancelado.", TipoErroDeNegocio.Validacao);
+
+        await _repositorio.CancelarAsync(orcamento.Id);
+        orcamento.Cancelado = true;
+
+        return await MontarRespostaAsync(orcamento);
+    }
+
     public async Task<OrcamentoResponse> ObterAsync(ObterOrcamentoRequest request)
     {
         Orcamento orcamento = await ObterOrcamentoExistenteAsync(request.Id);

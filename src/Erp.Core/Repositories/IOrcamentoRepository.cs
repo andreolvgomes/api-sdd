@@ -12,6 +12,8 @@ public interface IOrcamentoRepository
 
     Task AtualizarAsync(Orcamento orcamento);
 
+    Task CancelarAsync(int id);
+
     Task<string> InserirItemAsync(OrcamentoItem item);
 
     Task<OrcamentoItem?> ObterItemAsync(int orcamentoId, string numeroItem);

@@ -56,6 +56,11 @@ public class OrcamentoRepository : IOrcamentoRepository
             orcamento);
     }
 
+    public async Task CancelarAsync(int id)
+    {
+        await _conexao.ExecuteAsync("update orcamento set cancelado = 1 where id = @id", new { id });
+    }
+
     public async Task<string> InserirItemAsync(OrcamentoItem item)
     {
         return await _conexao.ExecuteScalarAsync<string>(

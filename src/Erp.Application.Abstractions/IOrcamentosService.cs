@@ -16,6 +16,8 @@ public interface IOrcamentosService
 
     Task<OrcamentoResponse> ReativarItemAsync(ReativarItemOrcamentoRequest request);
 
+    Task<OrcamentoResponse> CancelarAsync(CancelarOrcamentoRequest request);
+
     Task<OrcamentoResponse> ObterAsync(ObterOrcamentoRequest request);
 
     Task<List<OrcamentoResumoResponse>> ListarAsync(ListarOrcamentosRequest request);

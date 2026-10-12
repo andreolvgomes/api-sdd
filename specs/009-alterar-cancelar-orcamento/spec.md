@@ -20,9 +20,12 @@ Permite ajustar uma prévia de orçamento para um cliente a qualquer momento: al
 - **R14** — Alterar o cliente ou o vendedor do orçamento exige que o novo cadastro esteja ativo. Cliente inativo retorna "Cliente inativo não pode ser usado."; vendedor inativo retorna "Vendedor inativo não pode ser usado.". Cliente ou vendedor inexistente retornam "Cliente não encontrado." ou "Vendedor não encontrado.". Nada é gravado.
 - **R15** — Cancelar o orçamento grava `cancelado = true`. O orçamento continua no banco e não é excluído. Cancelar os itens não é feito automaticamente: os itens mantêm o seu estado.
 - **R16** — Cancelar um orçamento que já está cancelado retorna o erro "Orçamento já está cancelado.". Nada é gravado.
-- **R17** — Orçamento cancelado está congelado: não aceita nenhum tipo de modificação. Isso inclui incluir item, alterar item, cancelar item, reativar item, alterar cliente, alterar vendedor e cancelar de novo. Qualquer uma dessas operações retorna o erro "Orçamento cancelado não pode ser alterado.". Nada é gravado.
+- **R17** — Orçamento cancelado está congelado: não aceita nenhum tipo de modificação. Isso inclui incluir item, alterar item, cancelar item, reativar item, alterar cliente e alterar vendedor. Qualquer uma dessas operações retorna o erro "Orçamento cancelado não pode ser alterado.". Nada é gravado. Cancelar um orçamento que já está cancelado segue a R16.
 - **R18** — Não há trava por pagamento nesta spec. Fora de orçamento cancelado, a edição é liberada a qualquer momento.
 - **R19** — Alterar, cancelar e reativar itens e orçamento não alteram o estoque de produto nem movimentam saldo de caixa ou banco.
+- **R20** — Alterar um item sem informar quantidade nem produto retorna o erro "Informe a quantidade ou o produto para alterar.". Nada é gravado.
+- **R21** — Alterar o orçamento sem informar cliente nem vendedor retorna o erro "Informe o cliente ou o vendedor para alterar.". Nada é gravado.
+- **R22** — A consulta do orçamento mostra todos os itens, inclusive os cancelados, cada um com a indicação `cancelado`. Itens cancelados aparecem na consulta, mas não entram no subtotal.
 
 ## Exemplos
 | Entrada | Resultado |
@@ -51,6 +54,9 @@ Permite ajustar uma prévia de orçamento para um cliente a qualquer momento: al
 | Orçamento 1 cancelado, reativar item 002 | Erro: "Orçamento cancelado não pode ser alterado."; nada gravado |
 | Orçamento 1 cancelado, trocar vendedor | Erro: "Orçamento cancelado não pode ser alterado."; nada gravado |
 | Orçamento 1 com item 003 cancelado e item 004 incluído depois | O item 004 recebe o número 004, mesmo com 003 cancelado; o número 003 não é reutilizado |
+| Orçamento 1, item 002, alterar sem quantidade e sem produto | Erro: "Informe a quantidade ou o produto para alterar."; nada gravado |
+| Orçamento 1, alterar sem cliente e sem vendedor | Erro: "Informe o cliente ou o vendedor para alterar."; nada gravado |
+| Consultar orçamento 1 com item 002 cancelado (total 3.00) | Item 002 aparece com `cancelado = true`; subtotal 10.50, sem o item 002 |
 
 ## Fora do escopo
 - Fechamento e desconto.
@@ -69,4 +75,6 @@ Permite ajustar uma prévia de orçamento para um cliente a qualquer momento: al
 - Mensagens de erro novas desta spec, propostas e para revisão: "Item já está cancelado.", "Item não está cancelado.", "Item cancelado não pode ser alterado.", "Item não encontrado.", "Orçamento já está cancelado.", "Orçamento cancelado não pode ser alterado.", "Produto inativo não pode ser usado.". Mensagens de cliente e vendedor reutilizam as da spec 008.
 - A reativação de item cancelado é feita por um comando específico, separado da alteração do item (resposta do usuário).
 - Reativação não é permitida se o produto do item estiver inativo (resposta do usuário).
-- Em aberto: como preencher o número de item dos itens já incluídos antes desta spec (spec 008), que não têm número.
+- Cancelar um orçamento já cancelado retorna "Orçamento já está cancelado." (R16), por ser específica dessa operação. A R17 vale para as demais operações (resposta do usuário, pergunta 1).
+- Não há itens anteriores à spec sem número: o banco foi limpo antes desta implementação, então a pendência de numeração dos itens da spec 008 está resolvida (resposta do usuário, pergunta 2).
+- Regras R20, R21 e R22 registram os erros de alteração vazia e a exibição de itens cancelados na consulta, que já estavam no código (resposta do usuário, pergunta 3).
