@@ -13,7 +13,8 @@ public static class ProdutoMapeamento
             Codigo = produto.Codigo,
             Descricao = produto.Descricao,
             PrecoVenda = produto.PrecoVenda,
-            Status = produto.Status
+            Status = produto.Status,
+            Estoque = produto.Estoque
         };
     }
 }

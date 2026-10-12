@@ -6,4 +6,5 @@ public class Produto
     public string Descricao { get; set; } = "";
     public decimal PrecoVenda { get; set; }
     public string Status { get; set; } = "";
+    public decimal Estoque { get; set; }
 }

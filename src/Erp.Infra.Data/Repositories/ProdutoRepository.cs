@@ -7,7 +7,7 @@ namespace Erp.Infra.Data.Repositories;
 
 public class ProdutoRepository : IProdutoRepository
 {
-    private const string Colunas = "codigo, descricao, precovenda, status";
+    private const string Colunas = "codigo, descricao, precovenda, status, estoque";
 
     private readonly IDbConnection _conexao;
 
@@ -27,7 +27,7 @@ public class ProdutoRepository : IProdutoRepository
     public async Task InserirAsync(Produto produto)
     {
         await _conexao.ExecuteAsync(
-            "insert into produto (codigo, descricao, precovenda, status) values (@Codigo, @Descricao, @PrecoVenda, @Status)",
+            "insert into produto (codigo, descricao, precovenda, status, estoque) values (@Codigo, @Descricao, @PrecoVenda, @Status, @Estoque)",
             produto);
     }
 

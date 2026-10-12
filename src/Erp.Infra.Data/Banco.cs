@@ -14,8 +14,15 @@ public static class Banco
                 codigo text primary key,
                 descricao text not null,
                 precovenda text not null,
-                status text not null
+                status text not null,
+                estoque text not null default '0'
             )");
+
+        IEnumerable<string> colunasEstoque = await conexao.QueryAsync<string>(
+            "select name from pragma_table_info('produto') where name = 'estoque'");
+
+        if (!colunasEstoque.Any())
+            await conexao.ExecuteAsync("alter table produto add column estoque text not null default '0'");
 
         await conexao.ExecuteAsync(@"
             create table if not exists cliente (

@@ -17,6 +17,9 @@ public class ProdutosService : IProdutosService
 
     public async Task<ProdutoResponse> IncluirAsync(IncluirProdutoRequest request)
     {
+        if (request.Estoque != null)
+            throw new ErroDeNegocio("Estoque não pode ser informado nesta operação", TipoErroDeNegocio.Validacao);
+
         string status = request.Status ?? ProdutoValidacao.StatusAtivo;
 
         string? erro = ProdutoValidacao.Validar(request.Codigo, request.Descricao, request.PrecoVenda, status);
@@ -44,6 +47,9 @@ public class ProdutosService : IProdutosService
     {
         if (!await _repositorio.ExisteCodigoAsync(request.Codigo))
             throw new ErroDeNegocio("Produto não encontrado", TipoErroDeNegocio.NaoEncontrado);
+
+        if (request.Estoque != null)
+            throw new ErroDeNegocio("Estoque não pode ser informado nesta operação", TipoErroDeNegocio.Validacao);
 
         string? erro = ProdutoValidacao.ValidarAlteracao(request.Descricao, request.PrecoVenda, request.Status);
 

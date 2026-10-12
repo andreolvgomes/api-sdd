@@ -11,7 +11,7 @@ $numeros = Get-ChildItem specs -Directory |
     Where-Object { $_.Name -match '^\d{3}-' } |
     ForEach-Object { [int]$_.Name.Substring(0, 3) }
 
-$maior = ($numeros | Measure-Object -Maximum).Maximum
+$maior = [int](($numeros | Measure-Object -Maximum).Maximum)
 if ($maior -eq $null) {
     $maior = 0
 }
