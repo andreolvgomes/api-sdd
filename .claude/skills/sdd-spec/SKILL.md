@@ -93,7 +93,8 @@ Só depois que o usuário responder (mesmo que seja "pode seguir com as sugestõ
 - **Spec ativa pode ser editada** quando o pedido for um ajuste ou complemento. Registre em Decisões o que mudou e o motivo.
 
 ## Etapa 4 — Confirmar
-Ao final, mostre exatamente neste formato, sem repetir o conteúdo da spec:
+- Ao final, mostre exatamente neste formato, sem repetir o conteúdo da spec:
+- Exibir link para visualizar spec:
 
 ```
 Spec: NNN-<nome-curto>
