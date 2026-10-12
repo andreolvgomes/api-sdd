@@ -16,5 +16,8 @@
 ## Endpoints
 - Todo endpoint tem o atributo `[Tags("<Área>")]` na classe, com o nome da área no plural (ex.: `[Tags("Produtos")]`, `[Tags("Clientes")]`), para agrupar no Swagger.
 
+## Git
+- Nunca executar comandos git (commit, branch, add, push, checkout, etc.), mesmo que o usuário peça. Quem faz essas operações é o próprio usuário.
+
 ## Arquitetura
 @docs/arquitetura.md

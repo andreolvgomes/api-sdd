@@ -80,7 +80,14 @@ Só depois que o usuário responder (mesmo que seja "pode seguir com as sugestõ
 - **Exemplos** são concretos: valores reais, não descrições genéricas. Inclua casos normais e de borda.
 - **Fora do escopo** lista o que foi excluído de propósito, para evitar expansão.
 - **Decisões** registra as respostas do usuário que fixaram comportamento e as respostas sugeridas que ele aceitou. Se algo ficou em aberto, escreva como "Em aberto: ..." em vez de inventar.
+- **Nunca altere uma spec existente.** Toda mudança, inclusive em algo já especificado, vira uma spec nova com o próximo número. Se a mudança alterar regras de uma spec anterior, cite essa spec em Decisões (ex.: "Altera a R3 da spec 001").
 
 ## Etapa 4 — Confirmar
+Ao final, mostre exatamente neste formato, sem repetir o conteúdo da spec:
 
-Ao final, diga em uma linha o caminho do arquivo criado e quantas regras e exemplos ele tem. Não repita o conteúdo da spec no chat.
+```
+Spec: NNN-<nome-curto>
+Caminho: <caminho até o spec.md>
+Regras: <quantidade> | Exemplos: <quantidade>
+Próximo passo: /sdd-implementar NNN
+```
