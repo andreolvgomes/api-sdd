@@ -20,6 +20,10 @@ public interface IOrcamentosService
 
     Task<OrcamentoResponse> FecharAsync(FecharOrcamentoRequest request);
 
+    Task<OrcamentoResponse> LancarPagamentoAsync(LancarPagamentoRequest request);
+
+    Task<OrcamentoResponse> CancelarPagamentoAsync(CancelarPagamentoRequest request);
+
     Task<OrcamentoResponse> ObterAsync(ObterOrcamentoRequest request);
 
     Task<List<OrcamentoResumoResponse>> ListarAsync(ListarOrcamentosRequest request);

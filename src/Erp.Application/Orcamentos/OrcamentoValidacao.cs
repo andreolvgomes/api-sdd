@@ -35,6 +35,17 @@ public static class OrcamentoValidacao
         return null;
     }
 
+    public static string? ValidarValorPagamento(decimal valor)
+    {
+        if (valor <= 0)
+            return "Valor do pagamento deve ser maior que zero.";
+
+        if (Math.Round(valor, 2) != valor)
+            return "Valor do pagamento deve ter até 2 casas decimais.";
+
+        return null;
+    }
+
     public static bool EhAtivo(string status)
     {
         return string.Equals(status, "ativo", StringComparison.OrdinalIgnoreCase);

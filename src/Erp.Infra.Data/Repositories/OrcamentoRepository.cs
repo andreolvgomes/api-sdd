@@ -107,4 +107,70 @@ public class OrcamentoRepository : IOrcamentoRepository
 
         return itens.ToList();
     }
+
+    public async Task<int> ContarPagamentosNaoCanceladosAsync(int orcamentoId)
+    {
+        return await _conexao.ExecuteScalarAsync<int>(
+            "select count(1) from orcamento_pagamento where orcamento_id = @orcamentoId and cancelado = 0",
+            new { orcamentoId });
+    }
+
+    public async Task<List<OrcamentoPagamento>> ListarPagamentosAsync(int orcamentoId)
+    {
+        IEnumerable<OrcamentoPagamento> pagamentos = await _conexao.QueryAsync<OrcamentoPagamento>(
+            "select id, orcamento_id as OrcamentoId, numero_pagamento as NumeroPagamento, forma_pagamento_id as FormaPagamentoId, caixa_banco_id as CaixaBancoId, valor as Valor, cancelado as Cancelado from orcamento_pagamento where orcamento_id = @orcamentoId order by numero_pagamento",
+            new { orcamentoId });
+
+        return pagamentos.ToList();
+    }
+
+    public async Task<OrcamentoPagamento?> ObterPagamentoAsync(int orcamentoId, string numeroPagamento)
+    {
+        return await _conexao.QueryFirstOrDefaultAsync<OrcamentoPagamento>(
+            "select id, orcamento_id as OrcamentoId, numero_pagamento as NumeroPagamento, forma_pagamento_id as FormaPagamentoId, caixa_banco_id as CaixaBancoId, valor as Valor, cancelado as Cancelado from orcamento_pagamento where orcamento_id = @orcamentoId and numero_pagamento = @numeroPagamento",
+            new { orcamentoId, numeroPagamento });
+    }
+
+    public async Task<bool> InserirPagamentoSeCouberAsync(OrcamentoPagamento pagamento, decimal total)
+    {
+        await _conexao.ExecuteAsync("begin immediate");
+
+        try
+        {
+            IEnumerable<decimal> valores = await _conexao.QueryAsync<decimal>(
+                "select valor from orcamento_pagamento where orcamento_id = @orcamentoId and cancelado = 0",
+                new { orcamentoId = pagamento.OrcamentoId });
+
+            decimal pago = valores.Sum();
+
+            if (pago + pagamento.Valor > total)
+            {
+                await _conexao.ExecuteAsync("rollback");
+                return false;
+            }
+
+            await _conexao.ExecuteAsync(
+                @"insert into orcamento_pagamento (orcamento_id, numero_pagamento, forma_pagamento_id, caixa_banco_id, valor, cancelado)
+                  values (
+                    @OrcamentoId,
+                    (select printf('%03d', coalesce(max(cast(numero_pagamento as integer)), 0) + 1) from orcamento_pagamento where orcamento_id = @OrcamentoId),
+                    @FormaPagamentoId, @CaixaBancoId, @Valor, 0)",
+                pagamento);
+
+            await _conexao.ExecuteAsync("commit");
+            return true;
+        }
+        catch
+        {
+            await _conexao.ExecuteAsync("rollback");
+            throw;
+        }
+    }
+
+    public async Task CancelarPagamentoAsync(int orcamentoId, string numeroPagamento)
+    {
+        await _conexao.ExecuteAsync(
+            "update orcamento_pagamento set cancelado = 1 where orcamento_id = @orcamentoId and numero_pagamento = @numeroPagamento",
+            new { orcamentoId, numeroPagamento });
+    }
 }

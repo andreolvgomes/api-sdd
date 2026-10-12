@@ -5,9 +5,11 @@ namespace Erp.Application.Orcamentos;
 
 public static class OrcamentoMapeamento
 {
-    public static OrcamentoResponse ParaResposta(Orcamento orcamento, Cliente? cliente, Vendedor? vendedor, List<OrcamentoItem> itens)
+    public static OrcamentoResponse ParaResposta(Orcamento orcamento, Cliente? cliente, Vendedor? vendedor, List<OrcamentoItem> itens, List<OrcamentoPagamento> pagamentos)
     {
         decimal subtotal = itens.Where(item => !item.Cancelado).Sum(item => item.Total);
+        decimal total = OrcamentoValidacao.Arredondar(subtotal - orcamento.Desconto);
+        decimal pago = pagamentos.Where(pagamento => !pagamento.Cancelado).Sum(pagamento => pagamento.Valor);
 
         return new OrcamentoResponse
         {
@@ -19,7 +21,21 @@ public static class OrcamentoMapeamento
             Itens = itens.Select(ParaItem).ToList(),
             Subtotal = subtotal,
             Desconto = orcamento.Desconto,
-            Total = OrcamentoValidacao.Arredondar(subtotal - orcamento.Desconto)
+            Total = total,
+            Pagamentos = pagamentos.Select(ParaPagamento).ToList(),
+            Saldo = OrcamentoValidacao.Arredondar(total - pago)
+        };
+    }
+
+    private static PagamentoResponse ParaPagamento(OrcamentoPagamento pagamento)
+    {
+        return new PagamentoResponse
+        {
+            NumeroPagamento = pagamento.NumeroPagamento,
+            FormaPagamentoId = pagamento.FormaPagamentoId,
+            CaixaBancoId = pagamento.CaixaBancoId,
+            Valor = pagamento.Valor,
+            Cancelado = pagamento.Cancelado
         };
     }
 

@@ -25,4 +25,14 @@ public interface IOrcamentoRepository
     Task DefinirCanceladoItemAsync(int orcamentoId, string numeroItem, bool cancelado);
 
     Task<List<OrcamentoItem>> ListarItensAsync(int orcamentoId);
+
+    Task<int> ContarPagamentosNaoCanceladosAsync(int orcamentoId);
+
+    Task<List<OrcamentoPagamento>> ListarPagamentosAsync(int orcamentoId);
+
+    Task<OrcamentoPagamento?> ObterPagamentoAsync(int orcamentoId, string numeroPagamento);
+
+    Task<bool> InserirPagamentoSeCouberAsync(OrcamentoPagamento pagamento, decimal total);
+
+    Task CancelarPagamentoAsync(int orcamentoId, string numeroPagamento);
 }

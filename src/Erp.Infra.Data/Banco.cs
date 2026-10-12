@@ -91,6 +91,21 @@ public static class Banco
                 foreign key (codigo_produto) references produto (codigo)
             )");
 
+        await conexao.ExecuteAsync(@"
+            create table if not exists orcamento_pagamento (
+                id integer primary key autoincrement,
+                orcamento_id integer not null,
+                numero_pagamento text not null,
+                forma_pagamento_id integer not null,
+                caixa_banco_id integer not null,
+                valor text not null,
+                cancelado integer not null default 0,
+                unique (orcamento_id, numero_pagamento),
+                foreign key (orcamento_id) references orcamento (id),
+                foreign key (forma_pagamento_id) references forma_pagamento (id),
+                foreign key (caixa_banco_id) references caixa_banco (id)
+            )");
+
         IEnumerable<string> colunasDesconto = await conexao.QueryAsync<string>(
             "select name from pragma_table_info('orcamento') where name = 'desconto'");
 

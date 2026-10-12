@@ -11,4 +11,6 @@ public class OrcamentoResponse
     public decimal Subtotal { get; set; }
     public decimal Desconto { get; set; }
     public decimal Total { get; set; }
+    public List<PagamentoResponse> Pagamentos { get; set; } = new();
+    public decimal Saldo { get; set; }
 }
