@@ -1,5 +1,6 @@
 using Erp.Api.Common;
 using Erp.Application.Abstractions.Clientes;
+using Erp.Application.Abstractions.Clientes.Dtos;
 using Erp.Core.Entities;
 using FastEndpoints;
 using Microsoft.AspNetCore.Authorization;

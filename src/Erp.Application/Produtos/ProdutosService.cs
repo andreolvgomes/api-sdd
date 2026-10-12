@@ -1,5 +1,6 @@
 using Erp.Application.Abstractions.Common;
 using Erp.Application.Abstractions.Produtos;
+using Erp.Application.Abstractions.Produtos.Dtos;
 using Erp.Core.Entities;
 using Erp.Core.Repositories;
 

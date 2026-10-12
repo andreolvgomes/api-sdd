@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text;
 using Erp.Application.Abstractions.Clientes;
+using Erp.Application.Abstractions.Clientes.Dtos;
 using Erp.Application.Abstractions.Common;
 using Erp.Core.Entities;
 using Erp.Core.Repositories;

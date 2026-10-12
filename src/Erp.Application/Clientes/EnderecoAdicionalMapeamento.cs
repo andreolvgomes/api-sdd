@@ -1,4 +1,5 @@
 using Erp.Application.Abstractions.Clientes;
+using Erp.Application.Abstractions.Clientes.Dtos;
 using Erp.Core.Entities;
 
 namespace Erp.Application.Clientes;

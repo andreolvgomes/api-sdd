@@ -1,5 +1,6 @@
 using Erp.Api.Common;
 using Erp.Application.Abstractions.Produtos;
+using Erp.Application.Abstractions.Produtos.Dtos;
 using FastEndpoints;
 using Microsoft.AspNetCore.Authorization;
 

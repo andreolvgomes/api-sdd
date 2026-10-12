@@ -1,4 +1,5 @@
 using Erp.Application.Abstractions.Produtos;
+using Erp.Application.Abstractions.Produtos.Dtos;
 using Erp.Core.Entities;
 
 namespace Erp.Application.Produtos;

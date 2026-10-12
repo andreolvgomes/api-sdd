@@ -1,4 +1,4 @@
-namespace Erp.Application.Abstractions.Clientes;
+namespace Erp.Application.Abstractions.Clientes.Dtos;
 
 public class EnderecoAdicionalResponse
 {
