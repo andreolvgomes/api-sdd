@@ -7,6 +7,8 @@ public static class OrcamentoMapeamento
 {
     public static OrcamentoResponse ParaResposta(Orcamento orcamento, Cliente? cliente, Vendedor? vendedor, List<OrcamentoItem> itens)
     {
+        decimal subtotal = itens.Where(item => !item.Cancelado).Sum(item => item.Total);
+
         return new OrcamentoResponse
         {
             Id = orcamento.Id,
@@ -15,7 +17,9 @@ public static class OrcamentoMapeamento
             Cliente = ParaCliente(cliente),
             Vendedor = ParaVendedor(vendedor),
             Itens = itens.Select(ParaItem).ToList(),
-            Subtotal = itens.Where(item => !item.Cancelado).Sum(item => item.Total)
+            Subtotal = subtotal,
+            Desconto = orcamento.Desconto,
+            Total = OrcamentoValidacao.Arredondar(subtotal - orcamento.Desconto)
         };
     }
 

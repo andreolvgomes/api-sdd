@@ -91,6 +91,12 @@ public static class Banco
                 foreign key (codigo_produto) references produto (codigo)
             )");
 
+        IEnumerable<string> colunasDesconto = await conexao.QueryAsync<string>(
+            "select name from pragma_table_info('orcamento') where name = 'desconto'");
+
+        if (!colunasDesconto.Any())
+            await conexao.ExecuteAsync("alter table orcamento add column desconto text not null default '0'");
+
         IEnumerable<string> colunasStatus = await conexao.QueryAsync<string>(
             "select name from pragma_table_info('cliente') where name = 'status'");
 

@@ -14,6 +14,8 @@ public interface IOrcamentoRepository
 
     Task CancelarAsync(int id);
 
+    Task DefinirDescontoAsync(int id, decimal desconto);
+
     Task<string> InserirItemAsync(OrcamentoItem item);
 
     Task<OrcamentoItem?> ObterItemAsync(int orcamentoId, string numeroItem);

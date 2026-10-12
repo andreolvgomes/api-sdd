@@ -7,4 +7,5 @@ public class Orcamento
     public int ClienteId { get; set; }
     public int VendedorId { get; set; }
     public bool Cancelado { get; set; }
+    public decimal Desconto { get; set; }
 }

@@ -24,6 +24,17 @@ public static class OrcamentoValidacao
         return null;
     }
 
+    public static string? ValidarDesconto(decimal desconto)
+    {
+        if (desconto < 0)
+            return "Desconto não pode ser negativo.";
+
+        if (Math.Round(desconto, 2) != desconto)
+            return "Desconto deve ter até 2 casas decimais.";
+
+        return null;
+    }
+
     public static bool EhAtivo(string status)
     {
         return string.Equals(status, "ativo", StringComparison.OrdinalIgnoreCase);

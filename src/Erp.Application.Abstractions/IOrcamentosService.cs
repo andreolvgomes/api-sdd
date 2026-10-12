@@ -18,6 +18,8 @@ public interface IOrcamentosService
 
     Task<OrcamentoResponse> CancelarAsync(CancelarOrcamentoRequest request);
 
+    Task<OrcamentoResponse> FecharAsync(FecharOrcamentoRequest request);
+
     Task<OrcamentoResponse> ObterAsync(ObterOrcamentoRequest request);
 
     Task<List<OrcamentoResumoResponse>> ListarAsync(ListarOrcamentosRequest request);

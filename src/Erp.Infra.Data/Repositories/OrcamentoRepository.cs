@@ -7,7 +7,7 @@ namespace Erp.Infra.Data.Repositories;
 
 public class OrcamentoRepository : IOrcamentoRepository
 {
-    private const string ColunasOrcamento = "id, data, cliente_id as ClienteId, vendedor_id as VendedorId, cancelado as Cancelado";
+    private const string ColunasOrcamento = "id, data, cliente_id as ClienteId, vendedor_id as VendedorId, cancelado as Cancelado, desconto as Desconto";
 
     private const string ColunasItem = "id, orcamento_id as OrcamentoId, numero_item as NumeroItem, codigo_produto as CodigoProduto, quantidade as Quantidade, preco as Preco, total as Total, cancelado as Cancelado";
 
@@ -54,6 +54,11 @@ public class OrcamentoRepository : IOrcamentoRepository
         await _conexao.ExecuteAsync(
             "update orcamento set cliente_id = @ClienteId, vendedor_id = @VendedorId where id = @Id",
             orcamento);
+    }
+
+    public async Task DefinirDescontoAsync(int id, decimal desconto)
+    {
+        await _conexao.ExecuteAsync("update orcamento set desconto = @desconto where id = @id", new { id, desconto });
     }
 
     public async Task CancelarAsync(int id)

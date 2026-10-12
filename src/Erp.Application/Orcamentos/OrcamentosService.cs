@@ -73,6 +73,7 @@ public class OrcamentosService : IOrcamentosService
         Produto produto = await ValidarProdutoAsync(request.CodigoProduto!, "Produto inativo não pode ser incluído.");
 
         await GravarItemAsync(orcamento.Id, produto, request.Quantidade!.Value);
+        await ZerarDescontoAsync(orcamento);
 
         return await MontarRespostaAsync(orcamento);
     }
@@ -143,6 +144,7 @@ public class OrcamentosService : IOrcamentosService
         item.Total = OrcamentoValidacao.Arredondar(quantidade * preco);
 
         await _repositorio.AtualizarItemAsync(item);
+        await ZerarDescontoAsync(orcamento);
 
         return await MontarRespostaAsync(orcamento);
     }
@@ -156,6 +158,7 @@ public class OrcamentosService : IOrcamentosService
             throw new ErroDeNegocio("Item já está cancelado.", TipoErroDeNegocio.Validacao);
 
         await _repositorio.DefinirCanceladoItemAsync(orcamento.Id, item.NumeroItem, true);
+        await ZerarDescontoAsync(orcamento);
 
         return await MontarRespostaAsync(orcamento);
     }
@@ -171,6 +174,7 @@ public class OrcamentosService : IOrcamentosService
         await ValidarProdutoAsync(item.CodigoProduto, "Produto inativo não pode ser usado.");
 
         await _repositorio.DefinirCanceladoItemAsync(orcamento.Id, item.NumeroItem, false);
+        await ZerarDescontoAsync(orcamento);
 
         return await MontarRespostaAsync(orcamento);
     }
@@ -184,6 +188,38 @@ public class OrcamentosService : IOrcamentosService
 
         await _repositorio.CancelarAsync(orcamento.Id);
         orcamento.Cancelado = true;
+
+        return await MontarRespostaAsync(orcamento);
+    }
+
+    public async Task<OrcamentoResponse> FecharAsync(FecharOrcamentoRequest request)
+    {
+        Orcamento orcamento = await ObterOrcamentoExistenteAsync(request.Id);
+
+        if (orcamento.Cancelado)
+            throw new ErroDeNegocio("Orçamento cancelado não pode ser alterado.", TipoErroDeNegocio.Validacao);
+
+        if (request.Desconto == null)
+            throw new ErroDeNegocio("Desconto é obrigatório.", TipoErroDeNegocio.Validacao);
+
+        string? erro = OrcamentoValidacao.ValidarDesconto(request.Desconto.Value);
+
+        if (erro != null)
+            throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+
+        List<OrcamentoItem> itens = await _repositorio.ListarItensAsync(orcamento.Id);
+        List<OrcamentoItem> ativos = itens.Where(item => !item.Cancelado).ToList();
+
+        if (ativos.Count == 0)
+            throw new ErroDeNegocio("Orçamento sem itens ativos não pode ser fechado.", TipoErroDeNegocio.Validacao);
+
+        decimal subtotal = ativos.Sum(item => item.Total);
+
+        if (request.Desconto.Value > subtotal)
+            throw new ErroDeNegocio("Desconto não pode ser maior que o subtotal.", TipoErroDeNegocio.Validacao);
+
+        await _repositorio.DefinirDescontoAsync(orcamento.Id, request.Desconto.Value);
+        orcamento.Desconto = request.Desconto.Value;
 
         return await MontarRespostaAsync(orcamento);
     }
@@ -210,6 +246,12 @@ public class OrcamentosService : IOrcamentosService
         }
 
         return resposta;
+    }
+
+    private async Task ZerarDescontoAsync(Orcamento orcamento)
+    {
+        await _repositorio.DefinirDescontoAsync(orcamento.Id, 0);
+        orcamento.Desconto = 0;
     }
 
     private async Task<Orcamento> ObterOrcamentoExistenteAsync(int id)
