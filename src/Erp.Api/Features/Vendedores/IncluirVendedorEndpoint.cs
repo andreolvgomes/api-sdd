@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.Vendedores;
 
-[HttpPost("/api/vendedores")]
+[HttpPost("api/vendedores")]
 [AllowAnonymous()]
 [Tags("Vendedores")]
 public class IncluirVendedorEndpoint : EndpointBase<IncluirVendedorRequest>

@@ -150,6 +150,25 @@ public class S005VendedoresTests : IDisposable
         Assert.Equal("Inativo", vendedor.Status);
     }
 
+    [Theory]
+    [InlineData("ativo")]
+    [InlineData("ATIVO")]
+    [InlineData("atiVO")]
+    public async Task S005_R4_IncluirComStatusAtivoEmQualquerCaixa_SalvaAtivo(string status)
+    {
+        var vendedor = await CriarAsync(new { nome = "Ana Souza", status });
+
+        Assert.Equal("Ativo", vendedor.Status);
+    }
+
+    [Fact]
+    public async Task S005_R4_IncluirComStatusInativoEmMinusculas_SalvaInativo()
+    {
+        var vendedor = await CriarAsync(new { nome = "Carlos Lima", status = "inativo" });
+
+        Assert.Equal("Inativo", vendedor.Status);
+    }
+
     [Fact]
     public async Task S005_R4_IncluirComStatusInvalido_Recusado()
     {
@@ -329,6 +348,18 @@ public class S005VendedoresTests : IDisposable
     }
 
     [Fact]
+    public async Task S005_R8_ListarComStatusInativoEmQualquerCaixa_RetornaOsInativos()
+    {
+        await CriarAsync(new { nome = "Ana Souza" });
+        await CriarAsync(new { nome = "Carlos Lima", status = "Inativo" });
+
+        var resposta = await _cliente.GetAsync("/api/vendedores?status=iNaTiVo");
+
+        var vendedores = await resposta.Content.ReadFromJsonAsync<List<VendedorResposta>>();
+        Assert.Equal(new List<VendedorResposta> { new VendedorResposta(2, "Carlos Lima", "Inativo") }, vendedores);
+    }
+
+    [Fact]
     public async Task S005_R8_ListarSemNenhumVendedor_RetornaListaVazia()
     {
         var resposta = await _cliente.GetAsync("/api/vendedores");
@@ -336,6 +367,60 @@ public class S005VendedoresTests : IDisposable
         Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
         var vendedores = await resposta.Content.ReadFromJsonAsync<List<VendedorResposta>>();
         Assert.Empty(vendedores!);
+    }
+
+    // ----- Excluir definitivamente (R9) -----
+
+    [Fact]
+    public async Task S005_R9_ExcluirVendedor_RemoveDaListagem()
+    {
+        await CriarAsync(new { nome = "Ana Souza" });
+        await CriarAsync(new { nome = "Carlos Lima" });
+
+        var resposta = await _cliente.DeleteAsync("/api/vendedores/2");
+
+        Assert.Equal(HttpStatusCode.NoContent, resposta.StatusCode);
+        var vendedores = await (await _cliente.GetAsync("/api/vendedores")).Content.ReadFromJsonAsync<List<VendedorResposta>>();
+        Assert.Equal(new List<VendedorResposta> { new VendedorResposta(1, "Ana Souza", "Ativo") }, vendedores);
+    }
+
+    // ----- Excluir id inexistente (R10) -----
+
+    [Fact]
+    public async Task S005_R10_ExcluirIdInexistente_NaoEncontrado()
+    {
+        var resposta = await _cliente.DeleteAsync("/api/vendedores/999");
+
+        Assert.Equal(HttpStatusCode.NotFound, resposta.StatusCode);
+        Assert.Contains("Vendedor não encontrado.", await TextoErroAsync(resposta));
+    }
+
+    // ----- Depois de excluído (R11) -----
+
+    [Fact]
+    public async Task S005_R11_ObterDepoisDeExcluido_NaoEncontrado()
+    {
+        await CriarAsync(new { nome = "Ana Souza" });
+        await CriarAsync(new { nome = "Carlos Lima" });
+        await _cliente.DeleteAsync("/api/vendedores/2");
+
+        var resposta = await _cliente.GetAsync("/api/vendedores/2");
+
+        Assert.Equal(HttpStatusCode.NotFound, resposta.StatusCode);
+        Assert.Contains("Vendedor não encontrado.", await TextoErroAsync(resposta));
+    }
+
+    [Fact]
+    public async Task S005_R11_AlterarDepoisDeExcluido_NaoEncontrado()
+    {
+        await CriarAsync(new { nome = "Ana Souza" });
+        await CriarAsync(new { nome = "Carlos Lima" });
+        await _cliente.DeleteAsync("/api/vendedores/2");
+
+        var resposta = await AlterarAsync(2, new { nome = "Marcos Reis" });
+
+        Assert.Equal(HttpStatusCode.NotFound, resposta.StatusCode);
+        Assert.Contains("Vendedor não encontrado.", await TextoErroAsync(resposta));
     }
 
     // ----- Auxiliares -----

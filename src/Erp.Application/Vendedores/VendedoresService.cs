@@ -37,7 +37,7 @@ public class VendedoresService : IVendedoresService
         Vendedor vendedor = new Vendedor
         {
             Nome = nome,
-            Status = status
+            Status = VendedorValidacao.NormalizarStatus(status)
         };
 
         vendedor.Id = await _repositorio.InserirAsync(vendedor);
@@ -74,7 +74,7 @@ public class VendedoresService : IVendedoresService
             if (erro != null)
                 throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
 
-            vendedor.Status = request.Status;
+            vendedor.Status = VendedorValidacao.NormalizarStatus(request.Status);
         }
 
         await _repositorio.AtualizarAsync(vendedor);
@@ -94,14 +94,24 @@ public class VendedoresService : IVendedoresService
 
     public async Task<List<Vendedor>> ListarAsync(ListarVendedoresRequest request)
     {
+        string? status = null;
+
         if (request.Status != null)
         {
             string? erro = VendedorValidacao.ValidarStatus(request.Status);
 
             if (erro != null)
                 throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+
+            status = VendedorValidacao.NormalizarStatus(request.Status);
         }
 
-        return await _repositorio.ListarAsync(request.Status);
+        return await _repositorio.ListarAsync(status);
+    }
+
+    public async Task ExcluirAsync(ExcluirVendedorRequest request)
+    {
+        if (!await _repositorio.ExcluirAsync(request.Id))
+            throw new ErroDeNegocio("Vendedor não encontrado.", TipoErroDeNegocio.NaoEncontrado);
     }
 }

@@ -73,7 +73,7 @@ Exemplo:
 
 ### Rotas
 - /api/produtos, /api/clientes, /api/pedidos
-- Os verbos decoram as classes de endpoint, sempre com a barra inicial: [HttpPost("/api/produtos")]
+- Os verbos decoram as classes de endpoint, sem barra inicial: [HttpPost("api/produtos")]
 
 ## Endpoints
 - Todo endpoint herda de EndpointBase (Api/Common) e responde só pelos helpers: Ok, Created, BadRequest, NotFound, NoContent.

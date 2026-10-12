@@ -12,4 +12,6 @@ public interface IVendedoresService
     Task<Vendedor> ObterAsync(ObterVendedorRequest request);
 
     Task<List<Vendedor>> ListarAsync(ListarVendedoresRequest request);
+
+    Task ExcluirAsync(ExcluirVendedorRequest request);
 }

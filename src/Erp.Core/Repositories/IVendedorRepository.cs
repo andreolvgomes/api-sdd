@@ -13,4 +13,6 @@ public interface IVendedorRepository
     Task<bool> AtualizarAsync(Vendedor vendedor);
 
     Task<List<Vendedor>> ListarAsync(string? status);
+
+    Task<bool> ExcluirAsync(int id);
 }

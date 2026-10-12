@@ -1,6 +1,6 @@
 ---
 name: sdd-spec
-description: Entrevista o usuário sobre a ideia de uma feature e escreve a especificação em specs/NNN-<nome-curto>/spec.md. Só roda por invocação manual (/sdd-spec).
+description: Entrevista o usuário sobre a ideia de uma feature e escreve a especificação em specs/em-andamento/NNN-<nome-curto>/spec.md. Só roda por invocação manual (/sdd-spec).
 argument-hint: <ideia da feature>
 disable-model-invocation: true
 ---
@@ -14,6 +14,15 @@ Siga as etapas em ordem. Não pule etapas e não escreva a spec antes da respost
 ## Etapa 0 — Entrada vazia
 
 Se a ideia acima estiver vazia, peça ao usuário que descreva a feature em uma ou duas frases e pare.
+
+## Etapa 0.5 — Spec ativa
+
+1. Verifique se existe alguma pasta em `specs/em-andamento/`. Se a pasta `specs/em-andamento/` não existir, crie-a.
+2. Se não existir nenhuma pasta dentro de `specs/em-andamento/`, siga para a Etapa 1.
+3. Se existir uma pasta (NNN-titulo) em `specs/em-andamento/`:
+   - Se o pedido for outra funcionalidade, pare e responda exatamente: "A spec NNN (titulo) ainda não foi concluída. Implemente com /sdd-implementar antes de criar uma nova spec."
+   - Se o pedido for um ajuste ou complemento da spec ativa, siga para a Etapa 1. Na Etapa 3, edite o `spec.md` dessa spec em vez de criar uma nova.
+   - Se não estiver claro se é ajuste ou outra funcionalidade, pergunte ao usuário antes de seguir.
 
 ## Etapa 1 — Ler a ideia e o CLAUDE.md
 
@@ -47,7 +56,7 @@ Só depois que o usuário responder (mesmo que seja "pode seguir com as sugestõ
 2. Defina `NNN` executando, na raiz do projeto:
    `powershell -ExecutionPolicy Bypass -File .claude/skills/sdd-spec/proximo-numero.ps1`
    Use exatamente o número que ele retornar. Não calcule o número por conta própria.
-3. Crie `specs/NNN-<nome-curto>/spec.md` na raiz do projeto.
+3. Se não houver spec ativa, crie `specs/em-andamento/NNN-<nome-curto>/spec.md` na raiz do projeto. Se houver spec ativa e o pedido for um ajuste ou complemento, edite o `spec.md` dela, sem mudar o número nem o nome da pasta.
 4. Use exatamente esta estrutura:
 
 ```markdown
@@ -80,7 +89,8 @@ Só depois que o usuário responder (mesmo que seja "pode seguir com as sugestõ
 - **Exemplos** são concretos: valores reais, não descrições genéricas. Inclua casos normais e de borda.
 - **Fora do escopo** lista o que foi excluído de propósito, para evitar expansão.
 - **Decisões** registra as respostas do usuário que fixaram comportamento e as respostas sugeridas que ele aceitou. Se algo ficou em aberto, escreva como "Em aberto: ..." em vez de inventar.
-- **Nunca altere uma spec existente.** Toda mudança, inclusive em algo já especificado, vira uma spec nova com o próximo número. Se a mudança alterar regras de uma spec anterior, cite essa spec em Decisões (ex.: "Altera a R3 da spec 001").
+- **Specs concluídas não são editadas.** Ficam direto em `specs/`. Mudança em algo já concluído vira uma nova spec, com o próximo número, citando a spec anterior em Decisões (ex.: "Altera a R3 da spec 001").
+- **Spec ativa pode ser editada** quando o pedido for um ajuste ou complemento. Registre em Decisões o que mudou e o motivo.
 
 ## Etapa 4 — Confirmar
 Ao final, mostre exatamente neste formato, sem repetir o conteúdo da spec:

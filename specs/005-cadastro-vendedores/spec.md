@@ -1,21 +1,20 @@
 # Spec: Cadastro de vendedores
 
 ## Objetivo
-Permite cadastrar, consultar, alterar e excluir vendedores. Cada vendedor tem um número de identificação, um nome e uma situação (ativo ou inativo). A exclusão é definitiva, mas só acontece quando o vendedor não está sendo usado em nenhum outro módulo do sistema.
+Permite cadastrar, consultar, alterar e excluir vendedores. Cada vendedor tem um número de identificação, um nome e uma situação (ativo ou inativo). A exclusão é definitiva.
 
 ## Regras
 - **R1** — O `id` de cada vendedor é gerado pelo sistema na inclusão, como número inteiro sequencial começando em 1. O usuário não informa nem altera o `id`.
 - **R2** — O `nome` é obrigatório. Antes de validar, espaços do início e do fim são removidos. Nome vazio (ou só com espaços) retorna o erro "Nome é obrigatório.". Nome com menos de 3 ou mais de 100 caracteres retorna o erro "Nome deve ter entre 3 e 100 caracteres.".
 - **R3** — Não pode existir dois vendedores com o mesmo nome. A comparação não diferencia maiúsculas de minúsculas. Nome repetido, na inclusão ou na alteração, retorna o erro "Já existe um vendedor com este nome.". Na alteração, o próprio vendedor não conta como repetido.
-- **R4** — O `status` só pode ser `Ativo` ou `Inativo`. Na inclusão, se o status não for informado, o vendedor entra como `Ativo`. O status pode ser alterado a qualquer momento. Valor diferente de `Ativo` e `Inativo` retorna o erro "Status inválido.".
+- **R4** — O `status` só pode ser `Ativo` ou `Inativo`, sem diferenciar maiúsculas de minúsculas (ex.: `ativo`, `ATIVO` e `atiVO` são o mesmo status). O status é sempre gravado como `Ativo` ou `Inativo`. Na inclusão, se o status não for informado, o vendedor entra como `Ativo`. O status pode ser alterado a qualquer momento. Valor diferente de `Ativo` e `Inativo` (em qualquer capitalização) retorna o erro "Status inválido.".
 - **R5** — Incluir um vendedor com dados válidos retorna o vendedor criado, com `id`, `nome` e `status`.
 - **R6** — Alterar um vendedor pelo `id` troca o `nome` e/ou o `status` e retorna o vendedor alterado. Aplicam-se R2, R3 e R4 às informações alteradas. Se o `id` não existir, retorna o erro "Vendedor não encontrado.".
 - **R7** — Obter um vendedor pelo `id` retorna seus dados. Se o `id` não existir, retorna o erro "Vendedor não encontrado.".
-- **R8** — Listar sem filtro mostra todos os vendedores, inclusive os inativos, ordenados pelo `id`. O filtro por `status` é opcional: quando informado, retorna apenas os vendedores com aquele status. Filtro com valor diferente de `Ativo` e `Inativo` retorna o erro "Status inválido.". Se não houver vendedores, a listagem retorna uma lista vazia, sem erro.
-- **R9** — Excluir um vendedor pelo `id` remove o registro definitivamente do banco de dados, desde que ele não esteja sendo usado em nenhum outro módulo do sistema. Depois da exclusão, o vendedor não aparece em nenhuma consulta.
-- **R10** — Se o vendedor estiver sendo usado em outro módulo do sistema, a exclusão é recusada com o erro "Vendedor não pode ser excluído porque está em uso.". Nada é removido, e o vendedor continua cadastrado com os mesmos dados.
-- **R11** — Excluir um `id` que não existe retorna o erro "Vendedor não encontrado.". Nada é removido.
-- **R12** — Depois de excluído, obter ou alterar o vendedor pelo mesmo `id` retorna o erro "Vendedor não encontrado.".
+- **R8** — Listar sem filtro mostra todos os vendedores, inclusive os inativos, ordenados pelo `id`. O filtro por `status` é opcional: quando informado, retorna apenas os vendedores com aquele status, sem diferenciar maiúsculas de minúsculas. Filtro com valor diferente de `Ativo` e `Inativo` retorna o erro "Status inválido.". Se não houver vendedores, a listagem retorna uma lista vazia, sem erro.
+- **R9** — Excluir um vendedor pelo `id` remove o registro definitivamente do banco de dados. Depois da exclusão, o vendedor não aparece em nenhuma consulta.
+- **R10** — Excluir um `id` que não existe retorna o erro "Vendedor não encontrado.". Nada é removido.
+- **R11** — Depois de excluído, obter ou alterar o vendedor pelo mesmo `id` retorna o erro "Vendedor não encontrado.".
 
 ## Exemplos
 | Entrada | Resultado |
@@ -37,13 +36,13 @@ Permite cadastrar, consultar, alterar e excluir vendedores. Cada vendedor tem um
 | Listar com status "Inativo" | Apenas o vendedor id 2 |
 | Listar com status "Pendente" | Erro: "Status inválido." |
 | Listar sem nenhum vendedor cadastrado | Lista vazia (não é erro) |
-| Excluir id 2, sem uso em nenhum outro módulo | Vendedor removido do banco; obter id 2 depois retorna "Vendedor não encontrado." |
-| Excluir id 1, usado em um registro de outro módulo | Erro: "Vendedor não pode ser excluído porque está em uso."; id 1 continua cadastrado com nome e status atuais |
+| Excluir id 2 | Vendedor removido do banco; obter id 2 depois retorna "Vendedor não encontrado." |
 | Excluir id 999 | Erro: "Vendedor não encontrado." |
 | Alterar id 2 depois da exclusão | Erro: "Vendedor não encontrado." |
 
 ## Fora do escopo
-- Definir quais módulos usam vendedor e como esse vínculo é registrado. Isso será tratado nas specs desses módulos.
+- Verificar se o vendedor está em uso em outros módulos antes de excluir. Isso será definido quando existirem módulos de venda.
+- Definir quais módulos usam vendedor e como esse vínculo é registrado.
 - Exclusão em lote de vendedores.
 - Desfazer uma exclusão.
 - Histórico de alterações do vendedor.
@@ -53,8 +52,7 @@ Permite cadastrar, consultar, alterar e excluir vendedores. Cada vendedor tem um
 - A feature cobre as operações de CRUD: incluir, alterar, obter, listar e excluir (resposta do usuário).
 - `id` gerado pelo sistema, sequencial a partir de 1, não editável (resposta do usuário).
 - Status com os valores `Ativo` e `Inativo`, padrão `Ativo` na inclusão, alterável a qualquer momento (resposta do usuário).
+- Status não diferencia maiúsculas de minúsculas: `ATIVO`, `ativo`, `Ativo` e `atiVO` são o mesmo status (resposta do usuário). Altera a R4 e a R8 desta mesma spec, que está em andamento.
 - Nome com 3 a 100 caracteres, sem repetição e sem diferenciar maiúsculas de minúsculas, e mensagens de erro conforme a sugestão aceita pelo usuário.
-- Exclusão definitiva quando o vendedor não está em uso em nenhum outro módulo do sistema (resposta do usuário).
+- Exclusão definitiva, sem verificação de uso em outros módulos. Essa verificação fica para quando existirem módulos de venda (resposta do usuário).
 - Listagem sem filtro mostra todos, inclusive inativos (resposta do usuário: "mostra tudo"). O filtro por status é opcional (decisão de implementação de R8).
-- Mensagem de erro para vendedor em uso ("Vendedor não pode ser excluído porque está em uso.") é uma proposta minha, não uma resposta do usuário. Confirme ou ajuste antes da implementação.
-- Em aberto: como o sistema verifica se um vendedor está em uso em outro módulo. Hoje nenhum módulo usa vendedor, então a verificação sempre resulta em "não está em uso" até que esses módulos existam.

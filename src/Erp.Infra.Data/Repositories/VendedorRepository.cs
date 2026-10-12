@@ -50,6 +50,13 @@ public class VendedorRepository : IVendedorRepository
         return vendedores.ToList();
     }
 
+    public async Task<bool> ExcluirAsync(int id)
+    {
+        int linhas = await _conexao.ExecuteAsync("delete from vendedor where id = @id", new { id });
+
+        return linhas > 0;
+    }
+
     public async Task<bool> AtualizarAsync(Vendedor vendedor)
     {
         int linhas = await _conexao.ExecuteAsync(

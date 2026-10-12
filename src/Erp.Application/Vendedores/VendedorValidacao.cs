@@ -18,9 +18,20 @@ public static class VendedorValidacao
 
     public static string? ValidarStatus(string? status)
     {
-        if (status != StatusAtivo && status != StatusInativo)
+        if (NormalizarStatus(status) == "")
             return "Status inválido.";
 
         return null;
+    }
+
+    public static string NormalizarStatus(string? status)
+    {
+        if (string.Equals(status, StatusAtivo, StringComparison.OrdinalIgnoreCase))
+            return StatusAtivo;
+
+        if (string.Equals(status, StatusInativo, StringComparison.OrdinalIgnoreCase))
+            return StatusInativo;
+
+        return "";
     }
 }
