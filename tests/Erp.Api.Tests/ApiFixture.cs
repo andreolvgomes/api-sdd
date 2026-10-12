@@ -9,6 +9,8 @@ public class ApiFixture : WebApplicationFactory<Program>
 {
     private readonly string _arquivoBanco = Path.Combine(Path.GetTempPath(), $"erp-teste-{Guid.NewGuid()}.db");
 
+    public string ArquivoBanco => _arquivoBanco;
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseSetting("ConnectionStrings:Erp", $"Data Source={_arquivoBanco}");

@@ -65,6 +65,28 @@ public static class Banco
                 status text not null default 'Ativo'
             )");
 
+        await conexao.ExecuteAsync(@"
+            create table if not exists orcamento (
+                id integer primary key autoincrement,
+                data text not null,
+                cliente_id integer not null,
+                vendedor_id integer not null,
+                foreign key (cliente_id) references cliente (id),
+                foreign key (vendedor_id) references vendedor (id)
+            )");
+
+        await conexao.ExecuteAsync(@"
+            create table if not exists orcamento_item (
+                id integer primary key autoincrement,
+                orcamento_id integer not null,
+                codigo_produto text not null,
+                quantidade text not null,
+                preco text not null,
+                total text not null,
+                foreign key (orcamento_id) references orcamento (id),
+                foreign key (codigo_produto) references produto (codigo)
+            )");
+
         IEnumerable<string> colunasStatus = await conexao.QueryAsync<string>(
             "select name from pragma_table_info('cliente') where name = 'status'");
 
