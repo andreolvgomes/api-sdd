@@ -45,4 +45,11 @@ public class ClienteRepository : IClienteRepository
 
         return linhas > 0;
     }
+
+    public async Task<bool> ExcluirAsync(int id)
+    {
+        int linhas = await _conexao.ExecuteAsync("delete from cliente where id = @id", new { id });
+
+        return linhas > 0;
+    }
 }

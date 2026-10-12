@@ -81,6 +81,12 @@ public class ClientesService : IClientesService
 
     public async Task ExcluirAsync(ExcluirClienteRequest request)
     {
+        if (!await _repositorio.ExcluirAsync(request.Id))
+            throw new ErroDeNegocio("Cliente não encontrado", TipoErroDeNegocio.NaoEncontrado);
+    }
+
+    public async Task DesativarAsync(DesativarClienteRequest request)
+    {
         Cliente? cliente = await _repositorio.ObterPorIdAsync(request.Id);
 
         if (cliente == null)
@@ -90,6 +96,21 @@ public class ClientesService : IClientesService
             throw new ErroDeNegocio("Cliente já está inativo", TipoErroDeNegocio.Validacao);
 
         cliente.Status = "inativo";
+
+        await _repositorio.AtualizarAsync(cliente);
+    }
+
+    public async Task AtivarAsync(AtivarClienteRequest request)
+    {
+        Cliente? cliente = await _repositorio.ObterPorIdAsync(request.Id);
+
+        if (cliente == null)
+            throw new ErroDeNegocio("Cliente não encontrado", TipoErroDeNegocio.NaoEncontrado);
+
+        if (cliente.Status == "ativo")
+            throw new ErroDeNegocio("Cliente já está ativo", TipoErroDeNegocio.Validacao);
+
+        cliente.Status = "ativo";
 
         await _repositorio.AtualizarAsync(cliente);
     }

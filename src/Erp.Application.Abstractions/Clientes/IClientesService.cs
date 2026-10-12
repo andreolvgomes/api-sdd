@@ -10,6 +10,10 @@ public interface IClientesService
 
     Task ExcluirAsync(ExcluirClienteRequest request);
 
+    Task DesativarAsync(DesativarClienteRequest request);
+
+    Task AtivarAsync(AtivarClienteRequest request);
+
     Task<Cliente> ObterAsync(ObterClienteRequest request);
 
     Task<List<Cliente>> ListarAsync(ListarClientesRequest request);

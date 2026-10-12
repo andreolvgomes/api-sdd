@@ -245,44 +245,6 @@ public class ClientesTests : IDisposable
     // ----- Exclusão (R11, R8) -----
 
     [Fact]
-    public async Task Excluir_IdExistente_InativaEMantemOCliente()
-    {
-        await CriarClienteAsync("Maria Silva", "Rua das Flores, 10", "11 91234-5678");
-
-        var resposta = await _cliente.DeleteAsync("/api/clientes/1");
-
-        Assert.Equal(HttpStatusCode.NoContent, resposta.StatusCode);
-        var consulta = await ObterAsync(1);
-        Assert.Equal(HttpStatusCode.OK, consulta.StatusCode);
-        var cliente = await LerClienteAsync(consulta);
-        Assert.Equal("Maria Silva", cliente.Nome);
-        Assert.Equal("inativo", cliente.Status);
-    }
-
-    [Fact]
-    public async Task Excluir_ClienteJaInativo_Recusado()
-    {
-        await CriarClienteAsync("Maria Silva", "Rua das Flores, 10", "11 91234-5678");
-        await _cliente.DeleteAsync("/api/clientes/1");
-
-        var resposta = await _cliente.DeleteAsync("/api/clientes/1");
-
-        Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
-        Assert.Contains("Cliente já está inativo", await TextoErroAsync(resposta));
-    }
-
-    [Fact]
-    public async Task Obter_ClienteInativo_RetornaAStatus()
-    {
-        await CriarClienteAsync("Maria Silva", "Rua das Flores, 10", "11 91234-5678");
-        await _cliente.DeleteAsync("/api/clientes/1");
-
-        var cliente = await LerClienteAsync(await ObterAsync(1));
-
-        Assert.Equal("inativo", cliente.Status);
-    }
-
-    [Fact]
     public async Task Excluir_IdInexistente_NaoEncontrado()
     {
         var resposta = await _cliente.DeleteAsync("/api/clientes/99");

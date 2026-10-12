@@ -1,6 +1,6 @@
 ---
 name: sdd-spec
-description: Entrevista o usuário sobre a ideia de uma feature e escreve a especificação em specs/<nome-curto>/spec.md. Só roda por invocação manual (/sdd-spec).
+description: Entrevista o usuário sobre a ideia de uma feature e escreve a especificação em specs/NNN-<nome-curto>/spec.md. Só roda por invocação manual (/sdd-spec).
 argument-hint: <ideia da feature>
 disable-model-invocation: true
 ---
@@ -43,9 +43,12 @@ Depois das perguntas, **pare e espere a resposta**. Não escreva o arquivo nesta
 
 Só depois que o usuário responder (mesmo que seja "pode seguir com as sugestões"):
 
-1. Defina `<nome-curto>`: minúsculo, sem acentos, palavras separadas por hífen, 2 a 4 palavras (ex.: `soma-com-historico`).
-2. Crie `specs/<nome-curto>/spec.md` na raiz do projeto.
-3. Use exatamente esta estrutura:
+1. Defina `<nome-curto>`: minúsculo, sem acentos, palavras separadas por hífen, 2 a 4 palavras (ex.: `situacao-clientes`).
+2. Defina `NNN` executando, na raiz do projeto:
+   `powershell -ExecutionPolicy Bypass -File .claude/skills/sdd-spec/proximo-numero.ps1`
+   Use exatamente o número que ele retornar. Não calcule o número por conta própria.
+3. Crie `specs/NNN-<nome-curto>/spec.md` na raiz do projeto.
+4. Use exatamente esta estrutura:
 
 ```markdown
 # Spec: <título da feature>
