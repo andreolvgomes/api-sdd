@@ -3,8 +3,10 @@ using Erp.Application.Abstractions.Clientes;
 using Erp.Application.Abstractions.Produtos;
 using Erp.Application.Clientes;
 using Erp.Application.Produtos;
+using Erp.Application.Abstractions.CaixasBancos;
 using Erp.Application.Abstractions.FormasPagamento;
 using Erp.Application.Abstractions.Vendedores;
+using Erp.Application.CaixasBancos;
 using Erp.Application.FormasPagamento;
 using Erp.Application.Vendedores;
 using Erp.Core.Repositories;
@@ -25,11 +27,13 @@ public static class DependencyInjection
         services.AddScoped<IEnderecoAdicionalRepository, EnderecoAdicionalRepository>();
         services.AddScoped<IVendedorRepository, VendedorRepository>();
         services.AddScoped<IFormaPagamentoRepository, FormaPagamentoRepository>();
+        services.AddScoped<ICaixaBancoRepository, CaixaBancoRepository>();
 
         services.AddTransient<IProdutosService, ProdutosService>();
         services.AddTransient<IClientesService, ClientesService>();
         services.AddTransient<IVendedoresService, VendedoresService>();
         services.AddTransient<IFormasPagamentoService, FormasPagamentoService>();
+        services.AddTransient<ICaixasBancosService, CaixasBancosService>();
 
         return services;
     }
