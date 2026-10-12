@@ -26,6 +26,16 @@ public static class Banco
                 status text not null default 'ativo'
             )");
 
+        await conexao.ExecuteAsync(@"
+            create table if not exists endereco_adicional (
+                cliente_id integer not null,
+                id integer not null,
+                rotulo text not null,
+                endereco text not null,
+                primary key (cliente_id, id),
+                foreign key (cliente_id) references cliente (id)
+            )");
+
         IEnumerable<string> colunasStatus = await conexao.QueryAsync<string>(
             "select name from pragma_table_info('cliente') where name = 'status'");
 

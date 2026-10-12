@@ -2,6 +2,8 @@ namespace Erp.Application.Clientes;
 
 public static class ClienteValidacao
 {
+    public const int LimiteEnderecosAdicionais = 10;
+
     public static string? Validar(string? nome, string? endereco, string? telefone)
     {
         string? erro = ValidarNome(nome);
@@ -44,6 +46,17 @@ public static class ClienteValidacao
 
         if (telefone.Length > 20)
             return "Telefone deve ter no máximo 20 caracteres";
+
+        return null;
+    }
+
+    public static string? ValidarRotulo(string? rotulo)
+    {
+        if (string.IsNullOrWhiteSpace(rotulo))
+            return "Rótulo é obrigatório";
+
+        if (rotulo.Length > 30)
+            return "Rótulo deve ter no máximo 30 caracteres";
 
         return null;
     }

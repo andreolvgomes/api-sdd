@@ -14,7 +14,13 @@ public interface IClientesService
 
     Task AtivarAsync(AtivarClienteRequest request);
 
-    Task<Cliente> ObterAsync(ObterClienteRequest request);
+    Task<ClienteDetalheResponse> ObterAsync(ObterClienteRequest request);
 
     Task<List<Cliente>> ListarAsync(ListarClientesRequest request);
+
+    Task<EnderecoAdicionalResponse> IncluirEnderecoAdicionalAsync(IncluirEnderecoAdicionalRequest request);
+
+    Task<EnderecoAdicionalResponse> AlterarEnderecoAdicionalAsync(AlterarEnderecoAdicionalRequest request);
+
+    Task ExcluirEnderecoAdicionalAsync(ExcluirEnderecoAdicionalRequest request);
 }

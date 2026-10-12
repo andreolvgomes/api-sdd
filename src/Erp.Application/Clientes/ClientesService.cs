@@ -10,10 +10,44 @@ namespace Erp.Application.Clientes;
 public class ClientesService : IClientesService
 {
     private readonly IClienteRepository _repositorio;
+    private readonly IEnderecoAdicionalRepository _enderecosRepositorio;
 
-    public ClientesService(IClienteRepository repositorio)
+    public ClientesService(IClienteRepository repositorio, IEnderecoAdicionalRepository enderecosRepositorio)
     {
         _repositorio = repositorio;
+        _enderecosRepositorio = enderecosRepositorio;
+    }
+
+    public async Task<EnderecoAdicionalResponse> IncluirEnderecoAdicionalAsync(IncluirEnderecoAdicionalRequest request)
+    {
+        await GarantirClienteExisteAsync(request.ClienteId);
+
+        string? rotulo = Limpar(request.Rotulo);
+        string? endereco = Limpar(request.Endereco);
+
+        string? erro = ClienteValidacao.ValidarRotulo(rotulo);
+
+        if (erro == null)
+            erro = ClienteValidacao.ValidarEndereco(endereco);
+
+        if (erro != null)
+            throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+
+        List<EnderecoAdicional> existentes = await _enderecosRepositorio.ListarPorClienteAsync(request.ClienteId);
+
+        if (existentes.Count >= ClienteValidacao.LimiteEnderecosAdicionais)
+            throw new ErroDeNegocio($"Cliente já possui {ClienteValidacao.LimiteEnderecosAdicionais} endereços adicionais", TipoErroDeNegocio.Validacao);
+
+        EnderecoAdicional enderecoAdicional = new EnderecoAdicional
+        {
+            ClienteId = request.ClienteId,
+            Rotulo = rotulo!,
+            Endereco = endereco!
+        };
+
+        enderecoAdicional.Id = await _enderecosRepositorio.InserirAsync(enderecoAdicional);
+
+        return EnderecoAdicionalMapeamento.ParaResposta(enderecoAdicional);
     }
 
     public async Task<ClienteResponse> IncluirAsync(IncluirClienteRequest request)
@@ -115,14 +149,16 @@ public class ClientesService : IClientesService
         await _repositorio.AtualizarAsync(cliente);
     }
 
-    public async Task<Cliente> ObterAsync(ObterClienteRequest request)
+    public async Task<ClienteDetalheResponse> ObterAsync(ObterClienteRequest request)
     {
         Cliente? cliente = await _repositorio.ObterPorIdAsync(request.Id);
 
         if (cliente == null)
             throw new ErroDeNegocio("Cliente não encontrado", TipoErroDeNegocio.NaoEncontrado);
 
-        return cliente;
+        List<EnderecoAdicional> enderecos = await _enderecosRepositorio.ListarPorClienteAsync(request.Id);
+
+        return ClienteMapeamento.ParaDetalhe(cliente, enderecos);
     }
 
     public async Task<List<Cliente>> ListarAsync(ListarClientesRequest request)
@@ -140,6 +176,50 @@ public class ClientesService : IClientesService
             clientes = clientes.Where(cliente => cliente.Status == status).ToList();
 
         return clientes.OrderBy(cliente => ChaveDeOrdenacao(cliente.Nome)).ToList();
+    }
+
+    public async Task<EnderecoAdicionalResponse> AlterarEnderecoAdicionalAsync(AlterarEnderecoAdicionalRequest request)
+    {
+        await GarantirClienteExisteAsync(request.ClienteId);
+
+        EnderecoAdicional? existente = await _enderecosRepositorio.ObterAsync(request.ClienteId, request.Id);
+
+        if (existente == null)
+            throw new ErroDeNegocio("Endereço não encontrado", TipoErroDeNegocio.NaoEncontrado);
+
+        string? rotulo = Limpar(request.Rotulo);
+        string? endereco = Limpar(request.Endereco);
+
+        string? erro = ClienteValidacao.ValidarRotulo(rotulo);
+
+        if (erro == null)
+            erro = ClienteValidacao.ValidarEndereco(endereco);
+
+        if (erro != null)
+            throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+
+        existente.Rotulo = rotulo!;
+        existente.Endereco = endereco!;
+
+        await _enderecosRepositorio.AtualizarAsync(existente);
+
+        return EnderecoAdicionalMapeamento.ParaResposta(existente);
+    }
+
+    public async Task ExcluirEnderecoAdicionalAsync(ExcluirEnderecoAdicionalRequest request)
+    {
+        await GarantirClienteExisteAsync(request.ClienteId);
+
+        if (!await _enderecosRepositorio.ExcluirAsync(request.ClienteId, request.Id))
+            throw new ErroDeNegocio("Endereço não encontrado", TipoErroDeNegocio.NaoEncontrado);
+    }
+
+    private async Task GarantirClienteExisteAsync(int clienteId)
+    {
+        Cliente? cliente = await _repositorio.ObterPorIdAsync(clienteId);
+
+        if (cliente == null)
+            throw new ErroDeNegocio("Cliente não encontrado", TipoErroDeNegocio.NaoEncontrado);
     }
 
     private static string? Limpar(string? valor)
