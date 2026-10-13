@@ -4,7 +4,7 @@ using Erp.Application.Abstractions.Clientes.Dtos;
 using FastEndpoints;
 using Microsoft.AspNetCore.Authorization;
 
-namespace Erp.Api.Features.Clientes;
+namespace Erp.Api.Features.Clientes.Enderecos;
 
 [HttpPut("api/clientes/{ClienteId}/enderecos/{Id}")]
 [AllowAnonymous()]

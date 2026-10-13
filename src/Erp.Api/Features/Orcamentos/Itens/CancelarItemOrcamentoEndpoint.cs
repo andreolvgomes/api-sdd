@@ -4,7 +4,7 @@ using Erp.Application.Abstractions.Orcamentos.Dtos;
 using FastEndpoints;
 using Microsoft.AspNetCore.Authorization;
 
-namespace Erp.Api.Features.Orcamentos;
+namespace Erp.Api.Features.Orcamentos.Itens;
 
 [HttpPost("api/orcamentos/{Id}/itens/{NumeroItem}/cancelar")]
 [AllowAnonymous()]

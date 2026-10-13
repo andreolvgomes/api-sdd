@@ -75,6 +75,37 @@ Exemplo:
 - /api/produtos, /api/clientes, /api/pedidos
 - Os verbos decoram as classes de endpoint, sem barra inicial: [HttpPost("api/produtos")]
 
+### Organização de endpoints por subcontexto
+- Os endpoints de uma área ficam em `Erp.Api/Features/{Area}/`.
+- Quando a área tem um subcontexto (ex.: Itens e Pagamentos dentro de Orçamentos), o subcontexto vai em subpasta: `Erp.Api/Features/{Area}/{Subcontexto}/`.
+- O namespace acompanha a pasta: `Erp.Api.Features.{Area}.{Subcontexto}`.
+- A tag continua sendo o nome da área, não do subcontexto: `[Tags("Orçamentos")]` também nos endpoints de `Itens`.
+- Nome do arquivo: `{Operação}{Entidade}Endpoint.cs`.
+
+Exemplo:
+
+    Erp.Api/
+      Features/
+        Orcamentos/
+          IncluirOrcamentoEndpoint.cs
+          Itens/
+            IncluirItemOrcamentoEndpoint.cs
+          Pagamentos/
+            LancarPagamentoEndpoint.cs
+
+Um endpoint novo de um subcontexto:
+
+    // Erp.Api/Features/Clientes/Contatos/IncluirContatoEndpoint.cs
+    namespace Erp.Api.Features.Clientes.Contatos;
+
+    [HttpPost("api/clientes/{ClienteId}/contatos")]
+    [AllowAnonymous()]
+    [Tags("Clientes")]
+    public class IncluirContatoEndpoint : EndpointBase<IncluirContatoRequest>
+    {
+        // ...
+    }
+
 ## Endpoints
 - Todo endpoint herda de EndpointBase (Api/Common) e responde só pelos helpers: Ok, Created, BadRequest, NotFound, NoContent.
 - Nunca use Send.* ou HttpContext.Response direto.
