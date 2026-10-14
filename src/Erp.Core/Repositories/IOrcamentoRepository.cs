@@ -16,6 +16,8 @@ public interface IOrcamentoRepository
 
     Task DefinirDescontoAsync(int id, decimal desconto);
 
+    Task AtualizarTotaisAsync(int id, decimal total, decimal totalComDesconto);
+
     Task<string> InserirItemAsync(OrcamentoItem item);
 
     Task<OrcamentoItem?> ObterItemAsync(int orcamentoId, string numeroItem);

@@ -63,6 +63,7 @@ public class OrcamentosService : IOrcamentosService
         orcamento.Orca_id = await _repositorio.InserirAsync(orcamento);
 
         await GravarItemAsync(orcamento.Orca_id, produto, request.Orci_quantidade!.Value);
+        await RecalcularTotaisAsync(orcamento);
 
         return await MontarRespostaAsync(orcamento);
     }
@@ -233,6 +234,7 @@ public class OrcamentosService : IOrcamentosService
 
         await _repositorio.DefinirDescontoAsync(orcamento.Orca_id, request.Orca_desconto.Value);
         orcamento.Orca_desconto = request.Orca_desconto.Value;
+        await RecalcularTotaisAsync(orcamento);
 
         return await MontarRespostaAsync(orcamento);
     }
@@ -266,7 +268,7 @@ public class OrcamentosService : IOrcamentosService
             Orcp_valor = request.Orcp_valor.Value
         };
 
-        decimal total = await CalcularTotalAsync(orcamento);
+        decimal total = orcamento.Orca_total_com_desconto;
 
         bool gravou = await _repositorio.InserirPagamentoSeCouberAsync(pagamento, total);
 
@@ -320,10 +322,23 @@ public class OrcamentosService : IOrcamentosService
         return resposta;
     }
 
+    private async Task RecalcularTotaisAsync(Orcamento orcamento)
+    {
+        List<OrcamentoItem> itens = await _repositorio.ListarItensAsync(orcamento.Orca_id);
+        decimal total = itens.Where(item => !item.Orci_cancelado).Sum(item => item.Orci_total);
+        decimal totalComDesconto = OrcamentoValidacao.Arredondar(total - orcamento.Orca_desconto);
+
+        await _repositorio.AtualizarTotaisAsync(orcamento.Orca_id, total, totalComDesconto);
+
+        orcamento.Orca_total = total;
+        orcamento.Orca_total_com_desconto = totalComDesconto;
+    }
+
     private async Task ZerarDescontoAsync(Orcamento orcamento)
     {
         await _repositorio.DefinirDescontoAsync(orcamento.Orca_id, 0);
         orcamento.Orca_desconto = 0;
+        await RecalcularTotaisAsync(orcamento);
     }
 
     private async Task<Orcamento> ObterOrcamentoExistenteAsync(int id)
@@ -362,14 +377,6 @@ public class OrcamentosService : IOrcamentosService
             throw new ErroDeNegocio("Item não encontrado.", TipoErroDeNegocio.NaoEncontrado);
 
         return item;
-    }
-
-    private async Task<decimal> CalcularTotalAsync(Orcamento orcamento)
-    {
-        List<OrcamentoItem> itens = await _repositorio.ListarItensAsync(orcamento.Orca_id);
-        decimal subtotal = itens.Where(item => !item.Orci_cancelado).Sum(item => item.Orci_total);
-
-        return OrcamentoValidacao.Arredondar(subtotal - orcamento.Orca_desconto);
     }
 
     private async Task<Cliente> ValidarClienteAsync(int id)

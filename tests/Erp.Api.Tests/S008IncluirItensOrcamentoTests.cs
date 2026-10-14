@@ -355,7 +355,7 @@ public class S008IncluirItensOrcamentoTests : IDisposable
         await IncluirItemAsync(Orca_id, "P001", 1);
 
         using var consulta = await LerAsync(await _cliente.GetAsync($"/api/orcamentos/{Orca_id}"));
-        Assert.Equal(13.50m, consulta.RootElement.GetProperty("subtotal").GetDecimal());
+        Assert.Equal(13.50m, consulta.RootElement.GetProperty("orca_total").GetDecimal());
     }
 
     // ----- Totais enviados são ignorados (R13) -----
@@ -372,7 +372,7 @@ public class S008IncluirItensOrcamentoTests : IDisposable
         Assert.Equal(HttpStatusCode.Created, resposta.StatusCode);
         using var doc = await LerAsync(resposta);
         Assert.Equal(1.00m, doc.RootElement.GetProperty("itens")[0].GetProperty("orci_total").GetDecimal());
-        Assert.Equal(1.00m, doc.RootElement.GetProperty("subtotal").GetDecimal());
+        Assert.Equal(1.00m, doc.RootElement.GetProperty("orca_total").GetDecimal());
     }
 
     // ----- Mesmo produto em itens independentes (R14) -----
@@ -393,7 +393,7 @@ public class S008IncluirItensOrcamentoTests : IDisposable
         var itens = doc.RootElement.GetProperty("itens");
         Assert.Equal(3, itens.GetArrayLength());
         Assert.Equal(3.50m, itens[2].GetProperty("orci_total").GetDecimal());
-        Assert.Equal(13.50m, doc.RootElement.GetProperty("subtotal").GetDecimal());
+        Assert.Equal(13.50m, doc.RootElement.GetProperty("orca_total").GetDecimal());
     }
 
     // ----- Cada item é salvo na hora (R15) -----
@@ -430,7 +430,7 @@ public class S008IncluirItensOrcamentoTests : IDisposable
         using var consulta = await LerAsync(await _cliente.GetAsync("/api/orcamentos/1"));
         Assert.Equal(1, consulta.RootElement.GetProperty("orca_id").GetInt32());
         Assert.Empty(consulta.RootElement.GetProperty("itens").EnumerateArray());
-        Assert.Equal(0m, consulta.RootElement.GetProperty("subtotal").GetDecimal());
+        Assert.Equal(0m, consulta.RootElement.GetProperty("orca_total").GetDecimal());
     }
 
     [Fact]
@@ -449,7 +449,7 @@ public class S008IncluirItensOrcamentoTests : IDisposable
         Assert.Equal(HttpStatusCode.InternalServerError, resposta.StatusCode);
         using var consulta = await LerAsync(await _cliente.GetAsync($"/api/orcamentos/{Orca_id}"));
         Assert.Equal(1, consulta.RootElement.GetProperty("itens").GetArrayLength());
-        Assert.Equal(7.00m, consulta.RootElement.GetProperty("subtotal").GetDecimal());
+        Assert.Equal(7.00m, consulta.RootElement.GetProperty("orca_total").GetDecimal());
     }
 
     // ----- Consulta do orçamento (R17) -----
@@ -477,7 +477,7 @@ public class S008IncluirItensOrcamentoTests : IDisposable
         Assert.Equal(Vend_id, raiz.GetProperty("vendedor").GetProperty("vend_id").GetInt32());
         Assert.Equal("João Lima", raiz.GetProperty("vendedor").GetProperty("vend_nome").GetString());
         Assert.Equal(3, raiz.GetProperty("itens").GetArrayLength());
-        Assert.Equal(13.50m, raiz.GetProperty("subtotal").GetDecimal());
+        Assert.Equal(13.50m, raiz.GetProperty("orca_total").GetDecimal());
     }
 
     [Fact]

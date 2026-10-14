@@ -7,8 +7,6 @@ public static class OrcamentoMapeamento
 {
     public static OrcamentoResponse ParaResposta(Orcamento orcamento, Cliente? cliente, Vendedor? vendedor, List<OrcamentoItem> itens, List<OrcamentoPagamento> pagamentos)
     {
-        decimal subtotal = itens.Where(item => !item.Orci_cancelado).Sum(item => item.Orci_total);
-        decimal total = OrcamentoValidacao.Arredondar(subtotal - orcamento.Orca_desconto);
         decimal pago = pagamentos.Where(pagamento => !pagamento.Orcp_cancelado).Sum(pagamento => pagamento.Orcp_valor);
 
         return new OrcamentoResponse
@@ -19,11 +17,11 @@ public static class OrcamentoMapeamento
             Cliente = ParaCliente(cliente),
             Vendedor = ParaVendedor(vendedor),
             Itens = itens.Select(ParaItem).ToList(),
-            Subtotal = subtotal,
+            Orca_total = orcamento.Orca_total,
             Orca_desconto = orcamento.Orca_desconto,
-            Total = total,
+            Orca_total_com_desconto = orcamento.Orca_total_com_desconto,
             Pagamentos = pagamentos.Select(ParaPagamento).ToList(),
-            Saldo = OrcamentoValidacao.Arredondar(total - pago)
+            Saldo = OrcamentoValidacao.Arredondar(orcamento.Orca_total_com_desconto - pago)
         };
     }
 

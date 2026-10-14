@@ -67,6 +67,8 @@ public static class Banco
                 vend_id integer not null,
                 orca_cancelado integer not null default 0,
                 orca_desconto text not null default '0',
+                orca_total decimal(12,2) not null default 0,
+                orca_total_com_desconto decimal(12,2) not null default 0,
                 foreign key (clie_id) references cliente (clie_id),
                 foreign key (vend_id) references vendedor (vend_id)
             )");
@@ -100,5 +102,55 @@ public static class Banco
                 foreign key (form_id) references forma_pagamento (form_id),
                 foreign key (caix_id) references caixa_banco (caix_id)
             )");
+
+        IEnumerable<string> colunasTotal = await conexao.QueryAsync<string>(
+            "select name from pragma_table_info('orcamento') where name = 'orca_total'");
+
+        if (!colunasTotal.Any())
+        {
+            await conexao.ExecuteAsync("alter table orcamento add column orca_total decimal(12,2) not null default 0");
+            await conexao.ExecuteAsync("alter table orcamento add column orca_total_com_desconto decimal(12,2) not null default 0");
+            await RecalcularTotaisAsync(conexao);
+        }
+    }
+
+    private static async Task RecalcularTotaisAsync(SqliteConnection conexao)
+    {
+        List<OrcamentoDesconto> orcamentos = (await conexao.QueryAsync<OrcamentoDesconto>(
+            "select orca_id, orca_desconto from orcamento")).ToList();
+
+        List<ItemTotal> itens = (await conexao.QueryAsync<ItemTotal>(
+            "select orca_id, orci_total, orci_cancelado from orcamento_item")).ToList();
+
+        foreach (OrcamentoDesconto orcamento in orcamentos)
+        {
+            decimal total = itens
+                .Where(item => item.Orca_id == orcamento.Orca_id && item.Orci_cancelado == 0)
+                .Sum(item => item.Orci_total);
+
+            decimal totalComDesconto = OrcamentoArredondar(total - orcamento.Orca_desconto);
+
+            await conexao.ExecuteAsync(
+                "update orcamento set orca_total = @total, orca_total_com_desconto = @totalComDesconto where orca_id = @Orca_id",
+                new { orcamento.Orca_id, total, totalComDesconto });
+        }
+    }
+
+    private static decimal OrcamentoArredondar(decimal valor)
+    {
+        return Math.Round(valor, 2, MidpointRounding.AwayFromZero);
+    }
+
+    private class OrcamentoDesconto
+    {
+        public int Orca_id { get; set; }
+        public decimal Orca_desconto { get; set; }
+    }
+
+    private class ItemTotal
+    {
+        public int Orca_id { get; set; }
+        public decimal Orci_total { get; set; }
+        public int Orci_cancelado { get; set; }
     }
 }

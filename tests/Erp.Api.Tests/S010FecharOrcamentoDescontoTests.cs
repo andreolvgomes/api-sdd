@@ -43,8 +43,8 @@ public class S010FecharOrcamentoDescontoTests : IDisposable
 
         using var doc = await LerAsync(await FecharAsync(Orca_id, new { Orca_desconto = 1.50m }));
 
-        Assert.Equal(13.50m, doc.RootElement.GetProperty("subtotal").GetDecimal());
-        Assert.Equal(12.00m, doc.RootElement.GetProperty("total").GetDecimal());
+        Assert.Equal(13.50m, doc.RootElement.GetProperty("orca_total").GetDecimal());
+        Assert.Equal(12.00m, doc.RootElement.GetProperty("orca_total_com_desconto").GetDecimal());
     }
 
     // ----- Desconto aplicado ao total, não aos itens (R2) -----
@@ -72,7 +72,7 @@ public class S010FecharOrcamentoDescontoTests : IDisposable
         using var doc = await LerAsync(await FecharAsync(Orca_id, new { Orca_desconto = 2.00m }));
 
         Assert.Equal(2.00m, doc.RootElement.GetProperty("orca_desconto").GetDecimal());
-        Assert.Equal(11.50m, doc.RootElement.GetProperty("total").GetDecimal());
+        Assert.Equal(11.50m, doc.RootElement.GetProperty("orca_total_com_desconto").GetDecimal());
     }
 
     [Fact]
@@ -84,7 +84,7 @@ public class S010FecharOrcamentoDescontoTests : IDisposable
         using var doc = await LerAsync(await FecharAsync(Orca_id, new { Orca_desconto = 0 }));
 
         Assert.Equal(0m, doc.RootElement.GetProperty("orca_desconto").GetDecimal());
-        Assert.Equal(13.50m, doc.RootElement.GetProperty("total").GetDecimal());
+        Assert.Equal(13.50m, doc.RootElement.GetProperty("orca_total_com_desconto").GetDecimal());
     }
 
     // ----- Desconto negativo (R5) -----
@@ -173,8 +173,8 @@ public class S010FecharOrcamentoDescontoTests : IDisposable
         using var doc = await LerAsync(await IncluirItemAsync(Orca_id, "P002", 1));
 
         Assert.Equal(0m, doc.RootElement.GetProperty("orca_desconto").GetDecimal());
-        Assert.Equal(14.50m, doc.RootElement.GetProperty("subtotal").GetDecimal());
-        Assert.Equal(14.50m, doc.RootElement.GetProperty("total").GetDecimal());
+        Assert.Equal(14.50m, doc.RootElement.GetProperty("orca_total").GetDecimal());
+        Assert.Equal(14.50m, doc.RootElement.GetProperty("orca_total_com_desconto").GetDecimal());
     }
 
     [Fact]
@@ -186,7 +186,7 @@ public class S010FecharOrcamentoDescontoTests : IDisposable
         using var doc = await LerAsync(await AlterarItemAsync(Orca_id, "002", new { Orci_quantidade = 5 }));
 
         Assert.Equal(0m, doc.RootElement.GetProperty("orca_desconto").GetDecimal());
-        Assert.Equal(15.50m, doc.RootElement.GetProperty("total").GetDecimal());
+        Assert.Equal(15.50m, doc.RootElement.GetProperty("orca_total_com_desconto").GetDecimal());
     }
 
     [Fact]
@@ -198,8 +198,8 @@ public class S010FecharOrcamentoDescontoTests : IDisposable
         using var doc = await LerAsync(await CancelarItemAsync(Orca_id, "002"));
 
         Assert.Equal(0m, doc.RootElement.GetProperty("orca_desconto").GetDecimal());
-        Assert.Equal(10.50m, doc.RootElement.GetProperty("subtotal").GetDecimal());
-        Assert.Equal(10.50m, doc.RootElement.GetProperty("total").GetDecimal());
+        Assert.Equal(10.50m, doc.RootElement.GetProperty("orca_total").GetDecimal());
+        Assert.Equal(10.50m, doc.RootElement.GetProperty("orca_total_com_desconto").GetDecimal());
     }
 
     [Fact]
@@ -212,7 +212,7 @@ public class S010FecharOrcamentoDescontoTests : IDisposable
         using var doc = await LerAsync(await ReativarItemAsync(Orca_id, "002"));
 
         Assert.Equal(0m, doc.RootElement.GetProperty("orca_desconto").GetDecimal());
-        Assert.Equal(13.50m, doc.RootElement.GetProperty("total").GetDecimal());
+        Assert.Equal(13.50m, doc.RootElement.GetProperty("orca_total_com_desconto").GetDecimal());
     }
 
     // ----- Fechamento não trava alteração de itens (R11) -----
@@ -238,7 +238,7 @@ public class S010FecharOrcamentoDescontoTests : IDisposable
         using var doc = await LerAsync(await ObterAsync(Orca_id));
 
         Assert.Equal(0m, doc.RootElement.GetProperty("orca_desconto").GetDecimal());
-        Assert.Equal(13.50m, doc.RootElement.GetProperty("total").GetDecimal());
+        Assert.Equal(13.50m, doc.RootElement.GetProperty("orca_total_com_desconto").GetDecimal());
     }
 
     // ----- Desconto obrigatório (R13) -----

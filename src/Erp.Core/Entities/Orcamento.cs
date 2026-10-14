@@ -8,4 +8,6 @@ public class Orcamento
     public int Vend_id { get; set; }
     public bool Orca_cancelado { get; set; }
     public decimal Orca_desconto { get; set; }
+    public decimal Orca_total { get; set; }
+    public decimal Orca_total_com_desconto { get; set; }
 }

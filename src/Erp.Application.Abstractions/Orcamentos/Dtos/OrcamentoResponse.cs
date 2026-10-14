@@ -8,9 +8,9 @@ public class OrcamentoResponse
     public OrcamentoClienteResponse Cliente { get; set; } = new();
     public OrcamentoVendedorResponse Vendedor { get; set; } = new();
     public List<ItemOrcamentoResponse> Itens { get; set; } = new();
-    public decimal Subtotal { get; set; }
+    public decimal Orca_total { get; set; }
     public decimal Orca_desconto { get; set; }
-    public decimal Total { get; set; }
+    public decimal Orca_total_com_desconto { get; set; }
     public List<PagamentoResponse> Pagamentos { get; set; } = new();
     public decimal Saldo { get; set; }
 }

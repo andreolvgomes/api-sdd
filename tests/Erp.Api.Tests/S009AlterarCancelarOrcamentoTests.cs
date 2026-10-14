@@ -151,7 +151,7 @@ public class S009AlterarCancelarOrcamentoTests : IDisposable
 
         using var doc = await LerAsync(await AlterarItemAsync(Orca_id, "002", new { Orci_quantidade = 5 }));
 
-        Assert.Equal(15.50m, doc.RootElement.GetProperty("subtotal").GetDecimal());
+        Assert.Equal(15.50m, doc.RootElement.GetProperty("orca_total").GetDecimal());
     }
 
     // ----- Preço do item (R5) -----
@@ -221,7 +221,7 @@ public class S009AlterarCancelarOrcamentoTests : IDisposable
 
         using var doc = await LerAsync(await CancelarItemAsync(Orca_id, "002"));
 
-        Assert.Equal(10.50m, doc.RootElement.GetProperty("subtotal").GetDecimal());
+        Assert.Equal(10.50m, doc.RootElement.GetProperty("orca_total").GetDecimal());
     }
 
     // ----- Reativar item (R8) -----
@@ -239,7 +239,7 @@ public class S009AlterarCancelarOrcamentoTests : IDisposable
         Assert.False(Item(doc, "002").GetProperty("orci_cancelado").GetBoolean());
         Assert.Equal(1.00m, Item(doc, "002").GetProperty("orci_preco").GetDecimal());
         Assert.Equal(3m, Item(doc, "002").GetProperty("orci_quantidade").GetDecimal());
-        Assert.Equal(13.50m, doc.RootElement.GetProperty("subtotal").GetDecimal());
+        Assert.Equal(13.50m, doc.RootElement.GetProperty("orca_total").GetDecimal());
     }
 
     [Fact]
@@ -483,7 +483,7 @@ public class S009AlterarCancelarOrcamentoTests : IDisposable
         using var doc = await LerAsync(await ObterAsync(Orca_id));
 
         Assert.True(Item(doc, "002").GetProperty("orci_cancelado").GetBoolean());
-        Assert.Equal(10.50m, doc.RootElement.GetProperty("subtotal").GetDecimal());
+        Assert.Equal(10.50m, doc.RootElement.GetProperty("orca_total").GetDecimal());
     }
 
     // ----- Cancelar item não altera estoque (R19) -----
