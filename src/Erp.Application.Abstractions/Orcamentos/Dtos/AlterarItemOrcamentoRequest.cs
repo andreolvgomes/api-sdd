@@ -2,8 +2,8 @@ namespace Erp.Application.Abstractions.Orcamentos.Dtos;
 
 public class AlterarItemOrcamentoRequest
 {
-    public int Id { get; set; }
-    public string NumeroItem { get; set; } = "";
-    public string? CodigoProduto { get; set; }
-    public decimal? Quantidade { get; set; }
+    public int Orca_id { get; set; }
+    public string Orci_numero_item { get; set; } = "";
+    public string? Prod_codigo { get; set; }
+    public decimal? Orci_quantidade { get; set; }
 }

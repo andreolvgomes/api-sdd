@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.Produtos;
 
-[HttpPut("api/produtos/{Codigo}")]
+[HttpPut("api/produtos/{Prod_codigo}")]
 [AllowAnonymous()]
 [Tags("Produtos")]
 public class AlterarProdutoEndpoint : EndpointBase<AlterarProdutoRequest>

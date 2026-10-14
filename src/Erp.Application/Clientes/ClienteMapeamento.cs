@@ -10,11 +10,11 @@ public static class ClienteMapeamento
     {
         ClienteDetalheResponse resposta = new ClienteDetalheResponse
         {
-            Id = cliente.Id,
-            Nome = cliente.Nome,
-            Endereco = cliente.Endereco,
-            Telefone = cliente.Telefone,
-            Status = cliente.Status
+            Clie_id = cliente.Clie_id,
+            Clie_nome = cliente.Clie_nome,
+            Clie_endereco = cliente.Clie_endereco,
+            Clie_telefone = cliente.Clie_telefone,
+            Clie_status = cliente.Clie_status
         };
 
         foreach (EnderecoAdicional endereco in enderecos)
@@ -27,11 +27,11 @@ public static class ClienteMapeamento
     {
         return new ClienteResponse
         {
-            Id = cliente.Id,
-            Nome = cliente.Nome,
-            Endereco = cliente.Endereco,
-            Telefone = cliente.Telefone,
-            Status = cliente.Status
+            Clie_id = cliente.Clie_id,
+            Clie_nome = cliente.Clie_nome,
+            Clie_endereco = cliente.Clie_endereco,
+            Clie_telefone = cliente.Clie_telefone,
+            Clie_status = cliente.Clie_status
         };
     }
 }

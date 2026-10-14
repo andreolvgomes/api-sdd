@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.Clientes;
 
-[HttpGet("api/clientes/{Id}")]
+[HttpGet("api/clientes/{Clie_id}")]
 [AllowAnonymous()]
 [Tags("Clientes")]
 public class ObterClienteEndpoint : EndpointBase<ObterClienteRequest>

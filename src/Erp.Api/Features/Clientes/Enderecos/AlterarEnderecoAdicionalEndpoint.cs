@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.Clientes.Enderecos;
 
-[HttpPut("api/clientes/{ClienteId}/enderecos/{Id}")]
+[HttpPut("api/clientes/{Clie_id}/enderecos/{Ende_id}")]
 [AllowAnonymous()]
 [Tags("Clientes")]
 public class AlterarEnderecoAdicionalEndpoint : EndpointBase<AlterarEnderecoAdicionalRequest>

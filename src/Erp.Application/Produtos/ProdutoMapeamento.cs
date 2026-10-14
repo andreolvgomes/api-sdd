@@ -10,11 +10,11 @@ public static class ProdutoMapeamento
     {
         return new ProdutoResponse
         {
-            Codigo = produto.Codigo,
-            Descricao = produto.Descricao,
-            PrecoVenda = produto.PrecoVenda,
-            Status = produto.Status,
-            Estoque = produto.Estoque
+            Prod_codigo = produto.Prod_codigo,
+            Prod_descricao = produto.Prod_descricao,
+            Prod_precovenda = produto.Prod_precovenda,
+            Prod_status = produto.Prod_status,
+            Prod_estoque = produto.Prod_estoque
         };
     }
 }

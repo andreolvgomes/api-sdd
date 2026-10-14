@@ -38,48 +38,48 @@ public class OrcamentosService : IOrcamentosService
 
     public async Task<OrcamentoResponse> IncluirAsync(IncluirOrcamentoRequest request)
     {
-        if (request.ClienteId == null)
+        if (request.Clie_id == null)
             throw new ErroDeNegocio("Cliente é obrigatório.", TipoErroDeNegocio.Validacao);
 
-        if (request.VendedorId == null)
+        if (request.Vend_id == null)
             throw new ErroDeNegocio("Vendedor é obrigatório.", TipoErroDeNegocio.Validacao);
 
-        string? erro = OrcamentoValidacao.ValidarItem(request.CodigoProduto, request.Quantidade);
+        string? erro = OrcamentoValidacao.ValidarItem(request.Prod_codigo, request.Orci_quantidade);
 
         if (erro != null)
             throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
 
-        Cliente cliente = await ValidarClienteAsync(request.ClienteId.Value);
-        Vendedor vendedor = await ValidarVendedorAsync(request.VendedorId.Value);
-        Produto produto = await ValidarProdutoAsync(request.CodigoProduto!, "Produto inativo não pode ser incluído.");
+        Cliente cliente = await ValidarClienteAsync(request.Clie_id.Value);
+        Vendedor vendedor = await ValidarVendedorAsync(request.Vend_id.Value);
+        Produto produto = await ValidarProdutoAsync(request.Prod_codigo!, "Produto inativo não pode ser incluído.");
 
         Orcamento orcamento = new Orcamento
         {
-            Data = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-            ClienteId = cliente.Id,
-            VendedorId = vendedor.Id
+            Orca_data = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+            Clie_id = cliente.Clie_id,
+            Vend_id = vendedor.Vend_id
         };
 
-        orcamento.Id = await _repositorio.InserirAsync(orcamento);
+        orcamento.Orca_id = await _repositorio.InserirAsync(orcamento);
 
-        await GravarItemAsync(orcamento.Id, produto, request.Quantidade!.Value);
+        await GravarItemAsync(orcamento.Orca_id, produto, request.Orci_quantidade!.Value);
 
         return await MontarRespostaAsync(orcamento);
     }
 
     public async Task<OrcamentoResponse> IncluirItemAsync(IncluirItemOrcamentoRequest request)
     {
-        Orcamento orcamento = await ObterOrcamentoAbertoAsync(request.Id);
-        await ValidarSemPagamentosAsync(orcamento.Id);
+        Orcamento orcamento = await ObterOrcamentoAbertoAsync(request.Orca_id);
+        await ValidarSemPagamentosAsync(orcamento.Orca_id);
 
-        string? erro = OrcamentoValidacao.ValidarItem(request.CodigoProduto, request.Quantidade);
+        string? erro = OrcamentoValidacao.ValidarItem(request.Prod_codigo, request.Orci_quantidade);
 
         if (erro != null)
             throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
 
-        Produto produto = await ValidarProdutoAsync(request.CodigoProduto!, "Produto inativo não pode ser incluído.");
+        Produto produto = await ValidarProdutoAsync(request.Prod_codigo!, "Produto inativo não pode ser incluído.");
 
-        await GravarItemAsync(orcamento.Id, produto, request.Quantidade!.Value);
+        await GravarItemAsync(orcamento.Orca_id, produto, request.Orci_quantidade!.Value);
         await ZerarDescontoAsync(orcamento);
 
         return await MontarRespostaAsync(orcamento);
@@ -87,22 +87,22 @@ public class OrcamentosService : IOrcamentosService
 
     public async Task<OrcamentoResponse> AlterarAsync(AlterarOrcamentoRequest request)
     {
-        Orcamento orcamento = await ObterOrcamentoAbertoAsync(request.Id);
-        await ValidarSemPagamentosAsync(orcamento.Id);
+        Orcamento orcamento = await ObterOrcamentoAbertoAsync(request.Orca_id);
+        await ValidarSemPagamentosAsync(orcamento.Orca_id);
 
-        if (request.ClienteId == null && request.VendedorId == null)
+        if (request.Clie_id == null && request.Vend_id == null)
             throw new ErroDeNegocio("Informe o cliente ou o vendedor para alterar.", TipoErroDeNegocio.Validacao);
 
-        if (request.ClienteId != null)
+        if (request.Clie_id != null)
         {
-            Cliente cliente = await ValidarClienteAsync(request.ClienteId.Value);
-            orcamento.ClienteId = cliente.Id;
+            Cliente cliente = await ValidarClienteAsync(request.Clie_id.Value);
+            orcamento.Clie_id = cliente.Clie_id;
         }
 
-        if (request.VendedorId != null)
+        if (request.Vend_id != null)
         {
-            Vendedor vendedor = await ValidarVendedorAsync(request.VendedorId.Value);
-            orcamento.VendedorId = vendedor.Id;
+            Vendedor vendedor = await ValidarVendedorAsync(request.Vend_id.Value);
+            orcamento.Vend_id = vendedor.Vend_id;
         }
 
         await _repositorio.AtualizarAsync(orcamento);
@@ -112,45 +112,45 @@ public class OrcamentosService : IOrcamentosService
 
     public async Task<OrcamentoResponse> AlterarItemAsync(AlterarItemOrcamentoRequest request)
     {
-        Orcamento orcamento = await ObterOrcamentoAbertoAsync(request.Id);
-        await ValidarSemPagamentosAsync(orcamento.Id);
-        OrcamentoItem item = await ObterItemExistenteAsync(orcamento.Id, request.NumeroItem);
+        Orcamento orcamento = await ObterOrcamentoAbertoAsync(request.Orca_id);
+        await ValidarSemPagamentosAsync(orcamento.Orca_id);
+        OrcamentoItem item = await ObterItemExistenteAsync(orcamento.Orca_id, request.Orci_numero_item);
 
-        if (item.Cancelado)
+        if (item.Orci_cancelado)
             throw new ErroDeNegocio("Item cancelado não pode ser alterado.", TipoErroDeNegocio.Validacao);
 
-        if (request.CodigoProduto == null && request.Quantidade == null)
+        if (request.Prod_codigo == null && request.Orci_quantidade == null)
             throw new ErroDeNegocio("Informe a quantidade ou o produto para alterar.", TipoErroDeNegocio.Validacao);
 
-        if (request.CodigoProduto != null && string.IsNullOrWhiteSpace(request.CodigoProduto))
+        if (request.Prod_codigo != null && string.IsNullOrWhiteSpace(request.Prod_codigo))
             throw new ErroDeNegocio("Produto é obrigatório.", TipoErroDeNegocio.Validacao);
 
-        if (request.Quantidade != null)
+        if (request.Orci_quantidade != null)
         {
-            string? erro = OrcamentoValidacao.ValidarQuantidade(request.Quantidade);
+            string? erro = OrcamentoValidacao.ValidarQuantidade(request.Orci_quantidade);
 
             if (erro != null)
                 throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
         }
 
-        decimal quantidade = request.Quantidade ?? item.Quantidade;
-        string codigoProduto = item.CodigoProduto;
-        decimal preco = item.Preco;
+        decimal quantidade = request.Orci_quantidade ?? item.Orci_quantidade;
+        string codigoProduto = item.Prod_codigo;
+        decimal preco = item.Orci_preco;
 
-        if (request.CodigoProduto != null)
+        if (request.Prod_codigo != null)
         {
-            Produto produto = await ValidarProdutoAsync(request.CodigoProduto, "Produto inativo não pode ser usado.");
+            Produto produto = await ValidarProdutoAsync(request.Prod_codigo, "Produto inativo não pode ser usado.");
 
-            if (produto.Codigo != item.CodigoProduto)
-                preco = produto.PrecoVenda;
+            if (produto.Prod_codigo != item.Prod_codigo)
+                preco = produto.Prod_precovenda;
 
-            codigoProduto = produto.Codigo;
+            codigoProduto = produto.Prod_codigo;
         }
 
-        item.CodigoProduto = codigoProduto;
-        item.Quantidade = quantidade;
-        item.Preco = preco;
-        item.Total = OrcamentoValidacao.Arredondar(quantidade * preco);
+        item.Prod_codigo = codigoProduto;
+        item.Orci_quantidade = quantidade;
+        item.Orci_preco = preco;
+        item.Orci_total = OrcamentoValidacao.Arredondar(quantidade * preco);
 
         await _repositorio.AtualizarItemAsync(item);
         await ZerarDescontoAsync(orcamento);
@@ -160,14 +160,14 @@ public class OrcamentosService : IOrcamentosService
 
     public async Task<OrcamentoResponse> CancelarItemAsync(CancelarItemOrcamentoRequest request)
     {
-        Orcamento orcamento = await ObterOrcamentoAbertoAsync(request.Id);
-        await ValidarSemPagamentosAsync(orcamento.Id);
-        OrcamentoItem item = await ObterItemExistenteAsync(orcamento.Id, request.NumeroItem);
+        Orcamento orcamento = await ObterOrcamentoAbertoAsync(request.Orca_id);
+        await ValidarSemPagamentosAsync(orcamento.Orca_id);
+        OrcamentoItem item = await ObterItemExistenteAsync(orcamento.Orca_id, request.Orci_numero_item);
 
-        if (item.Cancelado)
+        if (item.Orci_cancelado)
             throw new ErroDeNegocio("Item já está cancelado.", TipoErroDeNegocio.Validacao);
 
-        await _repositorio.DefinirCanceladoItemAsync(orcamento.Id, item.NumeroItem, true);
+        await _repositorio.DefinirCanceladoItemAsync(orcamento.Orca_id, item.Orci_numero_item, true);
         await ZerarDescontoAsync(orcamento);
 
         return await MontarRespostaAsync(orcamento);
@@ -175,16 +175,16 @@ public class OrcamentosService : IOrcamentosService
 
     public async Task<OrcamentoResponse> ReativarItemAsync(ReativarItemOrcamentoRequest request)
     {
-        Orcamento orcamento = await ObterOrcamentoAbertoAsync(request.Id);
-        await ValidarSemPagamentosAsync(orcamento.Id);
-        OrcamentoItem item = await ObterItemExistenteAsync(orcamento.Id, request.NumeroItem);
+        Orcamento orcamento = await ObterOrcamentoAbertoAsync(request.Orca_id);
+        await ValidarSemPagamentosAsync(orcamento.Orca_id);
+        OrcamentoItem item = await ObterItemExistenteAsync(orcamento.Orca_id, request.Orci_numero_item);
 
-        if (!item.Cancelado)
+        if (!item.Orci_cancelado)
             throw new ErroDeNegocio("Item não está cancelado.", TipoErroDeNegocio.Validacao);
 
-        await ValidarProdutoAsync(item.CodigoProduto, "Produto inativo não pode ser usado.");
+        await ValidarProdutoAsync(item.Prod_codigo, "Produto inativo não pode ser usado.");
 
-        await _repositorio.DefinirCanceladoItemAsync(orcamento.Id, item.NumeroItem, false);
+        await _repositorio.DefinirCanceladoItemAsync(orcamento.Orca_id, item.Orci_numero_item, false);
         await ZerarDescontoAsync(orcamento);
 
         return await MontarRespostaAsync(orcamento);
@@ -192,78 +192,78 @@ public class OrcamentosService : IOrcamentosService
 
     public async Task<OrcamentoResponse> CancelarAsync(CancelarOrcamentoRequest request)
     {
-        Orcamento orcamento = await ObterOrcamentoExistenteAsync(request.Id);
+        Orcamento orcamento = await ObterOrcamentoExistenteAsync(request.Orca_id);
 
-        if (orcamento.Cancelado)
+        if (orcamento.Orca_cancelado)
             throw new ErroDeNegocio("Orçamento já está cancelado.", TipoErroDeNegocio.Validacao);
 
-        await _repositorio.CancelarAsync(orcamento.Id);
-        orcamento.Cancelado = true;
+        await _repositorio.CancelarAsync(orcamento.Orca_id);
+        orcamento.Orca_cancelado = true;
 
         return await MontarRespostaAsync(orcamento);
     }
 
     public async Task<OrcamentoResponse> FecharAsync(FecharOrcamentoRequest request)
     {
-        Orcamento orcamento = await ObterOrcamentoExistenteAsync(request.Id);
+        Orcamento orcamento = await ObterOrcamentoExistenteAsync(request.Orca_id);
 
-        if (orcamento.Cancelado)
+        if (orcamento.Orca_cancelado)
             throw new ErroDeNegocio("Orçamento cancelado não pode ser alterado.", TipoErroDeNegocio.Validacao);
 
-        await ValidarSemPagamentosAsync(orcamento.Id);
+        await ValidarSemPagamentosAsync(orcamento.Orca_id);
 
-        if (request.Desconto == null)
+        if (request.Orca_desconto == null)
             throw new ErroDeNegocio("Desconto é obrigatório.", TipoErroDeNegocio.Validacao);
 
-        string? erro = OrcamentoValidacao.ValidarDesconto(request.Desconto.Value);
+        string? erro = OrcamentoValidacao.ValidarDesconto(request.Orca_desconto.Value);
 
         if (erro != null)
             throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
 
-        List<OrcamentoItem> itens = await _repositorio.ListarItensAsync(orcamento.Id);
-        List<OrcamentoItem> ativos = itens.Where(item => !item.Cancelado).ToList();
+        List<OrcamentoItem> itens = await _repositorio.ListarItensAsync(orcamento.Orca_id);
+        List<OrcamentoItem> ativos = itens.Where(item => !item.Orci_cancelado).ToList();
 
         if (ativos.Count == 0)
             throw new ErroDeNegocio("Orçamento sem itens ativos não pode ser fechado.", TipoErroDeNegocio.Validacao);
 
-        decimal subtotal = ativos.Sum(item => item.Total);
+        decimal subtotal = ativos.Sum(item => item.Orci_total);
 
-        if (request.Desconto.Value > subtotal)
+        if (request.Orca_desconto.Value > subtotal)
             throw new ErroDeNegocio("Desconto não pode ser maior que o subtotal.", TipoErroDeNegocio.Validacao);
 
-        await _repositorio.DefinirDescontoAsync(orcamento.Id, request.Desconto.Value);
-        orcamento.Desconto = request.Desconto.Value;
+        await _repositorio.DefinirDescontoAsync(orcamento.Orca_id, request.Orca_desconto.Value);
+        orcamento.Orca_desconto = request.Orca_desconto.Value;
 
         return await MontarRespostaAsync(orcamento);
     }
 
     public async Task<OrcamentoResponse> LancarPagamentoAsync(LancarPagamentoRequest request)
     {
-        Orcamento orcamento = await ObterOrcamentoAbertoAsync(request.Id);
+        Orcamento orcamento = await ObterOrcamentoAbertoAsync(request.Orca_id);
 
-        if (request.FormaPagamentoId == null)
+        if (request.Form_id == null)
             throw new ErroDeNegocio("Forma de pagamento é obrigatória.", TipoErroDeNegocio.Validacao);
 
-        if (request.CaixaBancoId == null)
+        if (request.Caix_id == null)
             throw new ErroDeNegocio("Caixa ou banco é obrigatório.", TipoErroDeNegocio.Validacao);
 
-        if (request.Valor == null)
+        if (request.Orcp_valor == null)
             throw new ErroDeNegocio("Valor do pagamento é obrigatório.", TipoErroDeNegocio.Validacao);
 
-        string? erro = OrcamentoValidacao.ValidarValorPagamento(request.Valor.Value);
+        string? erro = OrcamentoValidacao.ValidarValorPagamento(request.Orcp_valor.Value);
 
         if (erro != null)
             throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
 
-        await ValidarFormaPagamentoAsync(request.FormaPagamentoId.Value);
-        await ValidarCaixaBancoAsync(request.CaixaBancoId.Value);
+        await ValidarFormaPagamentoAsync(request.Form_id.Value);
+        await ValidarCaixaBancoAsync(request.Caix_id.Value);
 
         OrcamentoPagamento pagamento = new OrcamentoPagamento
         {
-            OrcamentoId = orcamento.Id,
-            FormaPagamentoId = request.FormaPagamentoId.Value,
-            CaixaBancoId = request.CaixaBancoId.Value,
-            Valor = request.Valor.Value
+            Orca_id = orcamento.Orca_id,
+            Form_id = request.Form_id.Value,
+            Caix_id = request.Caix_id.Value,
+            Orcp_valor = request.Orcp_valor.Value
         };
 
         decimal total = await CalcularTotalAsync(orcamento);
@@ -278,41 +278,41 @@ public class OrcamentosService : IOrcamentosService
 
     public async Task<OrcamentoResponse> CancelarPagamentoAsync(CancelarPagamentoRequest request)
     {
-        Orcamento orcamento = await ObterOrcamentoExistenteAsync(request.Id);
+        Orcamento orcamento = await ObterOrcamentoExistenteAsync(request.Orca_id);
 
-        if (orcamento.Cancelado)
+        if (orcamento.Orca_cancelado)
             throw new ErroDeNegocio("Orçamento cancelado não pode ser alterado.", TipoErroDeNegocio.Validacao);
 
-        OrcamentoPagamento? pagamento = await _repositorio.ObterPagamentoAsync(orcamento.Id, request.NumeroPagamento);
+        OrcamentoPagamento? pagamento = await _repositorio.ObterPagamentoAsync(orcamento.Orca_id, request.Orcp_numero_pagamento);
 
         if (pagamento == null)
             throw new ErroDeNegocio("Pagamento não encontrado.", TipoErroDeNegocio.NaoEncontrado);
 
-        if (pagamento.Cancelado)
+        if (pagamento.Orcp_cancelado)
             throw new ErroDeNegocio("Pagamento já está cancelado.", TipoErroDeNegocio.Validacao);
 
-        await _repositorio.CancelarPagamentoAsync(orcamento.Id, pagamento.NumeroPagamento);
+        await _repositorio.CancelarPagamentoAsync(orcamento.Orca_id, pagamento.Orcp_numero_pagamento);
 
         return await MontarRespostaAsync(orcamento);
     }
 
     public async Task<OrcamentoResponse> ObterAsync(ObterOrcamentoRequest request)
     {
-        Orcamento orcamento = await ObterOrcamentoExistenteAsync(request.Id);
+        Orcamento orcamento = await ObterOrcamentoExistenteAsync(request.Orca_id);
 
         return await MontarRespostaAsync(orcamento);
     }
 
     public async Task<List<OrcamentoResumoResponse>> ListarAsync(ListarOrcamentosRequest request)
     {
-        List<Orcamento> orcamentos = await _repositorio.ListarAsync(request.ClienteId, request.VendedorId);
+        List<Orcamento> orcamentos = await _repositorio.ListarAsync(request.Clie_id, request.Vend_id);
 
         List<OrcamentoResumoResponse> resposta = new List<OrcamentoResumoResponse>();
 
         foreach (Orcamento orcamento in orcamentos)
         {
-            Cliente? cliente = await _clientes.ObterPorIdAsync(orcamento.ClienteId);
-            Vendedor? vendedor = await _vendedores.ObterPorIdAsync(orcamento.VendedorId);
+            Cliente? cliente = await _clientes.ObterPorIdAsync(orcamento.Clie_id);
+            Vendedor? vendedor = await _vendedores.ObterPorIdAsync(orcamento.Vend_id);
 
             resposta.Add(OrcamentoMapeamento.ParaResumo(orcamento, cliente, vendedor));
         }
@@ -322,8 +322,8 @@ public class OrcamentosService : IOrcamentosService
 
     private async Task ZerarDescontoAsync(Orcamento orcamento)
     {
-        await _repositorio.DefinirDescontoAsync(orcamento.Id, 0);
-        orcamento.Desconto = 0;
+        await _repositorio.DefinirDescontoAsync(orcamento.Orca_id, 0);
+        orcamento.Orca_desconto = 0;
     }
 
     private async Task<Orcamento> ObterOrcamentoExistenteAsync(int id)
@@ -340,7 +340,7 @@ public class OrcamentosService : IOrcamentosService
     {
         Orcamento orcamento = await ObterOrcamentoExistenteAsync(id);
 
-        if (orcamento.Cancelado)
+        if (orcamento.Orca_cancelado)
             throw new ErroDeNegocio("Orçamento cancelado não pode ser alterado.", TipoErroDeNegocio.Validacao);
 
         return orcamento;
@@ -366,10 +366,10 @@ public class OrcamentosService : IOrcamentosService
 
     private async Task<decimal> CalcularTotalAsync(Orcamento orcamento)
     {
-        List<OrcamentoItem> itens = await _repositorio.ListarItensAsync(orcamento.Id);
-        decimal subtotal = itens.Where(item => !item.Cancelado).Sum(item => item.Total);
+        List<OrcamentoItem> itens = await _repositorio.ListarItensAsync(orcamento.Orca_id);
+        decimal subtotal = itens.Where(item => !item.Orci_cancelado).Sum(item => item.Orci_total);
 
-        return OrcamentoValidacao.Arredondar(subtotal - orcamento.Desconto);
+        return OrcamentoValidacao.Arredondar(subtotal - orcamento.Orca_desconto);
     }
 
     private async Task<Cliente> ValidarClienteAsync(int id)
@@ -379,7 +379,7 @@ public class OrcamentosService : IOrcamentosService
         if (cliente == null)
             throw new ErroDeNegocio("Cliente não encontrado.", TipoErroDeNegocio.NaoEncontrado);
 
-        if (!OrcamentoValidacao.EhAtivo(cliente.Status))
+        if (!OrcamentoValidacao.EhAtivo(cliente.Clie_status))
             throw new ErroDeNegocio("Cliente inativo não pode ser usado.", TipoErroDeNegocio.Validacao);
 
         return cliente;
@@ -392,7 +392,7 @@ public class OrcamentosService : IOrcamentosService
         if (vendedor == null)
             throw new ErroDeNegocio("Vendedor não encontrado.", TipoErroDeNegocio.NaoEncontrado);
 
-        if (!OrcamentoValidacao.EhAtivo(vendedor.Status))
+        if (!OrcamentoValidacao.EhAtivo(vendedor.Vend_status))
             throw new ErroDeNegocio("Vendedor inativo não pode ser usado.", TipoErroDeNegocio.Validacao);
 
         return vendedor;
@@ -405,7 +405,7 @@ public class OrcamentosService : IOrcamentosService
         if (produto == null)
             throw new ErroDeNegocio("Produto não encontrado.", TipoErroDeNegocio.NaoEncontrado);
 
-        if (!OrcamentoValidacao.EhAtivo(produto.Status))
+        if (!OrcamentoValidacao.EhAtivo(produto.Prod_status))
             throw new ErroDeNegocio(mensagemInativo, TipoErroDeNegocio.Validacao);
 
         return produto;
@@ -418,7 +418,7 @@ public class OrcamentosService : IOrcamentosService
         if (forma == null)
             throw new ErroDeNegocio("Forma de pagamento não encontrada.", TipoErroDeNegocio.NaoEncontrado);
 
-        if (!OrcamentoValidacao.EhAtivo(forma.Status))
+        if (!OrcamentoValidacao.EhAtivo(forma.Form_status))
             throw new ErroDeNegocio("Forma de pagamento inativa não pode ser usada.", TipoErroDeNegocio.Validacao);
 
         return forma;
@@ -431,7 +431,7 @@ public class OrcamentosService : IOrcamentosService
         if (caixa == null)
             throw new ErroDeNegocio("Caixa ou banco não encontrado.", TipoErroDeNegocio.NaoEncontrado);
 
-        if (!OrcamentoValidacao.EhAtivo(caixa.Status))
+        if (!OrcamentoValidacao.EhAtivo(caixa.Caix_status))
             throw new ErroDeNegocio("Caixa ou banco inativo não pode ser usado.", TipoErroDeNegocio.Validacao);
 
         return caixa;
@@ -441,11 +441,11 @@ public class OrcamentosService : IOrcamentosService
     {
         OrcamentoItem item = new OrcamentoItem
         {
-            OrcamentoId = orcamentoId,
-            CodigoProduto = produto.Codigo,
-            Quantidade = quantidade,
-            Preco = produto.PrecoVenda,
-            Total = OrcamentoValidacao.Arredondar(quantidade * produto.PrecoVenda)
+            Orca_id = orcamentoId,
+            Prod_codigo = produto.Prod_codigo,
+            Orci_quantidade = quantidade,
+            Orci_preco = produto.Prod_precovenda,
+            Orci_total = OrcamentoValidacao.Arredondar(quantidade * produto.Prod_precovenda)
         };
 
         try
@@ -454,17 +454,17 @@ public class OrcamentosService : IOrcamentosService
         }
         catch (Exception erro)
         {
-            _log.LogError(erro, "Falha ao gravar item do orçamento {OrcamentoId} (produto {CodigoProduto})", orcamentoId, produto.Codigo);
+            _log.LogError(erro, "Falha ao gravar item do orçamento {OrcamentoId} (produto {CodigoProduto})", orcamentoId, produto.Prod_codigo);
             throw;
         }
     }
 
     private async Task<OrcamentoResponse> MontarRespostaAsync(Orcamento orcamento)
     {
-        Cliente? cliente = await _clientes.ObterPorIdAsync(orcamento.ClienteId);
-        Vendedor? vendedor = await _vendedores.ObterPorIdAsync(orcamento.VendedorId);
-        List<OrcamentoItem> itens = await _repositorio.ListarItensAsync(orcamento.Id);
-        List<OrcamentoPagamento> pagamentos = await _repositorio.ListarPagamentosAsync(orcamento.Id);
+        Cliente? cliente = await _clientes.ObterPorIdAsync(orcamento.Clie_id);
+        Vendedor? vendedor = await _vendedores.ObterPorIdAsync(orcamento.Vend_id);
+        List<OrcamentoItem> itens = await _repositorio.ListarItensAsync(orcamento.Orca_id);
+        List<OrcamentoPagamento> pagamentos = await _repositorio.ListarPagamentosAsync(orcamento.Orca_id);
 
         return OrcamentoMapeamento.ParaResposta(orcamento, cliente, vendedor, itens, pagamentos);
     }

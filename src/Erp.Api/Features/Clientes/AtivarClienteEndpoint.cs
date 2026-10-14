@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.Clientes;
 
-[HttpPost("api/clientes/{Id}/ativar")]
+[HttpPost("api/clientes/{Clie_id}/ativar")]
 [AllowAnonymous()]
 [Tags("Clientes")]
 public class AtivarClienteEndpoint : EndpointBase<AtivarClienteRequest>

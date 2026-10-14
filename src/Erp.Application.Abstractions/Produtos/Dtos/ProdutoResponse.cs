@@ -2,9 +2,9 @@ namespace Erp.Application.Abstractions.Produtos.Dtos;
 
 public class ProdutoResponse
 {
-    public string Codigo { get; set; } = "";
-    public string Descricao { get; set; } = "";
-    public decimal PrecoVenda { get; set; }
-    public string Status { get; set; } = "";
-    public decimal Estoque { get; set; }
+    public string Prod_codigo { get; set; } = "";
+    public string Prod_descricao { get; set; } = "";
+    public decimal Prod_precovenda { get; set; }
+    public string Prod_status { get; set; } = "";
+    public decimal Prod_estoque { get; set; }
 }

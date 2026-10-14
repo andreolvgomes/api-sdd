@@ -2,5 +2,5 @@ namespace Erp.Application.Abstractions.Clientes.Dtos;
 
 public class AtivarClienteRequest
 {
-    public int Id { get; set; }
+    public int Clie_id { get; set; }
 }

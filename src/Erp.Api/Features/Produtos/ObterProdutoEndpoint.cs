@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.Produtos;
 
-[HttpGet("api/produtos/{Codigo}")]
+[HttpGet("api/produtos/{Prod_codigo}")]
 [AllowAnonymous()]
 [Tags("Produtos")]
 public class ObterProdutoEndpoint : EndpointBase<ObterProdutoRequest>

@@ -27,42 +27,42 @@ public class ProdutosTests : IDisposable
     [Fact]
     public async Task Cadastrar_SemStatus_CriaComoAtivo()
     {
-        var resposta = await CriarAsync(new { codigo = "P001", descricao = "Caneta azul", precoVenda = 3.50m });
+        var resposta = await CriarAsync(new { Prod_codigo = "P001", Prod_descricao = "Caneta azul", Prod_precovenda = 3.50m });
 
         Assert.Equal(HttpStatusCode.Created, resposta.StatusCode);
         var produto = await LerProdutoAsync(resposta);
-        Assert.Equal("ativo", produto.Status);
+        Assert.Equal("ativo", produto.Prod_status);
     }
 
     [Fact]
     public async Task Cadastrar_CodigoJaExistente_RecusadoENaoGrava()
     {
-        await CriarAsync(new { codigo = "P001", descricao = "Caneta azul", precoVenda = 3.50m });
+        await CriarAsync(new { Prod_codigo = "P001", Prod_descricao = "Caneta azul", Prod_precovenda = 3.50m });
 
-        var resposta = await CriarAsync(new { codigo = "P001", descricao = "Caneta vermelha", precoVenda = 4.00m });
+        var resposta = await CriarAsync(new { Prod_codigo = "P001", Prod_descricao = "Caneta vermelha", Prod_precovenda = 4.00m });
 
         Assert.Equal(HttpStatusCode.Conflict, resposta.StatusCode);
         Assert.Contains("Código já cadastrado", await TextoErroAsync(resposta));
 
         var atual = await LerProdutoAsync(await ObterAsync("P001"));
-        Assert.Equal("Caneta azul", atual.Descricao);
-        Assert.Equal(3.50m, atual.PrecoVenda);
+        Assert.Equal("Caneta azul", atual.Prod_descricao);
+        Assert.Equal(3.50m, atual.Prod_precovenda);
     }
 
     [Fact]
     public async Task Cadastrar_PrecoZero_EAceito()
     {
-        var resposta = await CriarAsync(new { codigo = "P002", descricao = "Borracha", precoVenda = 0m });
+        var resposta = await CriarAsync(new { Prod_codigo = "P002", Prod_descricao = "Borracha", Prod_precovenda = 0m });
 
         Assert.Equal(HttpStatusCode.Created, resposta.StatusCode);
         var produto = await LerProdutoAsync(resposta);
-        Assert.Equal(0.00m, produto.PrecoVenda);
+        Assert.Equal(0.00m, produto.Prod_precovenda);
     }
 
     [Fact]
     public async Task Cadastrar_DescricaoSomenteEspacos_Recusada()
     {
-        var resposta = await CriarAsync(new { codigo = "P005", descricao = "   ", precoVenda = 1.00m });
+        var resposta = await CriarAsync(new { Prod_codigo = "P005", Prod_descricao = "   ", Prod_precovenda = 1.00m });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Descrição é obrigatória", await TextoErroAsync(resposta));
@@ -71,7 +71,7 @@ public class ProdutosTests : IDisposable
     [Fact]
     public async Task Cadastrar_CodigoComMaisDe20Caracteres_Recusado()
     {
-        var resposta = await CriarAsync(new { codigo = new string('A', 21), descricao = "Régua", precoVenda = 1.00m });
+        var resposta = await CriarAsync(new { Prod_codigo = new string('A', 21), Prod_descricao = "Régua", Prod_precovenda = 1.00m });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Código deve ter no máximo 20 caracteres", await TextoErroAsync(resposta));
@@ -80,7 +80,7 @@ public class ProdutosTests : IDisposable
     [Fact]
     public async Task Cadastrar_DescricaoCom101Caracteres_Recusada()
     {
-        var resposta = await CriarAsync(new { codigo = "P008", descricao = new string('a', 101), precoVenda = 1.00m });
+        var resposta = await CriarAsync(new { Prod_codigo = "P008", Prod_descricao = new string('a', 101), Prod_precovenda = 1.00m });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Descrição deve ter no máximo 100 caracteres", await TextoErroAsync(resposta));
@@ -89,7 +89,7 @@ public class ProdutosTests : IDisposable
     [Fact]
     public async Task Cadastrar_DescricaoCom100Caracteres_EAceita()
     {
-        var resposta = await CriarAsync(new { codigo = "P009", descricao = new string('a', 100), precoVenda = 1.00m });
+        var resposta = await CriarAsync(new { Prod_codigo = "P009", Prod_descricao = new string('a', 100), Prod_precovenda = 1.00m });
 
         Assert.Equal(HttpStatusCode.Created, resposta.StatusCode);
     }
@@ -103,9 +103,9 @@ public class ProdutosTests : IDisposable
     [InlineData("P001", null, 1.0, null, "Descrição é obrigatória")]
     [InlineData("P001", "Régua", null, null, "Preço de venda é obrigatório")]
     public async Task Cadastrar_DadosInvalidos_SaoRecusadosComMensagem(
-        string? codigo, string? descricao, double? precoVenda, string? status, string mensagem)
+        string? Prod_codigo, string? Prod_descricao, double? Prod_precovenda, string? Prod_status, string mensagem)
     {
-        var resposta = await CriarAsync(new { codigo, descricao, precoVenda, status });
+        var resposta = await CriarAsync(new { Prod_codigo, Prod_descricao, Prod_precovenda, Prod_status });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains(mensagem, await TextoErroAsync(resposta));
@@ -133,16 +133,16 @@ public class ProdutosTests : IDisposable
         await CriarProdutoAsync("P002", "Borracha", 2.00m, "ativo");
         await CriarProdutoAsync("P003", "Lápis", 3.00m, "inativo");
 
-        var produtos = await ListarAsync("?status=inativo");
+        var produtos = await ListarAsync("?Prod_status=inativo");
 
         Assert.Single(produtos);
-        Assert.Equal("P003", produtos[0].Codigo);
+        Assert.Equal("P003", produtos[0].Prod_codigo);
     }
 
     [Fact]
     public async Task Listar_FiltroStatusInvalido_Recusado()
     {
-        var resposta = await _cliente.GetAsync("/api/produtos?status=pausado");
+        var resposta = await _cliente.GetAsync("/api/produtos?Prod_status=pausado");
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Status deve ser ativo ou inativo", await TextoErroAsync(resposta));
@@ -157,10 +157,10 @@ public class ProdutosTests : IDisposable
 
         var produto = await LerProdutoAsync(await ObterAsync("P001"));
 
-        Assert.Equal("P001", produto.Codigo);
-        Assert.Equal("Caneta azul", produto.Descricao);
-        Assert.Equal(3.50m, produto.PrecoVenda);
-        Assert.Equal("ativo", produto.Status);
+        Assert.Equal("P001", produto.Prod_codigo);
+        Assert.Equal("Caneta azul", produto.Prod_descricao);
+        Assert.Equal(3.50m, produto.Prod_precovenda);
+        Assert.Equal("ativo", produto.Prod_status);
     }
 
     [Fact]
@@ -181,17 +181,17 @@ public class ProdutosTests : IDisposable
 
         var resposta = await AlterarAsync("P001", new
         {
-            codigo = "P999",
-            descricao = "Caneta azul fina",
-            precoVenda = 3.90m,
-            status = "inativo"
+            Prod_codigo = "P999",
+            Prod_descricao = "Caneta azul fina",
+            Prod_precovenda = 3.90m,
+            Prod_status = "inativo"
         });
 
         Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
         var atual = await LerProdutoAsync(await ObterAsync("P001"));
-        Assert.Equal("Caneta azul fina", atual.Descricao);
-        Assert.Equal(3.90m, atual.PrecoVenda);
-        Assert.Equal("inativo", atual.Status);
+        Assert.Equal("Caneta azul fina", atual.Prod_descricao);
+        Assert.Equal(3.90m, atual.Prod_precovenda);
+        Assert.Equal("inativo", atual.Prod_status);
         Assert.Equal(HttpStatusCode.NotFound, (await ObterAsync("P999")).StatusCode);
     }
 
@@ -200,18 +200,18 @@ public class ProdutosTests : IDisposable
     {
         await CriarProdutoAsync("P001", "Caneta azul", 3.50m, "ativo");
 
-        var resposta = await AlterarAsync("P001", new { descricao = "Caneta azul", precoVenda = -2.00m, status = "ativo" });
+        var resposta = await AlterarAsync("P001", new { Prod_descricao = "Caneta azul", Prod_precovenda = -2.00m, Prod_status = "ativo" });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Preço não pode ser negativo", await TextoErroAsync(resposta));
         var atual = await LerProdutoAsync(await ObterAsync("P001"));
-        Assert.Equal(3.50m, atual.PrecoVenda);
+        Assert.Equal(3.50m, atual.Prod_precovenda);
     }
 
     [Fact]
     public async Task Alterar_CodigoInexistente_NaoEncontrado()
     {
-        var resposta = await AlterarAsync("X999", new { descricao = "Caneta", precoVenda = 1.00m, status = "ativo" });
+        var resposta = await AlterarAsync("X999", new { Prod_descricao = "Caneta", Prod_precovenda = 1.00m, Prod_status = "ativo" });
 
         Assert.Equal(HttpStatusCode.NotFound, resposta.StatusCode);
         Assert.Contains("Produto não encontrado", await TextoErroAsync(resposta));
@@ -248,19 +248,19 @@ public class ProdutosTests : IDisposable
         return _cliente.PostAsJsonAsync("/api/produtos", corpo);
     }
 
-    private Task<HttpResponseMessage> ObterAsync(string codigo)
+    private Task<HttpResponseMessage> ObterAsync(string Prod_codigo)
     {
-        return _cliente.GetAsync($"/api/produtos/{codigo}");
+        return _cliente.GetAsync($"/api/produtos/{Prod_codigo}");
     }
 
-    private Task<HttpResponseMessage> AlterarAsync(string codigo, object corpo)
+    private Task<HttpResponseMessage> AlterarAsync(string Prod_codigo, object corpo)
     {
-        return _cliente.PutAsJsonAsync($"/api/produtos/{codigo}", corpo);
+        return _cliente.PutAsJsonAsync($"/api/produtos/{Prod_codigo}", corpo);
     }
 
-    private async Task CriarProdutoAsync(string codigo, string descricao, decimal precoVenda, string status)
+    private async Task CriarProdutoAsync(string Prod_codigo, string Prod_descricao, decimal Prod_precovenda, string Prod_status)
     {
-        var resposta = await CriarAsync(new { codigo, descricao, precoVenda, status });
+        var resposta = await CriarAsync(new { Prod_codigo, Prod_descricao, Prod_precovenda, Prod_status });
         Assert.Equal(HttpStatusCode.Created, resposta.StatusCode);
     }
 
@@ -306,5 +306,5 @@ public class ProdutosTests : IDisposable
         return texto;
     }
 
-    private record ProdutoResposta(string Codigo, string Descricao, decimal PrecoVenda, string Status);
+    private record ProdutoResposta(string Prod_codigo, string Prod_descricao, decimal Prod_precovenda, string Prod_status);
 }

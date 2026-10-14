@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.FormasPagamento;
 
-[HttpPut("api/formas-pagamento/{Id}")]
+[HttpPut("api/formas-pagamento/{Form_id}")]
 [AllowAnonymous()]
 [Tags("Formas de pagamento")]
 public class AlterarFormaPagamentoEndpoint : EndpointBase<AlterarFormaPagamentoRequest>

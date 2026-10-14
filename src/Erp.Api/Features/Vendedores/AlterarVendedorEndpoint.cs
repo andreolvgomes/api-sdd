@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.Vendedores;
 
-[HttpPut("api/vendedores/{Id}")]
+[HttpPut("api/vendedores/{Vend_id}")]
 [AllowAnonymous()]
 [Tags("Vendedores")]
 public class AlterarVendedorEndpoint : EndpointBase<AlterarVendedorRequest>

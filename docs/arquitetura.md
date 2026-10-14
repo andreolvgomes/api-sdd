@@ -34,7 +34,7 @@ Exemplo:
 
     public class IncluirProdutoRequest
     {
-        public string Codigo { get; set; } = string.Empty;
+        public string Prod_codigo { get; set; } = string.Empty;
     }
 
     // Erp.Application.Abstractions/Produtos/Dtos/ProdutoResponse.cs
@@ -42,8 +42,17 @@ Exemplo:
 
     public class ProdutoResponse
     {
-        public int Id { get; set; }
+        public string Prod_codigo { get; set; } = string.Empty;
     }
+
+### Nomes de colunas, entidades e DTOs
+- Colunas começam com a sigla da tabela em 4 letras + `_`, tudo minúsculo (ex.: produto → `prod_codigo`, `prod_descricao`, `prod_precovenda`; cliente → `clie_id`, `clie_nome`, `clie_telefone`).
+- Chave primária tem o nome `<sigla>_id` (ex.: `clie_id`, `vend_id`). Quando já existe um campo único que identifica o registro, ele é a chave primária com o próprio nome (ex.: `prod_codigo` em produto).
+- Propriedades da entidade e dos DTOs (Requests e Responses) têm o mesmo nome da coluna, só com a primeira letra maiúscula (ex.: `Prod_precovenda`, `Clie_id`).
+- Assim o Dapper mapeia sem alias, inclusive em resultados de inner join.
+- Siglas das tabelas: produto `prod`, cliente `clie`, endereco_adicional `ende`, vendedor `vend`, forma_pagamento `form`, caixa_banco `caix`, orcamento `orca`, orcamento_item `orci`, orcamento_pagamento `orcp`.
+- Chave estrangeira usa exatamente o mesmo nome da chave primária que referencia (ex.: `clie_id` em `cliente` e em `endereco_adicional` e `orcamento`; `prod_codigo` em `produto` e em `orcamento_item`). Não existe outro nome para representar uma FK.
+- Os demais campos da tabela usam a sigla da própria tabela (ex.: `ende_rotulo`, `ende_cidade` em `endereco_adicional`).
 
 ### Exemplo: onde fica cada parte de Produtos
 
@@ -98,7 +107,7 @@ Um endpoint novo de um subcontexto:
     // Erp.Api/Features/Clientes/Contatos/IncluirContatoEndpoint.cs
     namespace Erp.Api.Features.Clientes.Contatos;
 
-    [HttpPost("api/clientes/{ClienteId}/contatos")]
+    [HttpPost("api/clientes/{Clie_id}/contatos")]
     [AllowAnonymous()]
     [Tags("Clientes")]
     public class IncluirContatoEndpoint : EndpointBase<IncluirContatoRequest>

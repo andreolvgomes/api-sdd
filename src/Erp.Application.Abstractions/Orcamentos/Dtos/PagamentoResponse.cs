@@ -2,9 +2,9 @@ namespace Erp.Application.Abstractions.Orcamentos.Dtos;
 
 public class PagamentoResponse
 {
-    public string NumeroPagamento { get; set; } = "";
-    public int FormaPagamentoId { get; set; }
-    public int CaixaBancoId { get; set; }
-    public decimal Valor { get; set; }
-    public bool Cancelado { get; set; }
+    public string Orcp_numero_pagamento { get; set; } = "";
+    public int Form_id { get; set; }
+    public int Caix_id { get; set; }
+    public decimal Orcp_valor { get; set; }
+    public bool Orcp_cancelado { get; set; }
 }

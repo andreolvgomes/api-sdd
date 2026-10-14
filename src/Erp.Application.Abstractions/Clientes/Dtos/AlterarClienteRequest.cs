@@ -2,9 +2,9 @@ namespace Erp.Application.Abstractions.Clientes.Dtos;
 
 public class AlterarClienteRequest
 {
-    public int Id { get; set; }
-    public string? Nome { get; set; }
-    public string? Endereco { get; set; }
-    public string? Telefone { get; set; }
-    public string? Status { get; set; }
+    public int Clie_id { get; set; }
+    public string? Clie_nome { get; set; }
+    public string? Clie_endereco { get; set; }
+    public string? Clie_telefone { get; set; }
+    public string? Clie_status { get; set; }
 }

@@ -2,5 +2,5 @@ namespace Erp.Application.Abstractions.Clientes.Dtos;
 
 public class ListarClientesRequest
 {
-    public string? Status { get; set; }
+    public string? Clie_status { get; set; }
 }

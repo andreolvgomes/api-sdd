@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.Produtos;
 
-[HttpDelete("api/produtos/{Codigo}")]
+[HttpDelete("api/produtos/{Prod_codigo}")]
 [AllowAnonymous()]
 [Tags("Produtos")]
 public class ExcluirProdutoEndpoint : EndpointBase<ExcluirProdutoRequest>

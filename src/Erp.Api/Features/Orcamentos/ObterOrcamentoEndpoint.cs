@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.Orcamentos;
 
-[HttpGet("api/orcamentos/{Id}")]
+[HttpGet("api/orcamentos/{Orca_id}")]
 [AllowAnonymous()]
 [Tags("Orçamentos")]
 public class ObterOrcamentoEndpoint : EndpointBase<ObterOrcamentoRequest>

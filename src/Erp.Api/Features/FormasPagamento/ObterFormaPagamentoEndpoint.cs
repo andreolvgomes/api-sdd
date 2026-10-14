@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.FormasPagamento;
 
-[HttpGet("api/formas-pagamento/{Id}")]
+[HttpGet("api/formas-pagamento/{Form_id}")]
 [AllowAnonymous()]
 [Tags("Formas de pagamento")]
 public class ObterFormaPagamentoEndpoint : EndpointBase<ObterFormaPagamentoRequest>

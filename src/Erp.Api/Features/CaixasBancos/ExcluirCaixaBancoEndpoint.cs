@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.CaixasBancos;
 
-[HttpDelete("api/caixas-bancos/{Id}")]
+[HttpDelete("api/caixas-bancos/{Caix_id}")]
 [AllowAnonymous()]
 [Tags("Caixas/Bancos")]
 public class ExcluirCaixaBancoEndpoint : EndpointBase<ExcluirCaixaBancoRequest>

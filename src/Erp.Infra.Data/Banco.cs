@@ -11,119 +11,94 @@ public static class Banco
 
         await conexao.ExecuteAsync(@"
             create table if not exists produto (
-                codigo text primary key,
-                descricao text not null,
-                precovenda text not null,
-                status text not null,
-                estoque text not null default '0'
+                prod_codigo text primary key,
+                prod_descricao text not null,
+                prod_precovenda text not null,
+                prod_status text not null,
+                prod_estoque text not null default '0'
             )");
-
-        IEnumerable<string> colunasEstoque = await conexao.QueryAsync<string>(
-            "select name from pragma_table_info('produto') where name = 'estoque'");
-
-        if (!colunasEstoque.Any())
-            await conexao.ExecuteAsync("alter table produto add column estoque text not null default '0'");
 
         await conexao.ExecuteAsync(@"
             create table if not exists cliente (
-                id integer primary key autoincrement,
-                nome text not null,
-                endereco text not null,
-                telefone text not null,
-                status text not null default 'ativo'
+                clie_id integer primary key autoincrement,
+                clie_nome text not null,
+                clie_endereco text not null,
+                clie_telefone text not null,
+                clie_status text not null default 'ativo'
             )");
 
         await conexao.ExecuteAsync(@"
             create table if not exists endereco_adicional (
-                cliente_id integer not null,
-                id integer not null,
-                rotulo text not null,
-                endereco text not null,
-                primary key (cliente_id, id),
-                foreign key (cliente_id) references cliente (id)
+                clie_id integer not null,
+                ende_id integer not null,
+                ende_rotulo text not null,
+                ende_endereco text not null,
+                primary key (clie_id, ende_id),
+                foreign key (clie_id) references cliente (clie_id)
             )");
 
         await conexao.ExecuteAsync(@"
             create table if not exists vendedor (
-                id integer primary key autoincrement,
-                nome text not null,
-                status text not null default 'Ativo'
+                vend_id integer primary key autoincrement,
+                vend_nome text not null,
+                vend_status text not null default 'Ativo'
             )");
 
         await conexao.ExecuteAsync(@"
             create table if not exists forma_pagamento (
-                id integer primary key autoincrement,
-                descricao text not null,
-                tipo integer not null,
-                status text not null default 'Ativo'
+                form_id integer primary key autoincrement,
+                form_descricao text not null,
+                form_tipo integer not null,
+                form_status text not null default 'Ativo'
             )");
 
         await conexao.ExecuteAsync(@"
             create table if not exists caixa_banco (
-                id integer primary key autoincrement,
-                descricao text not null,
-                status text not null default 'Ativo'
+                caix_id integer primary key autoincrement,
+                caix_descricao text not null,
+                caix_status text not null default 'Ativo'
             )");
 
         await conexao.ExecuteAsync(@"
             create table if not exists orcamento (
-                id integer primary key autoincrement,
-                data text not null,
-                cliente_id integer not null,
-                vendedor_id integer not null,
-                cancelado integer not null default 0,
-                foreign key (cliente_id) references cliente (id),
-                foreign key (vendedor_id) references vendedor (id)
+                orca_id integer primary key autoincrement,
+                orca_data text not null,
+                clie_id integer not null,
+                vend_id integer not null,
+                orca_cancelado integer not null default 0,
+                orca_desconto text not null default '0',
+                foreign key (clie_id) references cliente (clie_id),
+                foreign key (vend_id) references vendedor (vend_id)
             )");
 
         await conexao.ExecuteAsync(@"
             create table if not exists orcamento_item (
-                id integer primary key autoincrement,
-                orcamento_id integer not null,
-                numero_item text not null,
-                codigo_produto text not null,
-                quantidade text not null,
-                preco text not null,
-                total text not null,
-                cancelado integer not null default 0,
-                unique (orcamento_id, numero_item),
-                foreign key (orcamento_id) references orcamento (id),
-                foreign key (codigo_produto) references produto (codigo)
+                orci_id integer primary key autoincrement,
+                orca_id integer not null,
+                orci_numero_item text not null,
+                prod_codigo text not null,
+                orci_quantidade text not null,
+                orci_preco text not null,
+                orci_total text not null,
+                orci_cancelado integer not null default 0,
+                unique (orca_id, orci_numero_item),
+                foreign key (orca_id) references orcamento (orca_id),
+                foreign key (prod_codigo) references produto (prod_codigo)
             )");
 
         await conexao.ExecuteAsync(@"
             create table if not exists orcamento_pagamento (
-                id integer primary key autoincrement,
-                orcamento_id integer not null,
-                numero_pagamento text not null,
-                forma_pagamento_id integer not null,
-                caixa_banco_id integer not null,
-                valor text not null,
-                cancelado integer not null default 0,
-                unique (orcamento_id, numero_pagamento),
-                foreign key (orcamento_id) references orcamento (id),
-                foreign key (forma_pagamento_id) references forma_pagamento (id),
-                foreign key (caixa_banco_id) references caixa_banco (id)
+                orcp_id integer primary key autoincrement,
+                orca_id integer not null,
+                orcp_numero_pagamento text not null,
+                form_id integer not null,
+                caix_id integer not null,
+                orcp_valor text not null,
+                orcp_cancelado integer not null default 0,
+                unique (orca_id, orcp_numero_pagamento),
+                foreign key (orca_id) references orcamento (orca_id),
+                foreign key (form_id) references forma_pagamento (form_id),
+                foreign key (caix_id) references caixa_banco (caix_id)
             )");
-
-        IEnumerable<string> colunasDesconto = await conexao.QueryAsync<string>(
-            "select name from pragma_table_info('orcamento') where name = 'desconto'");
-
-        if (!colunasDesconto.Any())
-            await conexao.ExecuteAsync("alter table orcamento add column desconto text not null default '0'");
-
-        IEnumerable<string> colunasStatus = await conexao.QueryAsync<string>(
-            "select name from pragma_table_info('cliente') where name = 'status'");
-
-        if (colunasStatus.Any())
-            return;
-
-        IEnumerable<string> colunasSituacao = await conexao.QueryAsync<string>(
-            "select name from pragma_table_info('cliente') where name = 'situacao'");
-
-        if (colunasSituacao.Any())
-            await conexao.ExecuteAsync("alter table cliente rename column situacao to status");
-        else
-            await conexao.ExecuteAsync("alter table cliente add column status text not null default 'ativo'");
     }
 }

@@ -9,9 +9,9 @@ public static class VendedorMapeamento
     {
         return new VendedorResponse
         {
-            Id = vendedor.Id,
-            Nome = vendedor.Nome,
-            Status = vendedor.Status
+            Vend_id = vendedor.Vend_id,
+            Vend_nome = vendedor.Vend_nome,
+            Vend_status = vendedor.Vend_status
         };
     }
 }

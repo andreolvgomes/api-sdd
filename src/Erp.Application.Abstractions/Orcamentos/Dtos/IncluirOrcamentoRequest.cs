@@ -2,8 +2,8 @@ namespace Erp.Application.Abstractions.Orcamentos.Dtos;
 
 public class IncluirOrcamentoRequest
 {
-    public int? ClienteId { get; set; }
-    public int? VendedorId { get; set; }
-    public string? CodigoProduto { get; set; }
-    public decimal? Quantidade { get; set; }
+    public int? Clie_id { get; set; }
+    public int? Vend_id { get; set; }
+    public string? Prod_codigo { get; set; }
+    public decimal? Orci_quantidade { get; set; }
 }

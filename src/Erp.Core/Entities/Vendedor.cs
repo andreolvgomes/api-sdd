@@ -2,7 +2,7 @@ namespace Erp.Core.Entities;
 
 public class Vendedor
 {
-    public int Id { get; set; }
-    public string Nome { get; set; } = "";
-    public string Status { get; set; } = "";
+    public int Vend_id { get; set; }
+    public string Vend_nome { get; set; } = "";
+    public string Vend_status { get; set; } = "";
 }

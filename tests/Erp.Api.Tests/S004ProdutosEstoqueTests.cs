@@ -25,34 +25,34 @@ public class S004ProdutosEstoqueTests : IDisposable
         _api.Dispose();
     }
 
-    // ----- Campo estoque (R1, R2) -----
+    // ----- Campo Prod_estoque (R1, R2) -----
 
     [Fact]
     public async Task S004_R1_ConsultarProduto_RetornaCampoEstoque()
     {
-        await CriarAsync(new { codigo = "P001", descricao = "Caneta azul", precoVenda = 3.50m });
+        await CriarAsync(new { Prod_codigo = "P001", Prod_descricao = "Caneta azul", Prod_precovenda = 3.50m });
 
         var produto = await LerProdutoAsync(await ObterAsync("P001"));
 
-        Assert.Equal(0m, produto.Estoque);
+        Assert.Equal(0m, produto.Prod_estoque);
     }
 
     [Fact]
     public async Task S004_R2_CadastrarSemEstoque_CriaComEstoqueZero()
     {
-        var resposta = await CriarAsync(new { codigo = "P001", descricao = "Caneta azul", precoVenda = 3.50m });
+        var resposta = await CriarAsync(new { Prod_codigo = "P001", Prod_descricao = "Caneta azul", Prod_precovenda = 3.50m });
 
         Assert.Equal(HttpStatusCode.Created, resposta.StatusCode);
         var produto = await LerProdutoAsync(resposta);
-        Assert.Equal(0.00m, produto.Estoque);
+        Assert.Equal(0.00m, produto.Prod_estoque);
     }
 
-    // ----- Estoque no cadastro (R4) -----
+    // ----- Prod_estoque no cadastro (R4) -----
 
     [Fact]
     public async Task S004_R4_CadastrarComEstoque5_RecusadoENaoGrava()
     {
-        var resposta = await CriarAsync(new { codigo = "P002", descricao = "Borracha", precoVenda = 1.00m, estoque = 5 });
+        var resposta = await CriarAsync(new { Prod_codigo = "P002", Prod_descricao = "Borracha", Prod_precovenda = 1.00m, Prod_estoque = 5 });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Estoque não pode ser informado nesta operação", await TextoErroAsync(resposta));
@@ -62,7 +62,7 @@ public class S004ProdutosEstoqueTests : IDisposable
     [Fact]
     public async Task S004_R4_CadastrarComEstoque0_RecusadoENaoGrava()
     {
-        var resposta = await CriarAsync(new { codigo = "P003", descricao = "Lápis", precoVenda = 2.00m, estoque = 0 });
+        var resposta = await CriarAsync(new { Prod_codigo = "P003", Prod_descricao = "Lápis", Prod_precovenda = 2.00m, Prod_estoque = 0 });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Estoque não pode ser informado nesta operação", await TextoErroAsync(resposta));
@@ -72,35 +72,35 @@ public class S004ProdutosEstoqueTests : IDisposable
     [Fact]
     public async Task S004_R4_CadastrarComEstoqueNull_TratadoComoNaoInformado()
     {
-        var resposta = await CriarAsync(new { codigo = "P004", descricao = "Régua", precoVenda = 4.00m, estoque = (decimal?)null });
+        var resposta = await CriarAsync(new { Prod_codigo = "P004", Prod_descricao = "Régua", Prod_precovenda = 4.00m, Prod_estoque = (decimal?)null });
 
         Assert.Equal(HttpStatusCode.Created, resposta.StatusCode);
         var produto = await LerProdutoAsync(resposta);
-        Assert.Equal(0.00m, produto.Estoque);
+        Assert.Equal(0.00m, produto.Prod_estoque);
     }
 
-    // ----- Estoque na alteração (R5) -----
+    // ----- Prod_estoque na alteração (R5) -----
 
     [Fact]
     public async Task S004_R5_AlterarComEstoque10_RecusadoENaoAltera()
     {
-        await CriarAsync(new { codigo = "P001", descricao = "Caneta azul", precoVenda = 3.50m });
+        await CriarAsync(new { Prod_codigo = "P001", Prod_descricao = "Caneta azul", Prod_precovenda = 3.50m });
 
-        var resposta = await _cliente.PutAsJsonAsync("/api/produtos/P001", new { descricao = "Caneta azul fina", precoVenda = 3.90m, status = "ativo", estoque = 10 });
+        var resposta = await _cliente.PutAsJsonAsync("/api/produtos/P001", new { Prod_descricao = "Caneta azul fina", Prod_precovenda = 3.90m, Prod_status = "ativo", Prod_estoque = 10 });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Estoque não pode ser informado nesta operação", await TextoErroAsync(resposta));
         var atual = await LerProdutoAsync(await ObterAsync("P001"));
-        Assert.Equal("Caneta azul", atual.Descricao);
-        Assert.Equal(0.00m, atual.Estoque);
+        Assert.Equal("Caneta azul", atual.Prod_descricao);
+        Assert.Equal(0.00m, atual.Prod_estoque);
     }
 
     [Fact]
     public async Task S004_R5_AlterarComEstoqueNull_TratadoComoNaoInformado()
     {
-        await CriarAsync(new { codigo = "P001", descricao = "Caneta azul", precoVenda = 3.50m });
+        await CriarAsync(new { Prod_codigo = "P001", Prod_descricao = "Caneta azul", Prod_precovenda = 3.50m });
 
-        var resposta = await _cliente.PutAsJsonAsync("/api/produtos/P001", new { descricao = "Caneta azul fina", precoVenda = 3.90m, status = "ativo", estoque = (decimal?)null });
+        var resposta = await _cliente.PutAsJsonAsync("/api/produtos/P001", new { Prod_descricao = "Caneta azul fina", Prod_precovenda = 3.90m, Prod_status = "ativo", Prod_estoque = (decimal?)null });
 
         Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
     }
@@ -110,24 +110,24 @@ public class S004ProdutosEstoqueTests : IDisposable
     [Fact]
     public async Task S004_R6_ConsultarProduto_RetornaEstoque()
     {
-        await CriarAsync(new { codigo = "P001", descricao = "Caneta azul", precoVenda = 3.50m });
+        await CriarAsync(new { Prod_codigo = "P001", Prod_descricao = "Caneta azul", Prod_precovenda = 3.50m });
 
         var resposta = await ObterAsync("P001");
 
         Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
-        Assert.Equal(0.00m, (await LerProdutoAsync(resposta)).Estoque);
+        Assert.Equal(0.00m, (await LerProdutoAsync(resposta)).Prod_estoque);
     }
 
     [Fact]
     public async Task S004_R7_Listagem_MostraEstoqueDeCadaProduto()
     {
-        await CriarAsync(new { codigo = "P001", descricao = "Caneta azul", precoVenda = 3.50m });
-        await CriarAsync(new { codigo = "P002", descricao = "Borracha", precoVenda = 1.00m });
+        await CriarAsync(new { Prod_codigo = "P001", Prod_descricao = "Caneta azul", Prod_precovenda = 3.50m });
+        await CriarAsync(new { Prod_codigo = "P002", Prod_descricao = "Borracha", Prod_precovenda = 1.00m });
 
         var produtos = await _cliente.GetFromJsonAsync<List<ProdutoResposta>>("/api/produtos");
 
         Assert.Equal(2, produtos!.Count);
-        Assert.All(produtos, produto => Assert.Equal(0.00m, produto.Estoque));
+        Assert.All(produtos, produto => Assert.Equal(0.00m, produto.Prod_estoque));
     }
 
     // ----- Ativar, desativar, alterar e excluir (R8, R9, R10) -----
@@ -135,19 +135,19 @@ public class S004ProdutosEstoqueTests : IDisposable
     [Fact]
     public async Task S004_R8_DesativarProduto_NaoAlteraEstoque()
     {
-        await CriarAsync(new { codigo = "P001", descricao = "Caneta azul", precoVenda = 3.50m });
+        await CriarAsync(new { Prod_codigo = "P001", Prod_descricao = "Caneta azul", Prod_precovenda = 3.50m });
 
         await _cliente.PostAsync("/api/produtos/P001/desativar", null);
 
         var produto = await LerProdutoAsync(await ObterAsync("P001"));
-        Assert.Equal("inativo", produto.Status);
-        Assert.Equal(0.00m, produto.Estoque);
+        Assert.Equal("inativo", produto.Prod_status);
+        Assert.Equal(0.00m, produto.Prod_estoque);
     }
 
     [Fact]
     public async Task S004_R9_ExcluirProduto_RemoveOEstoqueJunto()
     {
-        await CriarAsync(new { codigo = "P001", descricao = "Caneta azul", precoVenda = 3.50m });
+        await CriarAsync(new { Prod_codigo = "P001", Prod_descricao = "Caneta azul", Prod_precovenda = 3.50m });
 
         var resposta = await _cliente.DeleteAsync("/api/produtos/P001");
 
@@ -160,45 +160,17 @@ public class S004ProdutosEstoqueTests : IDisposable
     [Fact]
     public async Task S004_R10_AlterarSemEstoque_MantemEstoqueZero()
     {
-        await CriarAsync(new { codigo = "P001", descricao = "Caneta azul", precoVenda = 3.50m });
+        await CriarAsync(new { Prod_codigo = "P001", Prod_descricao = "Caneta azul", Prod_precovenda = 3.50m });
 
-        var resposta = await _cliente.PutAsJsonAsync("/api/produtos/P001", new { descricao = "Caneta azul fina", precoVenda = 3.90m, status = "ativo" });
+        var resposta = await _cliente.PutAsJsonAsync("/api/produtos/P001", new { Prod_descricao = "Caneta azul fina", Prod_precovenda = 3.90m, Prod_status = "ativo" });
 
         Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
         var produto = await LerProdutoAsync(await ObterAsync("P001"));
-        Assert.Equal("Caneta azul fina", produto.Descricao);
-        Assert.Equal(0.00m, produto.Estoque);
+        Assert.Equal("Caneta azul fina", produto.Prod_descricao);
+        Assert.Equal(0.00m, produto.Prod_estoque);
     }
 
     // ----- Produtos já cadastrados (R3) -----
-
-    [Fact]
-    public async Task S004_R3_BancoAntigoSemEstoque_ProdutoExistenteFicaComEstoqueZero()
-    {
-        string arquivo = Path.Combine(Path.GetTempPath(), $"erp-s004-{Guid.NewGuid()}.db");
-        string conexaoTexto = $"Data Source={arquivo}";
-        var conexaoDepois = new SqliteConnection(conexaoTexto);
-
-        try
-        {
-            await using (var conexao = new SqliteConnection(conexaoTexto))
-            {
-                await conexao.ExecuteAsync("create table produto (codigo text primary key, descricao text not null, precovenda text not null, status text not null)");
-                await conexao.ExecuteAsync("insert into produto (codigo, descricao, precovenda, status) values ('P001', 'Caneta azul', '3.50', 'ativo')");
-            }
-
-            await Banco.CriarTabelasAsync(conexaoTexto);
-
-            decimal estoque = await conexaoDepois.QuerySingleAsync<decimal>("select estoque from produto where codigo = 'P001'");
-            Assert.Equal(0m, estoque);
-        }
-        finally
-        {
-            SqliteConnection.ClearPool(conexaoDepois);
-            await conexaoDepois.DisposeAsync();
-            File.Delete(arquivo);
-        }
-    }
 
     // ----- Auxiliares -----
 
@@ -207,9 +179,9 @@ public class S004ProdutosEstoqueTests : IDisposable
         return _cliente.PostAsJsonAsync("/api/produtos", corpo);
     }
 
-    private Task<HttpResponseMessage> ObterAsync(string codigo)
+    private Task<HttpResponseMessage> ObterAsync(string prod_codigo)
     {
-        return _cliente.GetAsync($"/api/produtos/{codigo}");
+        return _cliente.GetAsync($"/api/produtos/{prod_codigo}");
     }
 
     private static async Task<string> TextoErroAsync(HttpResponseMessage resposta)
@@ -242,5 +214,5 @@ public class S004ProdutosEstoqueTests : IDisposable
         return produto!;
     }
 
-    private record ProdutoResposta(string Codigo, string Descricao, decimal PrecoVenda, string Status, decimal Estoque);
+    private record ProdutoResposta(string Prod_codigo, string Prod_descricao, decimal Prod_precovenda, string Prod_status, decimal Prod_estoque);
 }

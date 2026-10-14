@@ -2,6 +2,6 @@ namespace Erp.Application.Abstractions.Clientes.Dtos;
 
 public class ExcluirEnderecoAdicionalRequest
 {
-    public int ClienteId { get; set; }
-    public int Id { get; set; }
+    public int Clie_id { get; set; }
+    public int Ende_id { get; set; }
 }

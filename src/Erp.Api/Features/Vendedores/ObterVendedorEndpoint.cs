@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.Vendedores;
 
-[HttpGet("api/vendedores/{Id}")]
+[HttpGet("api/vendedores/{Vend_id}")]
 [AllowAnonymous()]
 [Tags("Vendedores")]
 public class ObterVendedorEndpoint : EndpointBase<ObterVendedorRequest>

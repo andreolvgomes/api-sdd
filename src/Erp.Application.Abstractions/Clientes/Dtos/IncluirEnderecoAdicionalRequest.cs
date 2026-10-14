@@ -2,7 +2,7 @@ namespace Erp.Application.Abstractions.Clientes.Dtos;
 
 public class IncluirEnderecoAdicionalRequest
 {
-    public int ClienteId { get; set; }
-    public string? Rotulo { get; set; }
-    public string? Endereco { get; set; }
+    public int Clie_id { get; set; }
+    public string? Ende_rotulo { get; set; }
+    public string? Ende_endereco { get; set; }
 }

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.Orcamentos.Pagamentos;
 
-[HttpPost("api/orcamentos/{Id}/pagamentos")]
+[HttpPost("api/orcamentos/{Orca_id}/pagamentos")]
 [AllowAnonymous()]
 [Tags("Orçamentos")]
 public class LancarPagamentoEndpoint : EndpointBase<LancarPagamentoRequest>

@@ -2,10 +2,10 @@ namespace Erp.Core.Entities;
 
 public class Orcamento
 {
-    public int Id { get; set; }
-    public string Data { get; set; } = "";
-    public int ClienteId { get; set; }
-    public int VendedorId { get; set; }
-    public bool Cancelado { get; set; }
-    public decimal Desconto { get; set; }
+    public int Orca_id { get; set; }
+    public string Orca_data { get; set; } = "";
+    public int Clie_id { get; set; }
+    public int Vend_id { get; set; }
+    public bool Orca_cancelado { get; set; }
+    public decimal Orca_desconto { get; set; }
 }

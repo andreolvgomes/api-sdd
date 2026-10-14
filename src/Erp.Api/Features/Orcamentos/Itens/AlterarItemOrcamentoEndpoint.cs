@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.Orcamentos.Itens;
 
-[HttpPut("api/orcamentos/{Id}/itens/{NumeroItem}")]
+[HttpPut("api/orcamentos/{Orca_id}/itens/{Orci_numero_item}")]
 [AllowAnonymous()]
 [Tags("Orçamentos")]
 public class AlterarItemOrcamentoEndpoint : EndpointBase<AlterarItemOrcamentoRequest>

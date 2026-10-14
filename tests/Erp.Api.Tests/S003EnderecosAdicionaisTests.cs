@@ -29,13 +29,13 @@ public class S003EnderecosAdicionaisTests : IDisposable
     {
         await CriarClienteAsync("Maria Silva", "Rua das Flores, 10, Centro", "11 91234-5678");
 
-        var resposta = await IncluirEnderecoAsync(1, new { rotulo = "Entrega", endereco = "Av. Brasil, 200, Centro" });
+        var resposta = await IncluirEnderecoAsync(1, new { Ende_rotulo = "Entrega", Ende_endereco = "Av. Brasil, 200, Centro" });
 
         Assert.Equal(HttpStatusCode.Created, resposta.StatusCode);
         var endereco = await resposta.Content.ReadFromJsonAsync<EnderecoResposta>();
-        Assert.Equal(1, endereco!.Id);
-        Assert.Equal("Entrega", endereco.Rotulo);
-        Assert.Equal("Av. Brasil, 200, Centro", endereco.Endereco);
+        Assert.Equal(1, endereco!.Ende_id);
+        Assert.Equal("Entrega", endereco.Ende_rotulo);
+        Assert.Equal("Av. Brasil, 200, Centro", endereco.Ende_endereco);
     }
 
     // ----- Campos obrigatórios (R2) -----
@@ -45,12 +45,12 @@ public class S003EnderecosAdicionaisTests : IDisposable
     {
         await CriarClienteAsync("Maria Silva", "Rua das Flores, 10, Centro", "11 91234-5678");
 
-        var resposta = await IncluirEnderecoAsync(1, new { endereco = "Av. Brasil, 200, Centro" });
+        var resposta = await IncluirEnderecoAsync(1, new { Ende_endereco = "Av. Brasil, 200, Centro" });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Rótulo é obrigatório", await TextoErroAsync(resposta));
-        var proximo = await IncluirEnderecoAsync(1, new { rotulo = "Entrega", endereco = "Av. Brasil, 200, Centro" });
-        Assert.Equal(1, (await proximo.Content.ReadFromJsonAsync<EnderecoResposta>())!.Id);
+        var proximo = await IncluirEnderecoAsync(1, new { Ende_rotulo = "Entrega", Ende_endereco = "Av. Brasil, 200, Centro" });
+        Assert.Equal(1, (await proximo.Content.ReadFromJsonAsync<EnderecoResposta>())!.Ende_id);
     }
 
     [Fact]
@@ -58,12 +58,12 @@ public class S003EnderecosAdicionaisTests : IDisposable
     {
         await CriarClienteAsync("Maria Silva", "Rua das Flores, 10, Centro", "11 91234-5678");
 
-        var resposta = await IncluirEnderecoAsync(1, new { rotulo = "Entrega" });
+        var resposta = await IncluirEnderecoAsync(1, new { Ende_rotulo = "Entrega" });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Endereço é obrigatório", await TextoErroAsync(resposta));
-        var proximo = await IncluirEnderecoAsync(1, new { rotulo = "Entrega", endereco = "Av. Brasil, 200, Centro" });
-        Assert.Equal(1, (await proximo.Content.ReadFromJsonAsync<EnderecoResposta>())!.Id);
+        var proximo = await IncluirEnderecoAsync(1, new { Ende_rotulo = "Entrega", Ende_endereco = "Av. Brasil, 200, Centro" });
+        Assert.Equal(1, (await proximo.Content.ReadFromJsonAsync<EnderecoResposta>())!.Ende_id);
     }
 
     // ----- Rótulo (R3) -----
@@ -73,7 +73,7 @@ public class S003EnderecosAdicionaisTests : IDisposable
     {
         await CriarClienteAsync("Maria Silva", "Rua das Flores, 10, Centro", "11 91234-5678");
 
-        var resposta = await IncluirEnderecoAsync(1, new { rotulo = "   ", endereco = "Av. Brasil, 200, Centro" });
+        var resposta = await IncluirEnderecoAsync(1, new { Ende_rotulo = "   ", Ende_endereco = "Av. Brasil, 200, Centro" });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Rótulo é obrigatório", await TextoErroAsync(resposta));
@@ -84,7 +84,7 @@ public class S003EnderecosAdicionaisTests : IDisposable
     {
         await CriarClienteAsync("Maria Silva", "Rua das Flores, 10, Centro", "11 91234-5678");
 
-        var resposta = await IncluirEnderecoAsync(1, new { rotulo = new string('R', 31), endereco = "Av. Brasil, 200, Centro" });
+        var resposta = await IncluirEnderecoAsync(1, new { Ende_rotulo = new string('R', 31), Ende_endereco = "Av. Brasil, 200, Centro" });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Rótulo deve ter no máximo 30 caracteres", await TextoErroAsync(resposta));
@@ -97,7 +97,7 @@ public class S003EnderecosAdicionaisTests : IDisposable
     {
         await CriarClienteAsync("Maria Silva", "Rua das Flores, 10, Centro", "11 91234-5678");
 
-        var resposta = await IncluirEnderecoAsync(1, new { rotulo = "Entrega", endereco = "   " });
+        var resposta = await IncluirEnderecoAsync(1, new { Ende_rotulo = "Entrega", Ende_endereco = "   " });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Endereço é obrigatório", await TextoErroAsync(resposta));
@@ -108,7 +108,7 @@ public class S003EnderecosAdicionaisTests : IDisposable
     {
         await CriarClienteAsync("Maria Silva", "Rua das Flores, 10, Centro", "11 91234-5678");
 
-        var resposta = await IncluirEnderecoAsync(1, new { rotulo = "Entrega", endereco = new string('A', 201) });
+        var resposta = await IncluirEnderecoAsync(1, new { Ende_rotulo = "Entrega", Ende_endereco = new string('A', 201) });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Endereço deve ter no máximo 200 caracteres", await TextoErroAsync(resposta));
@@ -123,7 +123,7 @@ public class S003EnderecosAdicionaisTests : IDisposable
 
         for (int i = 1; i <= 10; i++)
         {
-            var resposta = await IncluirEnderecoAsync(1, new { rotulo = $"Local {i}", endereco = $"Rua {i}, 1" });
+            var resposta = await IncluirEnderecoAsync(1, new { Ende_rotulo = $"Local {i}", Ende_endereco = $"Rua {i}, 1" });
             Assert.Equal(HttpStatusCode.Created, resposta.StatusCode);
         }
     }
@@ -133,9 +133,9 @@ public class S003EnderecosAdicionaisTests : IDisposable
     {
         await CriarClienteAsync("Maria Silva", "Rua das Flores, 10, Centro", "11 91234-5678");
         for (int i = 1; i <= 10; i++)
-            await IncluirEnderecoAsync(1, new { rotulo = $"Local {i}", endereco = $"Rua {i}, 1" });
+            await IncluirEnderecoAsync(1, new { Ende_rotulo = $"Local {i}", Ende_endereco = $"Rua {i}, 1" });
 
-        var resposta = await IncluirEnderecoAsync(1, new { rotulo = "Local 11", endereco = "Rua 11, 1" });
+        var resposta = await IncluirEnderecoAsync(1, new { Ende_rotulo = "Local 11", Ende_endereco = "Rua 11, 1" });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Cliente já possui 10 endereços adicionais", await TextoErroAsync(resposta));
@@ -146,7 +146,7 @@ public class S003EnderecosAdicionaisTests : IDisposable
     [Fact]
     public async Task S003_R6_CadastrarEnderecoAdicionalEmClienteInexistente_NaoEncontrado()
     {
-        var resposta = await IncluirEnderecoAsync(99, new { rotulo = "Entrega", endereco = "Av. Brasil, 200, Centro" });
+        var resposta = await IncluirEnderecoAsync(99, new { Ende_rotulo = "Entrega", Ende_endereco = "Av. Brasil, 200, Centro" });
 
         Assert.Equal(HttpStatusCode.NotFound, resposta.StatusCode);
         Assert.Contains("Cliente não encontrado", await TextoErroAsync(resposta));
@@ -158,23 +158,23 @@ public class S003EnderecosAdicionaisTests : IDisposable
     public async Task S003_R9_AlterarEnderecoAdicional_MantemOIdEAtualizaRotulo()
     {
         await CriarClienteAsync("Maria Silva", "Rua das Flores, 10, Centro", "11 91234-5678");
-        await IncluirEnderecoAsync(1, new { rotulo = "Entrega", endereco = "Av. Brasil, 200, Centro" });
+        await IncluirEnderecoAsync(1, new { Ende_rotulo = "Entrega", Ende_endereco = "Av. Brasil, 200, Centro" });
 
-        var resposta = await AlterarEnderecoAsync(1, 1, new { rotulo = "Entrega principal", endereco = "Av. Brasil, 200, Centro" });
+        var resposta = await AlterarEnderecoAsync(1, 1, new { Ende_rotulo = "Entrega principal", Ende_endereco = "Av. Brasil, 200, Centro" });
 
         Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
         var endereco = await resposta.Content.ReadFromJsonAsync<EnderecoResposta>();
-        Assert.Equal(1, endereco!.Id);
-        Assert.Equal("Entrega principal", endereco.Rotulo);
+        Assert.Equal(1, endereco!.Ende_id);
+        Assert.Equal("Entrega principal", endereco.Ende_rotulo);
     }
 
     [Fact]
     public async Task S003_R9_AlterarComTextoVazio_Recusado()
     {
         await CriarClienteAsync("Maria Silva", "Rua das Flores, 10, Centro", "11 91234-5678");
-        await IncluirEnderecoAsync(1, new { rotulo = "Entrega", endereco = "Av. Brasil, 200, Centro" });
+        await IncluirEnderecoAsync(1, new { Ende_rotulo = "Entrega", Ende_endereco = "Av. Brasil, 200, Centro" });
 
-        var resposta = await AlterarEnderecoAsync(1, 1, new { rotulo = "Entrega", endereco = "" });
+        var resposta = await AlterarEnderecoAsync(1, 1, new { Ende_rotulo = "Entrega", Ende_endereco = "" });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Endereço é obrigatório", await TextoErroAsync(resposta));
@@ -185,7 +185,7 @@ public class S003EnderecosAdicionaisTests : IDisposable
     {
         await CriarClienteAsync("Maria Silva", "Rua das Flores, 10, Centro", "11 91234-5678");
 
-        var resposta = await AlterarEnderecoAsync(1, 99, new { rotulo = "Entrega", endereco = "Av. Brasil, 200, Centro" });
+        var resposta = await AlterarEnderecoAsync(1, 99, new { Ende_rotulo = "Entrega", Ende_endereco = "Av. Brasil, 200, Centro" });
 
         Assert.Equal(HttpStatusCode.NotFound, resposta.StatusCode);
         Assert.Contains("Endereço não encontrado", await TextoErroAsync(resposta));
@@ -197,12 +197,12 @@ public class S003EnderecosAdicionaisTests : IDisposable
     public async Task S003_R11_ExcluirEnderecoAdicional_RemoveDefinitivamente()
     {
         await CriarClienteAsync("Maria Silva", "Rua das Flores, 10, Centro", "11 91234-5678");
-        await IncluirEnderecoAsync(1, new { rotulo = "Entrega", endereco = "Av. Brasil, 200, Centro" });
+        await IncluirEnderecoAsync(1, new { Ende_rotulo = "Entrega", Ende_endereco = "Av. Brasil, 200, Centro" });
 
         var resposta = await _cliente.DeleteAsync("/api/clientes/1/enderecos/1");
 
         Assert.Equal(HttpStatusCode.NoContent, resposta.StatusCode);
-        var depois = await AlterarEnderecoAsync(1, 1, new { rotulo = "Entrega", endereco = "Av. Brasil, 200, Centro" });
+        var depois = await AlterarEnderecoAsync(1, 1, new { Ende_rotulo = "Entrega", Ende_endereco = "Av. Brasil, 200, Centro" });
         Assert.Equal(HttpStatusCode.NotFound, depois.StatusCode);
         Assert.Contains("Endereço não encontrado", await TextoErroAsync(depois));
     }
@@ -239,7 +239,7 @@ public class S003EnderecosAdicionaisTests : IDisposable
     [Fact]
     public async Task S003_R6_AlterarEnderecoAdicionalDeClienteInexistente_NaoEncontrado()
     {
-        var resposta = await AlterarEnderecoAsync(99, 1, new { rotulo = "Entrega", endereco = "Av. Brasil, 200, Centro" });
+        var resposta = await AlterarEnderecoAsync(99, 1, new { Ende_rotulo = "Entrega", Ende_endereco = "Av. Brasil, 200, Centro" });
 
         Assert.Equal(HttpStatusCode.NotFound, resposta.StatusCode);
         Assert.Contains("Cliente não encontrado", await TextoErroAsync(resposta));
@@ -251,19 +251,19 @@ public class S003EnderecosAdicionaisTests : IDisposable
     public async Task S003_R12_ConsultarClienteComAdicionais_RetornaCadastroELista()
     {
         await CriarClienteAsync("Maria Silva", "Rua das Flores, 10, Centro", "11 91234-5678");
-        await IncluirEnderecoAsync(1, new { rotulo = "Entrega", endereco = "Av. Brasil, 200, Centro" });
-        await IncluirEnderecoAsync(1, new { rotulo = "Cobrança", endereco = "Rua C, 3" });
+        await IncluirEnderecoAsync(1, new { Ende_rotulo = "Entrega", Ende_endereco = "Av. Brasil, 200, Centro" });
+        await IncluirEnderecoAsync(1, new { Ende_rotulo = "Cobrança", Ende_endereco = "Rua C, 3" });
 
         var resposta = await _cliente.GetAsync("/api/clientes/1");
 
         Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
         var cliente = await resposta.Content.ReadFromJsonAsync<ClienteDetalheResposta>();
-        Assert.Equal("Maria Silva", cliente!.Nome);
+        Assert.Equal("Maria Silva", cliente!.Clie_nome);
         Assert.Equal(2, cliente.EnderecosAdicionais.Count);
-        Assert.Equal(1, cliente.EnderecosAdicionais[0].Id);
-        Assert.Equal("Entrega", cliente.EnderecosAdicionais[0].Rotulo);
-        Assert.Equal(2, cliente.EnderecosAdicionais[1].Id);
-        Assert.Equal("Cobrança", cliente.EnderecosAdicionais[1].Rotulo);
+        Assert.Equal(1, cliente.EnderecosAdicionais[0].Ende_id);
+        Assert.Equal("Entrega", cliente.EnderecosAdicionais[0].Ende_rotulo);
+        Assert.Equal(2, cliente.EnderecosAdicionais[1].Ende_id);
+        Assert.Equal("Cobrança", cliente.EnderecosAdicionais[1].Ende_rotulo);
     }
 
     [Fact]
@@ -280,18 +280,18 @@ public class S003EnderecosAdicionaisTests : IDisposable
     public async Task S003_R8_EnderecoAdicional_NaoAlteraOEnderecoPrincipal()
     {
         await CriarClienteAsync("Maria Silva", "Rua das Flores, 10, Centro", "11 91234-5678");
-        await IncluirEnderecoAsync(1, new { rotulo = "Entrega", endereco = "Av. Brasil, 200, Centro" });
+        await IncluirEnderecoAsync(1, new { Ende_rotulo = "Entrega", Ende_endereco = "Av. Brasil, 200, Centro" });
 
         var cliente = await (await _cliente.GetAsync("/api/clientes/1")).Content.ReadFromJsonAsync<ClienteDetalheResposta>();
 
-        Assert.Equal("Rua das Flores, 10, Centro", cliente!.Endereco);
+        Assert.Equal("Rua das Flores, 10, Centro", cliente!.Clie_endereco);
     }
 
     [Fact]
     public async Task S003_R13_Listagem_NaoMostraEnderecosAdicionais()
     {
         await CriarClienteAsync("Maria Silva", "Rua das Flores, 10, Centro", "11 91234-5678");
-        await IncluirEnderecoAsync(1, new { rotulo = "Entrega", endereco = "Av. Brasil, 200, Centro" });
+        await IncluirEnderecoAsync(1, new { Ende_rotulo = "Entrega", Ende_endereco = "Av. Brasil, 200, Centro" });
 
         var texto = await (await _cliente.GetAsync("/api/clientes?status=todos")).Content.ReadAsStringAsync();
 
@@ -304,8 +304,8 @@ public class S003EnderecosAdicionaisTests : IDisposable
     {
         await CriarClienteAsync("Maria Silva", "Rua das Flores, 10, Centro", "11 91234-5678");
         for (int i = 1; i <= 10; i++)
-            await IncluirEnderecoAsync(1, new { rotulo = $"Local {i}", endereco = $"Rua {i}, 1" });
-        await IncluirEnderecoAsync(1, new { rotulo = "Local 11", endereco = "Rua 11, 1" });
+            await IncluirEnderecoAsync(1, new { Ende_rotulo = $"Local {i}", Ende_endereco = $"Rua {i}, 1" });
+        await IncluirEnderecoAsync(1, new { Ende_rotulo = "Local 11", Ende_endereco = "Rua 11, 1" });
 
         var cliente = await (await _cliente.GetAsync("/api/clientes/1")).Content.ReadFromJsonAsync<ClienteDetalheResposta>();
 
@@ -317,10 +317,10 @@ public class S003EnderecosAdicionaisTests : IDisposable
     {
         await CriarClienteAsync("Maria Silva", "Rua das Flores, 10, Centro", "11 91234-5678");
         for (int i = 1; i <= 10; i++)
-            await IncluirEnderecoAsync(1, new { rotulo = $"Local {i}", endereco = $"Rua {i}, 1" });
+            await IncluirEnderecoAsync(1, new { Ende_rotulo = $"Local {i}", Ende_endereco = $"Rua {i}, 1" });
         await _cliente.DeleteAsync("/api/clientes/1/enderecos/2");
 
-        var resposta = await IncluirEnderecoAsync(1, new { rotulo = "Novo", endereco = "Rua Nova, 1" });
+        var resposta = await IncluirEnderecoAsync(1, new { Ende_rotulo = "Novo", Ende_endereco = "Rua Nova, 1" });
 
         Assert.Equal(HttpStatusCode.Created, resposta.StatusCode);
     }
@@ -329,43 +329,43 @@ public class S003EnderecosAdicionaisTests : IDisposable
     public async Task S003_R7_SegundoEnderecoAdicional_RecebeIdSequencial()
     {
         await CriarClienteAsync("Maria Silva", "Rua das Flores, 10, Centro", "11 91234-5678");
-        await IncluirEnderecoAsync(1, new { rotulo = "Entrega", endereco = "Av. Brasil, 200, Centro" });
+        await IncluirEnderecoAsync(1, new { Ende_rotulo = "Entrega", Ende_endereco = "Av. Brasil, 200, Centro" });
 
-        var resposta = await IncluirEnderecoAsync(1, new { rotulo = "Cobrança", endereco = "Rua C, 3" });
+        var resposta = await IncluirEnderecoAsync(1, new { Ende_rotulo = "Cobrança", Ende_endereco = "Rua C, 3" });
 
         var endereco = await resposta.Content.ReadFromJsonAsync<EnderecoResposta>();
-        Assert.Equal(2, endereco!.Id);
+        Assert.Equal(2, endereco!.Ende_id);
     }
 
     [Fact]
     public async Task S003_R9_AlterarComTextoVazio_NaoAlteraOEndereco()
     {
         await CriarClienteAsync("Maria Silva", "Rua das Flores, 10, Centro", "11 91234-5678");
-        await IncluirEnderecoAsync(1, new { rotulo = "Entrega", endereco = "Av. Brasil, 200, Centro" });
+        await IncluirEnderecoAsync(1, new { Ende_rotulo = "Entrega", Ende_endereco = "Av. Brasil, 200, Centro" });
 
-        await AlterarEnderecoAsync(1, 1, new { rotulo = "Outro", endereco = "" });
+        await AlterarEnderecoAsync(1, 1, new { Ende_rotulo = "Outro", Ende_endereco = "" });
 
         var cliente = await (await _cliente.GetAsync("/api/clientes/1")).Content.ReadFromJsonAsync<ClienteDetalheResposta>();
-        Assert.Equal("Entrega", cliente!.EnderecosAdicionais[0].Rotulo);
-        Assert.Equal("Av. Brasil, 200, Centro", cliente.EnderecosAdicionais[0].Endereco);
+        Assert.Equal("Entrega", cliente!.EnderecosAdicionais[0].Ende_rotulo);
+        Assert.Equal("Av. Brasil, 200, Centro", cliente.EnderecosAdicionais[0].Ende_endereco);
     }
 
     // ----- Auxiliares -----
 
     private async Task CriarClienteAsync(string nome, string endereco, string telefone)
     {
-        var resposta = await _cliente.PostAsJsonAsync("/api/clientes", new { nome, endereco, telefone });
+        var resposta = await _cliente.PostAsJsonAsync("/api/clientes", new { Clie_nome = nome, Clie_endereco = endereco, Clie_telefone = telefone });
         Assert.Equal(HttpStatusCode.Created, resposta.StatusCode);
     }
 
-    private Task<HttpResponseMessage> IncluirEnderecoAsync(int clienteId, object corpo)
+    private Task<HttpResponseMessage> IncluirEnderecoAsync(int Clie_id, object corpo)
     {
-        return _cliente.PostAsJsonAsync($"/api/clientes/{clienteId}/enderecos", corpo);
+        return _cliente.PostAsJsonAsync($"/api/clientes/{Clie_id}/enderecos", corpo);
     }
 
-    private Task<HttpResponseMessage> AlterarEnderecoAsync(int clienteId, int id, object corpo)
+    private Task<HttpResponseMessage> AlterarEnderecoAsync(int Clie_id, int id, object corpo)
     {
-        return _cliente.PutAsJsonAsync($"/api/clientes/{clienteId}/enderecos/{id}", corpo);
+        return _cliente.PutAsJsonAsync($"/api/clientes/{Clie_id}/enderecos/{Clie_id}", corpo);
     }
 
     private static async Task<string> TextoErroAsync(HttpResponseMessage resposta)
@@ -374,9 +374,9 @@ public class S003EnderecosAdicionaisTests : IDisposable
         return ReunirTextos(documento.RootElement);
     }
 
-    private record EnderecoResposta(int Id, string Rotulo, string Endereco);
+    private record EnderecoResposta(int Ende_id, string Ende_rotulo, string Ende_endereco);
 
-    private record ClienteDetalheResposta(int Id, string Nome, string Endereco, string Telefone, string Status, List<EnderecoResposta> EnderecosAdicionais);
+    private record ClienteDetalheResposta(int Clie_id, string Clie_nome, string Clie_endereco, string Clie_telefone, string Clie_status, List<EnderecoResposta> EnderecosAdicionais);
 
     private static string ReunirTextos(JsonElement elemento)
     {

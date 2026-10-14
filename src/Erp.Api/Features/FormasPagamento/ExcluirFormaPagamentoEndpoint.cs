@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.FormasPagamento;
 
-[HttpDelete("api/formas-pagamento/{Id}")]
+[HttpDelete("api/formas-pagamento/{Form_id}")]
 [AllowAnonymous()]
 [Tags("Formas de pagamento")]
 public class ExcluirFormaPagamentoEndpoint : EndpointBase<ExcluirFormaPagamentoRequest>

@@ -7,20 +7,20 @@ public static class OrcamentoMapeamento
 {
     public static OrcamentoResponse ParaResposta(Orcamento orcamento, Cliente? cliente, Vendedor? vendedor, List<OrcamentoItem> itens, List<OrcamentoPagamento> pagamentos)
     {
-        decimal subtotal = itens.Where(item => !item.Cancelado).Sum(item => item.Total);
-        decimal total = OrcamentoValidacao.Arredondar(subtotal - orcamento.Desconto);
-        decimal pago = pagamentos.Where(pagamento => !pagamento.Cancelado).Sum(pagamento => pagamento.Valor);
+        decimal subtotal = itens.Where(item => !item.Orci_cancelado).Sum(item => item.Orci_total);
+        decimal total = OrcamentoValidacao.Arredondar(subtotal - orcamento.Orca_desconto);
+        decimal pago = pagamentos.Where(pagamento => !pagamento.Orcp_cancelado).Sum(pagamento => pagamento.Orcp_valor);
 
         return new OrcamentoResponse
         {
-            Id = orcamento.Id,
-            Data = orcamento.Data,
-            Cancelado = orcamento.Cancelado,
+            Orca_id = orcamento.Orca_id,
+            Orca_data = orcamento.Orca_data,
+            Orca_cancelado = orcamento.Orca_cancelado,
             Cliente = ParaCliente(cliente),
             Vendedor = ParaVendedor(vendedor),
             Itens = itens.Select(ParaItem).ToList(),
             Subtotal = subtotal,
-            Desconto = orcamento.Desconto,
+            Orca_desconto = orcamento.Orca_desconto,
             Total = total,
             Pagamentos = pagamentos.Select(ParaPagamento).ToList(),
             Saldo = OrcamentoValidacao.Arredondar(total - pago)
@@ -31,11 +31,11 @@ public static class OrcamentoMapeamento
     {
         return new PagamentoResponse
         {
-            NumeroPagamento = pagamento.NumeroPagamento,
-            FormaPagamentoId = pagamento.FormaPagamentoId,
-            CaixaBancoId = pagamento.CaixaBancoId,
-            Valor = pagamento.Valor,
-            Cancelado = pagamento.Cancelado
+            Orcp_numero_pagamento = pagamento.Orcp_numero_pagamento,
+            Form_id = pagamento.Form_id,
+            Caix_id = pagamento.Caix_id,
+            Orcp_valor = pagamento.Orcp_valor,
+            Orcp_cancelado = pagamento.Orcp_cancelado
         };
     }
 
@@ -43,8 +43,8 @@ public static class OrcamentoMapeamento
     {
         return new OrcamentoResumoResponse
         {
-            Id = orcamento.Id,
-            Data = orcamento.Data,
+            Orca_id = orcamento.Orca_id,
+            Orca_data = orcamento.Orca_data,
             Cliente = ParaCliente(cliente),
             Vendedor = ParaVendedor(vendedor)
         };
@@ -54,12 +54,12 @@ public static class OrcamentoMapeamento
     {
         return new ItemOrcamentoResponse
         {
-            NumeroItem = item.NumeroItem,
-            CodigoProduto = item.CodigoProduto,
-            Quantidade = item.Quantidade,
-            Preco = item.Preco,
-            Total = item.Total,
-            Cancelado = item.Cancelado
+            Orci_numero_item = item.Orci_numero_item,
+            Prod_codigo = item.Prod_codigo,
+            Orci_quantidade = item.Orci_quantidade,
+            Orci_preco = item.Orci_preco,
+            Orci_total = item.Orci_total,
+            Orci_cancelado = item.Orci_cancelado
         };
     }
 
@@ -67,8 +67,8 @@ public static class OrcamentoMapeamento
     {
         return new OrcamentoClienteResponse
         {
-            Id = cliente?.Id ?? 0,
-            Nome = cliente?.Nome ?? ""
+            Clie_id = cliente?.Clie_id ?? 0,
+            Clie_nome = cliente?.Clie_nome ?? ""
         };
     }
 
@@ -76,8 +76,8 @@ public static class OrcamentoMapeamento
     {
         return new OrcamentoVendedorResponse
         {
-            Id = vendedor?.Id ?? 0,
-            Nome = vendedor?.Nome ?? ""
+            Vend_id = vendedor?.Vend_id ?? 0,
+            Vend_nome = vendedor?.Vend_nome ?? ""
         };
     }
 }

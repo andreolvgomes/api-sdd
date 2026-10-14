@@ -33,21 +33,21 @@ public class S002ProdutosStatusTests : IDisposable
 
         Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
         var produto = await LerProdutoAsync(await ObterAsync("P001"));
-        Assert.Equal("Caneta azul", produto.Descricao);
-        Assert.Equal("inativo", produto.Status);
+        Assert.Equal("Caneta azul", produto.Prod_descricao);
+        Assert.Equal("inativo", produto.Prod_status);
     }
 
     [Fact]
     public async Task S002_R2_DesativarProdutoJaInativo_Recusado()
     {
-        await CriarAsync(new { codigo = "P001", descricao = "Caneta azul", precoVenda = 3.50m, status = "inativo" });
+        await CriarAsync(new { Prod_codigo = "P001", Prod_descricao = "Caneta azul", Prod_precovenda = 3.50m, Prod_status = "inativo" });
 
         var resposta = await _cliente.PostAsync("/api/produtos/P001/desativar", null);
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Produto já está inativo", await TextoErroAsync(resposta));
         var produto = await LerProdutoAsync(await ObterAsync("P001"));
-        Assert.Equal("inativo", produto.Status);
+        Assert.Equal("inativo", produto.Prod_status);
     }
 
     // ----- Ativar (R3) -----
@@ -55,13 +55,13 @@ public class S002ProdutosStatusTests : IDisposable
     [Fact]
     public async Task S002_R3_AtivarProdutoInativo_MudaStatusParaAtivo()
     {
-        await CriarAsync(new { codigo = "P001", descricao = "Caneta azul", precoVenda = 3.50m, status = "inativo" });
+        await CriarAsync(new { Prod_codigo = "P001", Prod_descricao = "Caneta azul", Prod_precovenda = 3.50m, Prod_status = "inativo" });
 
         var resposta = await _cliente.PostAsync("/api/produtos/P001/ativar", null);
 
         Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
         var produto = await LerProdutoAsync(await ObterAsync("P001"));
-        Assert.Equal("ativo", produto.Status);
+        Assert.Equal("ativo", produto.Prod_status);
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public class S002ProdutosStatusTests : IDisposable
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Produto já está ativo", await TextoErroAsync(resposta));
         var produto = await LerProdutoAsync(await ObterAsync("P001"));
-        Assert.Equal("ativo", produto.Status);
+        Assert.Equal("ativo", produto.Prod_status);
     }
 
     [Fact]
@@ -102,10 +102,10 @@ public class S002ProdutosStatusTests : IDisposable
         await CriarProdutoAsync("P002", "Borracha", 1.00m);
         await _cliente.PostAsync("/api/produtos/P001/desativar", null);
 
-        var produtos = await _cliente.GetFromJsonAsync<List<ProdutoResposta>>("/api/produtos?status=inativo");
+        var produtos = await _cliente.GetFromJsonAsync<List<ProdutoResposta>>("/api/produtos?Prod_status=inativo");
 
         Assert.Single(produtos!);
-        Assert.Equal("P001", produtos![0].Codigo);
+        Assert.Equal("P001", produtos![0].Prod_codigo);
     }
 
     // ----- Sem corpo de resposta e sem motivo (R6, R7) -----
@@ -124,7 +124,7 @@ public class S002ProdutosStatusTests : IDisposable
     [Fact]
     public async Task S002_R6_AtivarComSucesso_RespondeSemCorpo()
     {
-        await CriarAsync(new { codigo = "P001", descricao = "Caneta azul", precoVenda = 3.50m, status = "inativo" });
+        await CriarAsync(new { Prod_codigo = "P001", Prod_descricao = "Caneta azul", Prod_precovenda = 3.50m, Prod_status = "inativo" });
 
         var resposta = await _cliente.PostAsync("/api/produtos/P001/ativar", null);
 
@@ -145,19 +145,19 @@ public class S002ProdutosStatusTests : IDisposable
     [Fact]
     public async Task S002_R7_AtivarNaoExigeMotivo()
     {
-        await CriarAsync(new { codigo = "P001", descricao = "Caneta azul", precoVenda = 3.50m, status = "inativo" });
+        await CriarAsync(new { Prod_codigo = "P001", Prod_descricao = "Caneta azul", Prod_precovenda = 3.50m, Prod_status = "inativo" });
 
         var resposta = await _cliente.PostAsJsonAsync("/api/produtos/P001/ativar", new { });
 
         Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
     }
 
-    // ----- Exclusão definitiva (R8) e alteração de status (R9) -----
+    // ----- Exclusão definitiva (R8) e alteração de Prod_status (R9) -----
 
     [Fact]
     public async Task S002_R8_ExcluirProdutoInativo_RemoveODefinitivamente()
     {
-        await CriarAsync(new { codigo = "P001", descricao = "Caneta azul", precoVenda = 3.50m, status = "inativo" });
+        await CriarAsync(new { Prod_codigo = "P001", Prod_descricao = "Caneta azul", Prod_precovenda = 3.50m, Prod_status = "inativo" });
 
         var resposta = await _cliente.DeleteAsync("/api/produtos/P001");
 
@@ -170,15 +170,15 @@ public class S002ProdutosStatusTests : IDisposable
     [Fact]
     public async Task S002_R9_AlterarProdutoInativoComStatusAtivo_ReativaEMantemOsDemaisCampos()
     {
-        await CriarAsync(new { codigo = "P001", descricao = "Caneta azul", precoVenda = 3.50m, status = "inativo" });
+        await CriarAsync(new { Prod_codigo = "P001", Prod_descricao = "Caneta azul", Prod_precovenda = 3.50m, Prod_status = "inativo" });
 
-        var resposta = await _cliente.PutAsJsonAsync("/api/produtos/P001", new { descricao = "Caneta azul", precoVenda = 3.50m, status = "ativo" });
+        var resposta = await _cliente.PutAsJsonAsync("/api/produtos/P001", new { Prod_descricao = "Caneta azul", Prod_precovenda = 3.50m, Prod_status = "ativo" });
 
         Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
         var produto = await LerProdutoAsync(await ObterAsync("P001"));
-        Assert.Equal("Caneta azul", produto.Descricao);
-        Assert.Equal(3.50m, produto.PrecoVenda);
-        Assert.Equal("ativo", produto.Status);
+        Assert.Equal("Caneta azul", produto.Prod_descricao);
+        Assert.Equal(3.50m, produto.Prod_precovenda);
+        Assert.Equal("ativo", produto.Prod_status);
     }
 
     // ----- Auxiliares -----
@@ -188,15 +188,15 @@ public class S002ProdutosStatusTests : IDisposable
         return _cliente.PostAsJsonAsync("/api/produtos", corpo);
     }
 
-    private async Task CriarProdutoAsync(string codigo, string descricao, decimal precoVenda)
+    private async Task CriarProdutoAsync(string Prod_codigo, string Prod_descricao, decimal Prod_precovenda)
     {
-        var resposta = await CriarAsync(new { codigo, descricao, precoVenda });
+        var resposta = await CriarAsync(new { Prod_codigo, Prod_descricao, Prod_precovenda });
         Assert.Equal(HttpStatusCode.Created, resposta.StatusCode);
     }
 
-    private Task<HttpResponseMessage> ObterAsync(string codigo)
+    private Task<HttpResponseMessage> ObterAsync(string Prod_codigo)
     {
-        return _cliente.GetAsync($"/api/produtos/{codigo}");
+        return _cliente.GetAsync($"/api/produtos/{Prod_codigo}");
     }
 
     private static async Task<ProdutoResposta> LerProdutoAsync(HttpResponseMessage resposta)
@@ -211,7 +211,7 @@ public class S002ProdutosStatusTests : IDisposable
         return ReunirTextos(documento.RootElement);
     }
 
-    private record ProdutoResposta(string Codigo, string Descricao, decimal PrecoVenda, string Status);
+    private record ProdutoResposta(string Prod_codigo, string Prod_descricao, decimal Prod_precovenda, string Prod_status);
 
     private static string ReunirTextos(JsonElement elemento)
     {

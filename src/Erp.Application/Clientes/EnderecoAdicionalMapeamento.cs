@@ -10,9 +10,9 @@ public static class EnderecoAdicionalMapeamento
     {
         return new EnderecoAdicionalResponse
         {
-            Id = endereco.Id,
-            Rotulo = endereco.Rotulo,
-            Endereco = endereco.Endereco
+            Ende_id = endereco.Ende_id,
+            Ende_rotulo = endereco.Ende_rotulo,
+            Ende_endereco = endereco.Ende_endereco
         };
     }
 }

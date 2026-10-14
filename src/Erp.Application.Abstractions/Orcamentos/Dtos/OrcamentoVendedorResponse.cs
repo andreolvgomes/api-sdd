@@ -2,6 +2,6 @@ namespace Erp.Application.Abstractions.Orcamentos.Dtos;
 
 public class OrcamentoVendedorResponse
 {
-    public int Id { get; set; }
-    public string Nome { get; set; } = "";
+    public int Vend_id { get; set; }
+    public string Vend_nome { get; set; } = "";
 }

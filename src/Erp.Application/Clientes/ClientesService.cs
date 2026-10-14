@@ -21,10 +21,10 @@ public class ClientesService : IClientesService
 
     public async Task<EnderecoAdicionalResponse> IncluirEnderecoAdicionalAsync(IncluirEnderecoAdicionalRequest request)
     {
-        await GarantirClienteExisteAsync(request.ClienteId);
+        await GarantirClienteExisteAsync(request.Clie_id);
 
-        string? rotulo = Limpar(request.Rotulo);
-        string? endereco = Limpar(request.Endereco);
+        string? rotulo = Limpar(request.Ende_rotulo);
+        string? endereco = Limpar(request.Ende_endereco);
 
         string? erro = ClienteValidacao.ValidarRotulo(rotulo);
 
@@ -34,30 +34,30 @@ public class ClientesService : IClientesService
         if (erro != null)
             throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
 
-        List<EnderecoAdicional> existentes = await _enderecosRepositorio.ListarPorClienteAsync(request.ClienteId);
+        List<EnderecoAdicional> existentes = await _enderecosRepositorio.ListarPorClienteAsync(request.Clie_id);
 
         if (existentes.Count >= ClienteValidacao.LimiteEnderecosAdicionais)
             throw new ErroDeNegocio($"Cliente já possui {ClienteValidacao.LimiteEnderecosAdicionais} endereços adicionais", TipoErroDeNegocio.Validacao);
 
         EnderecoAdicional enderecoAdicional = new EnderecoAdicional
         {
-            ClienteId = request.ClienteId,
-            Rotulo = rotulo!,
-            Endereco = endereco!
+            Clie_id = request.Clie_id,
+            Ende_rotulo = rotulo!,
+            Ende_endereco = endereco!
         };
 
-        enderecoAdicional.Id = await _enderecosRepositorio.InserirAsync(enderecoAdicional);
+        enderecoAdicional.Ende_id = await _enderecosRepositorio.InserirAsync(enderecoAdicional);
 
         return EnderecoAdicionalMapeamento.ParaResposta(enderecoAdicional);
     }
 
     public async Task<ClienteResponse> IncluirAsync(IncluirClienteRequest request)
     {
-        string? nome = Limpar(request.Nome);
-        string? endereco = Limpar(request.Endereco);
-        string? telefone = Limpar(request.Telefone);
+        string? nome = Limpar(request.Clie_nome);
+        string? endereco = Limpar(request.Clie_endereco);
+        string? telefone = Limpar(request.Clie_telefone);
 
-        string? status = Limpar(request.Status) ?? "ativo";
+        string? status = Limpar(request.Clie_status) ?? "ativo";
 
         string? erro = ClienteValidacao.Validar(nome, endereco, telefone);
 
@@ -69,28 +69,28 @@ public class ClientesService : IClientesService
 
         Cliente cliente = new Cliente
         {
-            Nome = nome!,
-            Endereco = endereco!,
-            Telefone = telefone!,
-            Status = status
+            Clie_nome = nome!,
+            Clie_endereco = endereco!,
+            Clie_telefone = telefone!,
+            Clie_status = status
         };
 
-        cliente.Id = await _repositorio.InserirAsync(cliente);
+        cliente.Clie_id = await _repositorio.InserirAsync(cliente);
 
         return ClienteMapeamento.ParaResposta(cliente);
     }
 
     public async Task<ClienteResponse> AlterarAsync(AlterarClienteRequest request)
     {
-        Cliente? existente = await _repositorio.ObterPorIdAsync(request.Id);
+        Cliente? existente = await _repositorio.ObterPorIdAsync(request.Clie_id);
 
         if (existente == null)
             throw new ErroDeNegocio("Cliente não encontrado", TipoErroDeNegocio.NaoEncontrado);
 
-        string? nome = Limpar(request.Nome);
-        string? endereco = Limpar(request.Endereco);
-        string? telefone = Limpar(request.Telefone);
-        string? status = Limpar(request.Status) ?? existente.Status;
+        string? nome = Limpar(request.Clie_nome);
+        string? endereco = Limpar(request.Clie_endereco);
+        string? telefone = Limpar(request.Clie_telefone);
+        string? status = Limpar(request.Clie_status) ?? existente.Clie_status;
 
         string? erro = ClienteValidacao.Validar(nome, endereco, telefone);
 
@@ -102,11 +102,11 @@ public class ClientesService : IClientesService
 
         Cliente cliente = new Cliente
         {
-            Id = request.Id,
-            Nome = nome!,
-            Endereco = endereco!,
-            Telefone = telefone!,
-            Status = status
+            Clie_id = request.Clie_id,
+            Clie_nome = nome!,
+            Clie_endereco = endereco!,
+            Clie_telefone = telefone!,
+            Clie_status = status
         };
 
         await _repositorio.AtualizarAsync(cliente);
@@ -116,55 +116,55 @@ public class ClientesService : IClientesService
 
     public async Task ExcluirAsync(ExcluirClienteRequest request)
     {
-        if (!await _repositorio.ExcluirAsync(request.Id))
+        if (!await _repositorio.ExcluirAsync(request.Clie_id))
             throw new ErroDeNegocio("Cliente não encontrado", TipoErroDeNegocio.NaoEncontrado);
     }
 
     public async Task DesativarAsync(DesativarClienteRequest request)
     {
-        Cliente? cliente = await _repositorio.ObterPorIdAsync(request.Id);
+        Cliente? cliente = await _repositorio.ObterPorIdAsync(request.Clie_id);
 
         if (cliente == null)
             throw new ErroDeNegocio("Cliente não encontrado", TipoErroDeNegocio.NaoEncontrado);
 
-        if (cliente.Status == "inativo")
+        if (cliente.Clie_status == "inativo")
             throw new ErroDeNegocio("Cliente já está inativo", TipoErroDeNegocio.Validacao);
 
-        cliente.Status = "inativo";
+        cliente.Clie_status = "inativo";
 
         await _repositorio.AtualizarAsync(cliente);
     }
 
     public async Task AtivarAsync(AtivarClienteRequest request)
     {
-        Cliente? cliente = await _repositorio.ObterPorIdAsync(request.Id);
+        Cliente? cliente = await _repositorio.ObterPorIdAsync(request.Clie_id);
 
         if (cliente == null)
             throw new ErroDeNegocio("Cliente não encontrado", TipoErroDeNegocio.NaoEncontrado);
 
-        if (cliente.Status == "ativo")
+        if (cliente.Clie_status == "ativo")
             throw new ErroDeNegocio("Cliente já está ativo", TipoErroDeNegocio.Validacao);
 
-        cliente.Status = "ativo";
+        cliente.Clie_status = "ativo";
 
         await _repositorio.AtualizarAsync(cliente);
     }
 
     public async Task<ClienteDetalheResponse> ObterAsync(ObterClienteRequest request)
     {
-        Cliente? cliente = await _repositorio.ObterPorIdAsync(request.Id);
+        Cliente? cliente = await _repositorio.ObterPorIdAsync(request.Clie_id);
 
         if (cliente == null)
             throw new ErroDeNegocio("Cliente não encontrado", TipoErroDeNegocio.NaoEncontrado);
 
-        List<EnderecoAdicional> enderecos = await _enderecosRepositorio.ListarPorClienteAsync(request.Id);
+        List<EnderecoAdicional> enderecos = await _enderecosRepositorio.ListarPorClienteAsync(request.Clie_id);
 
         return ClienteMapeamento.ParaDetalhe(cliente, enderecos);
     }
 
     public async Task<List<Cliente>> ListarAsync(ListarClientesRequest request)
     {
-        string status = Limpar(request.Status) ?? "ativo";
+        string status = Limpar(request.Clie_status) ?? "ativo";
 
         string? erro = ClienteValidacao.ValidarFiltroStatus(status);
 
@@ -174,22 +174,22 @@ public class ClientesService : IClientesService
         List<Cliente> clientes = await _repositorio.ListarAsync();
 
         if (status != "todos")
-            clientes = clientes.Where(cliente => cliente.Status == status).ToList();
+            clientes = clientes.Where(cliente => cliente.Clie_status == status).ToList();
 
-        return clientes.OrderBy(cliente => ChaveDeOrdenacao(cliente.Nome)).ToList();
+        return clientes.OrderBy(cliente => ChaveDeOrdenacao(cliente.Clie_nome)).ToList();
     }
 
     public async Task<EnderecoAdicionalResponse> AlterarEnderecoAdicionalAsync(AlterarEnderecoAdicionalRequest request)
     {
-        await GarantirClienteExisteAsync(request.ClienteId);
+        await GarantirClienteExisteAsync(request.Clie_id);
 
-        EnderecoAdicional? existente = await _enderecosRepositorio.ObterAsync(request.ClienteId, request.Id);
+        EnderecoAdicional? existente = await _enderecosRepositorio.ObterAsync(request.Clie_id, request.Ende_id);
 
         if (existente == null)
             throw new ErroDeNegocio("Endereço não encontrado", TipoErroDeNegocio.NaoEncontrado);
 
-        string? rotulo = Limpar(request.Rotulo);
-        string? endereco = Limpar(request.Endereco);
+        string? rotulo = Limpar(request.Ende_rotulo);
+        string? endereco = Limpar(request.Ende_endereco);
 
         string? erro = ClienteValidacao.ValidarRotulo(rotulo);
 
@@ -199,8 +199,8 @@ public class ClientesService : IClientesService
         if (erro != null)
             throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
 
-        existente.Rotulo = rotulo!;
-        existente.Endereco = endereco!;
+        existente.Ende_rotulo = rotulo!;
+        existente.Ende_endereco = endereco!;
 
         await _enderecosRepositorio.AtualizarAsync(existente);
 
@@ -209,9 +209,9 @@ public class ClientesService : IClientesService
 
     public async Task ExcluirEnderecoAdicionalAsync(ExcluirEnderecoAdicionalRequest request)
     {
-        await GarantirClienteExisteAsync(request.ClienteId);
+        await GarantirClienteExisteAsync(request.Clie_id);
 
-        if (!await _enderecosRepositorio.ExcluirAsync(request.ClienteId, request.Id))
+        if (!await _enderecosRepositorio.ExcluirAsync(request.Clie_id, request.Ende_id))
             throw new ErroDeNegocio("Endereço não encontrado", TipoErroDeNegocio.NaoEncontrado);
     }
 

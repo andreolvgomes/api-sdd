@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.CaixasBancos;
 
-[HttpPut("api/caixas-bancos/{Id}")]
+[HttpPut("api/caixas-bancos/{Caix_id}")]
 [AllowAnonymous()]
 [Tags("Caixas/Bancos")]
 public class AlterarCaixaBancoEndpoint : EndpointBase<AlterarCaixaBancoRequest>

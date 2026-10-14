@@ -9,10 +9,10 @@ public static class FormaPagamentoMapeamento
     {
         return new FormaPagamentoResponse
         {
-            Id = formaPagamento.Id,
-            Descricao = formaPagamento.Descricao,
-            Tipo = formaPagamento.Tipo,
-            Status = formaPagamento.Status
+            Form_id = formaPagamento.Form_id,
+            Form_descricao = formaPagamento.Form_descricao,
+            Form_tipo = formaPagamento.Form_tipo,
+            Form_status = formaPagamento.Form_status
         };
     }
 }

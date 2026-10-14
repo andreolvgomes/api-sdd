@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.Orcamentos.Itens;
 
-[HttpPost("api/orcamentos/{Id}/itens/{NumeroItem}/reativar")]
+[HttpPost("api/orcamentos/{Orca_id}/itens/{Orci_numero_item}/reativar")]
 [AllowAnonymous()]
 [Tags("Orçamentos")]
 public class ReativarItemOrcamentoEndpoint : EndpointBase<ReativarItemOrcamentoRequest>

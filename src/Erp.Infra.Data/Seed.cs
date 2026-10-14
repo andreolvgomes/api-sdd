@@ -30,52 +30,52 @@ public static class Seed
     private static async Task InserirClientesAsync(SqliteConnection conexao)
     {
         await conexao.ExecuteAsync(
-            "insert into cliente (nome, endereco, telefone, status) values (@Nome, @Endereco, @Telefone, @Status)",
+            "insert into cliente (clie_nome, clie_endereco, clie_telefone, clie_status) values (@Clie_nome, @Clie_endereco, @Clie_telefone, @Clie_status)",
             new[]
             {
-                new { Nome = "Maria Silva", Endereco = "Rua das Flores, 120 - Centro", Telefone = "11 90000-0001", Status = "ativo" },
-                new { Nome = "João Pereira", Endereco = "Av. Brasil, 500 - Jardim Norte", Telefone = "11 90000-0002", Status = "ativo" },
-                new { Nome = "Ana Lima", Endereco = "Rua do Comércio, 45 - Vila Nova", Telefone = "11 90000-0003", Status = "inativo" },
-                new { Nome = "Carlos Souza", Endereco = "Rua Verde, 8 - Bela Vista", Telefone = "11 90000-0004", Status = "ativo" }
+                new { Clie_nome = "Maria Silva", Clie_endereco = "Rua das Flores, 120 - Centro", Clie_telefone = "11 90000-0001", Clie_status = "ativo" },
+                new { Clie_nome = "João Pereira", Clie_endereco = "Av. Brasil, 500 - Jardim Norte", Clie_telefone = "11 90000-0002", Clie_status = "ativo" },
+                new { Clie_nome = "Ana Lima", Clie_endereco = "Rua do Comércio, 45 - Vila Nova", Clie_telefone = "11 90000-0003", Clie_status = "inativo" },
+                new { Clie_nome = "Carlos Souza", Clie_endereco = "Rua Verde, 8 - Bela Vista", Clie_telefone = "11 90000-0004", Clie_status = "ativo" }
             });
     }
 
     private static async Task InserirVendedoresAsync(SqliteConnection conexao)
     {
         await conexao.ExecuteAsync(
-            "insert into vendedor (nome, status) values (@Nome, @Status)",
+            "insert into vendedor (vend_nome, vend_status) values (@Vend_nome, @Vend_status)",
             new[]
             {
-                new { Nome = "Roberto Alves", Status = "Ativo" },
-                new { Nome = "Fernanda Costa", Status = "Ativo" },
-                new { Nome = "Paulo Souza", Status = "Inativo" }
+                new { Vend_nome = "Roberto Alves", Vend_status = "Ativo" },
+                new { Vend_nome = "Fernanda Costa", Vend_status = "Ativo" },
+                new { Vend_nome = "Paulo Souza", Vend_status = "Inativo" }
             });
     }
 
     private static async Task InserirFormasPagamentoAsync(SqliteConnection conexao)
     {
         await conexao.ExecuteAsync(
-            "insert into forma_pagamento (descricao, tipo, status) values (@Descricao, @Tipo, @Status)",
+            "insert into forma_pagamento (form_descricao, form_tipo, form_status) values (@Form_descricao, @Form_tipo, @Form_status)",
             new[]
             {
-                new { Descricao = "Dinheiro", Tipo = 1, Status = "Ativo" },
-                new { Descricao = "Cartão de crédito", Tipo = 2, Status = "Ativo" },
-                new { Descricao = "Cartão de débito", Tipo = 3, Status = "Ativo" },
-                new { Descricao = "Pix", Tipo = 4, Status = "Ativo" },
-                new { Descricao = "Boleto", Tipo = 5, Status = "Ativo" },
-                new { Descricao = "Crediário", Tipo = 6, Status = "Inativo" }
+                new { Form_descricao = "Dinheiro", Form_tipo = 1, Form_status = "Ativo" },
+                new { Form_descricao = "Cartão de crédito", Form_tipo = 2, Form_status = "Ativo" },
+                new { Form_descricao = "Cartão de débito", Form_tipo = 3, Form_status = "Ativo" },
+                new { Form_descricao = "Pix", Form_tipo = 4, Form_status = "Ativo" },
+                new { Form_descricao = "Boleto", Form_tipo = 5, Form_status = "Ativo" },
+                new { Form_descricao = "Crediário", Form_tipo = 6, Form_status = "Inativo" }
             });
     }
 
     private static async Task InserirCaixasBancosAsync(SqliteConnection conexao)
     {
         await conexao.ExecuteAsync(
-            "insert into caixa_banco (descricao, status) values (@Descricao, @Status)",
+            "insert into caixa_banco (caix_descricao, caix_status) values (@Caix_descricao, @Caix_status)",
             new[]
             {
-                new { Descricao = "Caixa geral", Status = "Ativo" },
-                new { Descricao = "Banco - conta corrente", Status = "Ativo" },
-                new { Descricao = "Banco - conta poupança", Status = "Inativo" }
+                new { Caix_descricao = "Caixa geral", Caix_status = "Ativo" },
+                new { Caix_descricao = "Banco - conta corrente", Caix_status = "Ativo" },
+                new { Caix_descricao = "Banco - conta poupança", Caix_status = "Inativo" }
             });
     }
 }

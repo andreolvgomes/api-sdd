@@ -9,9 +9,9 @@ public static class CaixaBancoMapeamento
     {
         return new CaixaBancoResponse
         {
-            Id = caixaBanco.Id,
-            Descricao = caixaBanco.Descricao,
-            Status = caixaBanco.Status
+            Caix_id = caixaBanco.Caix_id,
+            Caix_descricao = caixaBanco.Caix_descricao,
+            Caix_status = caixaBanco.Caix_status
         };
     }
 }

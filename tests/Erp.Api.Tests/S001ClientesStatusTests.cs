@@ -22,43 +22,43 @@ public class S001ClientesStatusTests : IDisposable
         _api.Dispose();
     }
 
-    // ----- Cadastro e status (R1, R2, R3) -----
+    // ----- Cadastro e Clie_status (R1, R2, R3) -----
 
     [Fact]
     public async Task S001_R2_CadastrarSemStatus_NasceAtivo()
     {
-        var resposta = await CriarAsync(new { nome = "Maria Silva", endereco = "Rua das Flores, 10, Centro", telefone = "11 91234-5678" });
+        var resposta = await CriarAsync(new { Clie_nome = "Maria Silva", Clie_endereco = "Rua das Flores, 10, Centro", Clie_telefone = "11 91234-5678" });
 
         Assert.Equal(HttpStatusCode.Created, resposta.StatusCode);
         var cliente = await LerClienteAsync(resposta);
-        Assert.Equal("ativo", cliente.Status);
+        Assert.Equal("ativo", cliente.Clie_status);
     }
 
     [Fact]
     public async Task S001_R1_CadastrarComStatusInativo_CriaInativo()
     {
-        var resposta = await CriarAsync(new { nome = "Ana Lima", endereco = "Rua C, 3", telefone = "31 90000-0003", status = "inativo" });
+        var resposta = await CriarAsync(new { Clie_nome = "Ana Lima", Clie_endereco = "Rua C, 3", Clie_telefone = "31 90000-0003", Clie_status = "inativo" });
 
         Assert.Equal(HttpStatusCode.Created, resposta.StatusCode);
         var cliente = await LerClienteAsync(resposta);
-        Assert.Equal("inativo", cliente.Status);
+        Assert.Equal("inativo", cliente.Clie_status);
     }
 
     [Fact]
     public async Task S001_R3_CadastrarComStatusRegistrado_RecusadoENaoGrava()
     {
-        var resposta = await CriarAsync(new { nome = "João Souza", endereco = "Av. Brasil, 200", telefone = "21 99876-5432", status = "registrado" });
+        var resposta = await CriarAsync(new { Clie_nome = "João Souza", Clie_endereco = "Av. Brasil, 200", Clie_telefone = "21 99876-5432", Clie_status = "registrado" });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Status deve ser ativo ou inativo", await TextoErroAsync(resposta));
-        var consulta = await _cliente.GetFromJsonAsync<List<ClienteResposta>>("/api/clientes?status=todos");
+        var consulta = await _cliente.GetFromJsonAsync<List<ClienteResposta>>("/api/clientes?clie_status=todos");
         Assert.Empty(consulta!);
     }
 
     [Fact]
     public async Task S001_R10_AtivarNaoExigeMotivo()
     {
-        await CriarAsync(new { nome = "João Souza", endereco = "Av. Brasil, 200", telefone = "21 99876-5432", status = "inativo" });
+        await CriarAsync(new { Clie_nome = "João Souza", Clie_endereco = "Av. Brasil, 200", Clie_telefone = "21 99876-5432", Clie_status = "inativo" });
 
         var resposta = await _cliente.PostAsJsonAsync("/api/clientes/1/ativar", new { });
 
@@ -70,14 +70,14 @@ public class S001ClientesStatusTests : IDisposable
     [Fact]
     public async Task S001_R6_AtivarClienteInativo_MudaStatusParaAtivo()
     {
-        await CriarAsync(new { nome = "João Souza", endereco = "Av. Brasil, 200", telefone = "21 99876-5432", status = "inativo" });
+        await CriarAsync(new { Clie_nome = "João Souza", Clie_endereco = "Av. Brasil, 200", Clie_telefone = "21 99876-5432", Clie_status = "inativo" });
 
         var resposta = await _cliente.PostAsync("/api/clientes/1/ativar", null);
 
         Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
         Assert.Empty(await resposta.Content.ReadAsStringAsync());
         var cliente = await LerClienteAsync(await ObterAsync(1));
-        Assert.Equal("ativo", cliente.Status);
+        Assert.Equal("ativo", cliente.Clie_status);
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class S001ClientesStatusTests : IDisposable
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Cliente já está ativo", await TextoErroAsync(resposta));
         var cliente = await LerClienteAsync(await ObterAsync(1));
-        Assert.Equal("ativo", cliente.Status);
+        Assert.Equal("ativo", cliente.Clie_status);
     }
 
     [Fact]
@@ -113,21 +113,21 @@ public class S001ClientesStatusTests : IDisposable
 
         Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
         var cliente = await LerClienteAsync(await ObterAsync(1));
-        Assert.Equal("Maria Silva", cliente.Nome);
-        Assert.Equal("inativo", cliente.Status);
+        Assert.Equal("Maria Silva", cliente.Clie_nome);
+        Assert.Equal("inativo", cliente.Clie_status);
     }
 
     [Fact]
     public async Task S001_R5_DesativarClienteJaInativo_Recusado()
     {
-        await CriarAsync(new { nome = "João Souza", endereco = "Av. Brasil, 200", telefone = "21 99876-5432", status = "inativo" });
+        await CriarAsync(new { Clie_nome = "João Souza", Clie_endereco = "Av. Brasil, 200", Clie_telefone = "21 99876-5432", Clie_status = "inativo" });
 
         var resposta = await _cliente.PostAsync("/api/clientes/1/desativar", null);
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Cliente já está inativo", await TextoErroAsync(resposta));
         var cliente = await LerClienteAsync(await ObterAsync(1));
-        Assert.Equal("inativo", cliente.Status);
+        Assert.Equal("inativo", cliente.Clie_status);
     }
 
     [Fact]
@@ -178,8 +178,8 @@ public class S001ClientesStatusTests : IDisposable
     [Fact]
     public async Task S001_R11_ExcluirClienteInativo_RemoveODefinitivamente()
     {
-        await CriarAsync(new { nome = "Maria Silva", endereco = "Rua A, 1", telefone = "11 90000-0001" });
-        await CriarAsync(new { nome = "João Souza", endereco = "Av. Brasil, 200", telefone = "21 99876-5432", status = "inativo" });
+        await CriarAsync(new { Clie_nome = "Maria Silva", Clie_endereco = "Rua A, 1", Clie_telefone = "11 90000-0001" });
+        await CriarAsync(new { Clie_nome = "João Souza", Clie_endereco = "Av. Brasil, 200", Clie_telefone = "21 99876-5432", Clie_status = "inativo" });
 
         var resposta = await _cliente.DeleteAsync("/api/clientes/2");
 
@@ -215,15 +215,15 @@ public class S001ClientesStatusTests : IDisposable
         return _cliente.PostAsJsonAsync("/api/clientes", corpo);
     }
 
-    private async Task CriarClienteAsync(string nome, string endereco, string telefone)
+    private async Task CriarClienteAsync(string Clie_nome, string Clie_endereco, string Clie_telefone)
     {
-        var resposta = await CriarAsync(new { nome, endereco, telefone });
+        var resposta = await CriarAsync(new { Clie_nome, Clie_endereco, Clie_telefone });
         Assert.Equal(HttpStatusCode.Created, resposta.StatusCode);
     }
 
-    private Task<HttpResponseMessage> ObterAsync(int id)
+    private Task<HttpResponseMessage> ObterAsync(int clie_id)
     {
-        return _cliente.GetAsync($"/api/clientes/{id}");
+        return _cliente.GetAsync($"/api/clientes/{clie_id}");
     }
 
     private static async Task<ClienteResposta> LerClienteAsync(HttpResponseMessage resposta)
@@ -238,7 +238,7 @@ public class S001ClientesStatusTests : IDisposable
         return ReunirTextos(documento.RootElement);
     }
 
-    private record ClienteResposta(int Id, string Nome, string Endereco, string Telefone, string Status);
+    private record ClienteResposta(int Clie_id, string Clie_nome, string Clie_endereco, string Clie_telefone, string Clie_status);
 
     private static string ReunirTextos(JsonElement elemento)
     {

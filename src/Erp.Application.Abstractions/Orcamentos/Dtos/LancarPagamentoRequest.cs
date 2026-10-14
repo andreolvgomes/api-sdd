@@ -2,8 +2,8 @@ namespace Erp.Application.Abstractions.Orcamentos.Dtos;
 
 public class LancarPagamentoRequest
 {
-    public int Id { get; set; }
-    public int? FormaPagamentoId { get; set; }
-    public int? CaixaBancoId { get; set; }
-    public decimal? Valor { get; set; }
+    public int Orca_id { get; set; }
+    public int? Form_id { get; set; }
+    public int? Caix_id { get; set; }
+    public decimal? Orcp_valor { get; set; }
 }

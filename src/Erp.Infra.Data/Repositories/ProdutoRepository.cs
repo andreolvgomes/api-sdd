@@ -7,7 +7,7 @@ namespace Erp.Infra.Data.Repositories;
 
 public class ProdutoRepository : IProdutoRepository
 {
-    private const string Colunas = "codigo, descricao, precovenda, status, estoque";
+    private const string Colunas = "prod_codigo, prod_descricao, prod_precovenda, prod_status, prod_estoque";
 
     private readonly IDbConnection _conexao;
 
@@ -19,7 +19,7 @@ public class ProdutoRepository : IProdutoRepository
     public async Task<bool> ExisteCodigoAsync(string codigo)
     {
         int quantidade = await _conexao.ExecuteScalarAsync<int>(
-            "select count(1) from produto where codigo = @codigo", new { codigo });
+            "select count(1) from produto where prod_codigo = @codigo", new { codigo });
 
         return quantidade > 0;
     }
@@ -27,14 +27,14 @@ public class ProdutoRepository : IProdutoRepository
     public async Task InserirAsync(Produto produto)
     {
         await _conexao.ExecuteAsync(
-            "insert into produto (codigo, descricao, precovenda, status, estoque) values (@Codigo, @Descricao, @PrecoVenda, @Status, @Estoque)",
+            "insert into produto (prod_codigo, prod_descricao, prod_precovenda, prod_status, prod_estoque) values (@Prod_codigo, @Prod_descricao, @Prod_precovenda, @Prod_status, @Prod_estoque)",
             produto);
     }
 
     public async Task<Produto?> ObterPorCodigoAsync(string codigo)
     {
         return await _conexao.QueryFirstOrDefaultAsync<Produto>(
-            $"select {Colunas} from produto where codigo = @codigo", new { codigo });
+            $"select {Colunas} from produto where prod_codigo = @codigo", new { codigo });
     }
 
     public async Task<List<Produto>> ListarAsync(string? status)
@@ -42,9 +42,9 @@ public class ProdutoRepository : IProdutoRepository
         string sql = $"select {Colunas} from produto";
 
         if (status != null)
-            sql = sql + " where status = @status";
+            sql = sql + " where prod_status = @status";
 
-        sql = sql + " order by codigo";
+        sql = sql + " order by prod_codigo";
 
         IEnumerable<Produto> produtos = await _conexao.QueryAsync<Produto>(sql, new { status });
 
@@ -54,7 +54,7 @@ public class ProdutoRepository : IProdutoRepository
     public async Task<bool> AtualizarAsync(Produto produto)
     {
         int linhas = await _conexao.ExecuteAsync(
-            "update produto set descricao = @Descricao, precovenda = @PrecoVenda, status = @Status where codigo = @Codigo",
+            "update produto set prod_descricao = @Prod_descricao, prod_precovenda = @Prod_precovenda, prod_status = @Prod_status where prod_codigo = @Prod_codigo",
             produto);
 
         return linhas > 0;
@@ -62,7 +62,7 @@ public class ProdutoRepository : IProdutoRepository
 
     public async Task<bool> ExcluirAsync(string codigo)
     {
-        int linhas = await _conexao.ExecuteAsync("delete from produto where codigo = @codigo", new { codigo });
+        int linhas = await _conexao.ExecuteAsync("delete from produto where prod_codigo = @codigo", new { codigo });
 
         return linhas > 0;
     }

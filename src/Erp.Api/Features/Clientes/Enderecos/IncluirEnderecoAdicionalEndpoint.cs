@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.Clientes.Enderecos;
 
-[HttpPost("api/clientes/{ClienteId}/enderecos")]
+[HttpPost("api/clientes/{Clie_id}/enderecos")]
 [AllowAnonymous()]
 [Tags("Clientes")]
 public class IncluirEnderecoAdicionalEndpoint : EndpointBase<IncluirEnderecoAdicionalRequest>

@@ -2,7 +2,7 @@ namespace Erp.Application.Abstractions.Orcamentos.Dtos;
 
 public class AlterarOrcamentoRequest
 {
-    public int Id { get; set; }
-    public int? ClienteId { get; set; }
-    public int? VendedorId { get; set; }
+    public int Orca_id { get; set; }
+    public int? Clie_id { get; set; }
+    public int? Vend_id { get; set; }
 }

@@ -22,32 +22,32 @@ public class S005VendedoresTests : IDisposable
         _api.Dispose();
     }
 
-    // ----- Id sequencial gerado pelo sistema (R1) -----
+    // ----- Vend_id sequencial gerado pelo sistema (R1) -----
 
     [Fact]
     public async Task S005_R1_IncluirVendedores_IdSequencialComecandoEmUm()
     {
-        var primeiro = await CriarAsync(new { nome = "Ana Souza" });
-        var segundo = await CriarAsync(new { nome = "Carlos Lima" });
+        var primeiro = await CriarAsync(new { Vend_nome = "Ana Souza" });
+        var segundo = await CriarAsync(new { Vend_nome = "Carlos Lima" });
 
-        Assert.Equal(1, primeiro.Id);
-        Assert.Equal(2, segundo.Id);
+        Assert.Equal(1, primeiro.Vend_id);
+        Assert.Equal(2, segundo.Vend_id);
     }
 
     [Fact]
     public async Task S005_R1_IncluirVendedorInformandoId_IdEhIgnorado()
     {
-        var vendedor = await CriarAsync(new { id = 50, nome = "Ana Souza" });
+        var vendedor = await CriarAsync(new { Vend_id = 50, Vend_nome = "Ana Souza" });
 
-        Assert.Equal(1, vendedor.Id);
+        Assert.Equal(1, vendedor.Vend_id);
     }
 
-    // ----- Nome obrigatório e com tamanho entre 3 e 100 (R2) -----
+    // ----- Vend_nome obrigatório e com tamanho entre 3 e 100 (R2) -----
 
     [Fact]
     public async Task S005_R2_IncluirComNomeVazio_Recusado()
     {
-        var resposta = await IncluirAsync(new { nome = "" });
+        var resposta = await IncluirAsync(new { Vend_nome = "" });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Nome é obrigatório.", await TextoErroAsync(resposta));
@@ -56,7 +56,7 @@ public class S005VendedoresTests : IDisposable
     [Fact]
     public async Task S005_R2_IncluirComNomeSoComEspacos_Recusado()
     {
-        var resposta = await IncluirAsync(new { nome = "   " });
+        var resposta = await IncluirAsync(new { Vend_nome = "   " });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Nome é obrigatório.", await TextoErroAsync(resposta));
@@ -65,7 +65,7 @@ public class S005VendedoresTests : IDisposable
     [Fact]
     public async Task S005_R2_IncluirComDoisCaracteresAposTrim_Recusado()
     {
-        var resposta = await IncluirAsync(new { nome = "  Al  " });
+        var resposta = await IncluirAsync(new { Vend_nome = "  Al  " });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Nome deve ter entre 3 e 100 caracteres.", await TextoErroAsync(resposta));
@@ -74,7 +74,7 @@ public class S005VendedoresTests : IDisposable
     [Fact]
     public async Task S005_R2_IncluirComCentoEUmCaracteres_Recusado()
     {
-        var resposta = await IncluirAsync(new { nome = new string('A', 101) });
+        var resposta = await IncluirAsync(new { Vend_nome = new string('A', 101) });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Nome deve ter entre 3 e 100 caracteres.", await TextoErroAsync(resposta));
@@ -83,29 +83,29 @@ public class S005VendedoresTests : IDisposable
     [Fact]
     public async Task S005_R2_IncluirComTresECemCaracteres_Aceito()
     {
-        var tres = await CriarAsync(new { nome = "Ana" });
-        var cem = await CriarAsync(new { nome = new string('A', 100) });
+        var tres = await CriarAsync(new { Vend_nome = "Ana" });
+        var cem = await CriarAsync(new { Vend_nome = new string('A', 100) });
 
-        Assert.Equal("Ana", tres.Nome);
-        Assert.Equal(100, cem.Nome.Length);
+        Assert.Equal("Ana", tres.Vend_nome);
+        Assert.Equal(100, cem.Vend_nome.Length);
     }
 
     [Fact]
     public async Task S005_R2_IncluirComEspacosNasPontas_SalvaNomeSemEspacos()
     {
-        var vendedor = await CriarAsync(new { nome = "  Ana Souza  " });
+        var vendedor = await CriarAsync(new { Vend_nome = "  Ana Souza  " });
 
-        Assert.Equal("Ana Souza", vendedor.Nome);
+        Assert.Equal("Ana Souza", vendedor.Vend_nome);
     }
 
-    // ----- Nome único sem diferenciar maiúsculas (R3) -----
+    // ----- Vend_nome único sem diferenciar maiúsculas (R3) -----
 
     [Fact]
     public async Task S005_R3_IncluirComNomeJaCadastrado_Recusado()
     {
-        await CriarAsync(new { nome = "Ana Souza" });
+        await CriarAsync(new { Vend_nome = "Ana Souza" });
 
-        var resposta = await IncluirAsync(new { nome = "Ana Souza" });
+        var resposta = await IncluirAsync(new { Vend_nome = "Ana Souza" });
 
         Assert.Equal(HttpStatusCode.Conflict, resposta.StatusCode);
         Assert.Contains("Já existe um vendedor com este nome.", await TextoErroAsync(resposta));
@@ -114,9 +114,9 @@ public class S005VendedoresTests : IDisposable
     [Fact]
     public async Task S005_R3_IncluirComNomeIgualSemDiferenciarMaiusculas_Recusado()
     {
-        await CriarAsync(new { nome = "Ana Souza" });
+        await CriarAsync(new { Vend_nome = "Ana Souza" });
 
-        var resposta = await IncluirAsync(new { nome = "ana souza" });
+        var resposta = await IncluirAsync(new { Vend_nome = "ana souza" });
 
         Assert.Equal(HttpStatusCode.Conflict, resposta.StatusCode);
         Assert.Contains("Já existe um vendedor com este nome.", await TextoErroAsync(resposta));
@@ -125,54 +125,54 @@ public class S005VendedoresTests : IDisposable
     [Fact]
     public async Task S005_R3_IncluirComNomeDiferente_Aceito()
     {
-        await CriarAsync(new { nome = "Ana Souza" });
+        await CriarAsync(new { Vend_nome = "Ana Souza" });
 
-        var vendedor = await CriarAsync(new { nome = "Ana Souza Lima" });
+        var vendedor = await CriarAsync(new { Vend_nome = "Ana Souza Lima" });
 
-        Assert.Equal("Ana Souza Lima", vendedor.Nome);
+        Assert.Equal("Ana Souza Lima", vendedor.Vend_nome);
     }
 
-    // ----- Status Ativo ou Inativo, padrão Ativo (R4) -----
+    // ----- Vend_status Ativo ou Inativo, padrão Ativo (R4) -----
 
     [Fact]
     public async Task S005_R4_IncluirSemStatus_EntraComoAtivo()
     {
-        var vendedor = await CriarAsync(new { nome = "Ana Souza" });
+        var vendedor = await CriarAsync(new { Vend_nome = "Ana Souza" });
 
-        Assert.Equal("Ativo", vendedor.Status);
+        Assert.Equal("Ativo", vendedor.Vend_status);
     }
 
     [Fact]
     public async Task S005_R4_IncluirComStatusInativo_SalvaInativo()
     {
-        var vendedor = await CriarAsync(new { nome = "Carlos Lima", status = "Inativo" });
+        var vendedor = await CriarAsync(new { Vend_nome = "Carlos Lima", Vend_status = "Inativo" });
 
-        Assert.Equal("Inativo", vendedor.Status);
+        Assert.Equal("Inativo", vendedor.Vend_status);
     }
 
     [Theory]
     [InlineData("ativo")]
     [InlineData("ATIVO")]
     [InlineData("atiVO")]
-    public async Task S005_R4_IncluirComStatusAtivoEmQualquerCaixa_SalvaAtivo(string status)
+    public async Task S005_R4_IncluirComStatusAtivoEmQualquerCaixa_SalvaAtivo(string Vend_status)
     {
-        var vendedor = await CriarAsync(new { nome = "Ana Souza", status });
+        var vendedor = await CriarAsync(new { Vend_nome = "Ana Souza", Vend_status });
 
-        Assert.Equal("Ativo", vendedor.Status);
+        Assert.Equal("Ativo", vendedor.Vend_status);
     }
 
     [Fact]
     public async Task S005_R4_IncluirComStatusInativoEmMinusculas_SalvaInativo()
     {
-        var vendedor = await CriarAsync(new { nome = "Carlos Lima", status = "inativo" });
+        var vendedor = await CriarAsync(new { Vend_nome = "Carlos Lima", Vend_status = "inativo" });
 
-        Assert.Equal("Inativo", vendedor.Status);
+        Assert.Equal("Inativo", vendedor.Vend_status);
     }
 
     [Fact]
     public async Task S005_R4_IncluirComStatusInvalido_Recusado()
     {
-        var resposta = await IncluirAsync(new { nome = "Pedro Alves", status = "Pendente" });
+        var resposta = await IncluirAsync(new { Vend_nome = "Pedro Alves", Vend_status = "Pendente" });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Status inválido.", await TextoErroAsync(resposta));
@@ -183,21 +183,21 @@ public class S005VendedoresTests : IDisposable
     [Fact]
     public async Task S005_R5_IncluirVendedor_RetornaIdNomeEStatus()
     {
-        var resposta = await IncluirAsync(new { nome = "Carlos Lima", status = "Inativo" });
+        var resposta = await IncluirAsync(new { Vend_nome = "Carlos Lima", Vend_status = "Inativo" });
 
         Assert.Equal(HttpStatusCode.Created, resposta.StatusCode);
         var vendedor = await resposta.Content.ReadFromJsonAsync<VendedorResposta>();
         Assert.Equal(new VendedorResposta(1, "Carlos Lima", "Inativo"), vendedor);
     }
 
-    // ----- Alterar nome e/ou status pelo id (R6) -----
+    // ----- Alterar Vend_nome e/ou Vend_status pelo Vend_id (R6) -----
 
     [Fact]
     public async Task S005_R6_AlterarSoONome_MantemOStatus()
     {
-        await CriarAsync(new { nome = "Ana Souza" });
+        await CriarAsync(new { Vend_nome = "Ana Souza" });
 
-        var resposta = await AlterarAsync(1, new { nome = "Ana Paula Souza" });
+        var resposta = await AlterarAsync(1, new { Vend_nome = "Ana Paula Souza" });
 
         Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
         var vendedor = await resposta.Content.ReadFromJsonAsync<VendedorResposta>();
@@ -207,9 +207,9 @@ public class S005VendedoresTests : IDisposable
     [Fact]
     public async Task S005_R6_AlterarSoOStatus_MantemONome()
     {
-        await CriarAsync(new { nome = "Ana Souza" });
+        await CriarAsync(new { Vend_nome = "Ana Souza" });
 
-        var resposta = await AlterarAsync(1, new { status = "Inativo" });
+        var resposta = await AlterarAsync(1, new { Vend_status = "Inativo" });
 
         Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
         var vendedor = await resposta.Content.ReadFromJsonAsync<VendedorResposta>();
@@ -219,7 +219,7 @@ public class S005VendedoresTests : IDisposable
     [Fact]
     public async Task S005_R6_AlterarInexistente_NaoEncontrado()
     {
-        var resposta = await AlterarAsync(999, new { nome = "Marcos Reis" });
+        var resposta = await AlterarAsync(999, new { Vend_nome = "Marcos Reis" });
 
         Assert.Equal(HttpStatusCode.NotFound, resposta.StatusCode);
         Assert.Contains("Vendedor não encontrado.", await TextoErroAsync(resposta));
@@ -228,9 +228,9 @@ public class S005VendedoresTests : IDisposable
     [Fact]
     public async Task S005_R6_AlterarComNomeVazio_Recusado()
     {
-        await CriarAsync(new { nome = "Ana Souza" });
+        await CriarAsync(new { Vend_nome = "Ana Souza" });
 
-        var resposta = await AlterarAsync(1, new { nome = "" });
+        var resposta = await AlterarAsync(1, new { Vend_nome = "" });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Nome é obrigatório.", await TextoErroAsync(resposta));
@@ -239,23 +239,23 @@ public class S005VendedoresTests : IDisposable
     [Fact]
     public async Task S005_R6_AlterarComStatusInvalido_Recusado()
     {
-        await CriarAsync(new { nome = "Ana Souza" });
+        await CriarAsync(new { Vend_nome = "Ana Souza" });
 
-        var resposta = await AlterarAsync(1, new { status = "Pendente" });
+        var resposta = await AlterarAsync(1, new { Vend_status = "Pendente" });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Status inválido.", await TextoErroAsync(resposta));
     }
 
-    // ----- Nome repetido na alteração (R3) -----
+    // ----- Vend_nome repetido na alteração (R3) -----
 
     [Fact]
     public async Task S005_R3_AlterarParaNomeJaUsadoPorOutro_Recusado()
     {
-        await CriarAsync(new { nome = "Ana Souza" });
-        await CriarAsync(new { nome = "Carlos Lima" });
+        await CriarAsync(new { Vend_nome = "Ana Souza" });
+        await CriarAsync(new { Vend_nome = "Carlos Lima" });
 
-        var resposta = await AlterarAsync(2, new { nome = "Ana Souza" });
+        var resposta = await AlterarAsync(2, new { Vend_nome = "Ana Souza" });
 
         Assert.Equal(HttpStatusCode.Conflict, resposta.StatusCode);
         Assert.Contains("Já existe um vendedor com este nome.", await TextoErroAsync(resposta));
@@ -264,20 +264,20 @@ public class S005VendedoresTests : IDisposable
     [Fact]
     public async Task S005_R3_AlterarMantendoOProprioNomeComOutraCaixa_Aceito()
     {
-        await CriarAsync(new { nome = "Ana Souza" });
+        await CriarAsync(new { Vend_nome = "Ana Souza" });
 
-        var resposta = await AlterarAsync(1, new { nome = "ANA SOUZA" });
+        var resposta = await AlterarAsync(1, new { Vend_nome = "ANA SOUZA" });
 
         Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
     }
 
-    // ----- Obter pelo id (R7) -----
+    // ----- Obter pelo Vend_id (R7) -----
 
     [Fact]
     public async Task S005_R7_ObterVendedorExistente_RetornaSeusDados()
     {
-        await CriarAsync(new { nome = "Ana Souza" });
-        await CriarAsync(new { nome = "Carlos Lima", status = "Inativo" });
+        await CriarAsync(new { Vend_nome = "Ana Souza" });
+        await CriarAsync(new { Vend_nome = "Carlos Lima", Vend_status = "Inativo" });
 
         var resposta = await _cliente.GetAsync("/api/vendedores/2");
 
@@ -298,8 +298,8 @@ public class S005VendedoresTests : IDisposable
     [Fact]
     public async Task S005_R6_AlteracaoPersisteNoBanco()
     {
-        await CriarAsync(new { nome = "Ana Souza" });
-        await AlterarAsync(1, new { nome = "Ana Paula Souza", status = "Inativo" });
+        await CriarAsync(new { Vend_nome = "Ana Souza" });
+        await AlterarAsync(1, new { Vend_nome = "Ana Paula Souza", Vend_status = "Inativo" });
 
         var resposta = await _cliente.GetAsync("/api/vendedores/1");
 
@@ -307,13 +307,13 @@ public class S005VendedoresTests : IDisposable
         Assert.Equal(new VendedorResposta(1, "Ana Paula Souza", "Inativo"), vendedor);
     }
 
-    // ----- Listar com filtro opcional por status (R8) -----
+    // ----- Listar com filtro opcional por Vend_status (R8) -----
 
     [Fact]
     public async Task S005_R8_ListarSemFiltro_MostraTodosOrdenadosPorId()
     {
-        await CriarAsync(new { nome = "Ana Souza" });
-        await CriarAsync(new { nome = "Carlos Lima", status = "Inativo" });
+        await CriarAsync(new { Vend_nome = "Ana Souza" });
+        await CriarAsync(new { Vend_nome = "Carlos Lima", Vend_status = "Inativo" });
 
         var resposta = await _cliente.GetAsync("/api/vendedores");
 
@@ -329,10 +329,10 @@ public class S005VendedoresTests : IDisposable
     [Fact]
     public async Task S005_R8_ListarComStatusInativo_RetornaSomenteOsInativos()
     {
-        await CriarAsync(new { nome = "Ana Souza" });
-        await CriarAsync(new { nome = "Carlos Lima", status = "Inativo" });
+        await CriarAsync(new { Vend_nome = "Ana Souza" });
+        await CriarAsync(new { Vend_nome = "Carlos Lima", Vend_status = "Inativo" });
 
-        var resposta = await _cliente.GetAsync("/api/vendedores?status=Inativo");
+        var resposta = await _cliente.GetAsync("/api/vendedores?vend_status=Inativo");
 
         var vendedores = await resposta.Content.ReadFromJsonAsync<List<VendedorResposta>>();
         Assert.Equal(new List<VendedorResposta> { new VendedorResposta(2, "Carlos Lima", "Inativo") }, vendedores);
@@ -341,7 +341,7 @@ public class S005VendedoresTests : IDisposable
     [Fact]
     public async Task S005_R8_ListarComStatusInvalido_Recusado()
     {
-        var resposta = await _cliente.GetAsync("/api/vendedores?status=Pendente");
+        var resposta = await _cliente.GetAsync("/api/vendedores?vend_status=Pendente");
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Status inválido.", await TextoErroAsync(resposta));
@@ -350,10 +350,10 @@ public class S005VendedoresTests : IDisposable
     [Fact]
     public async Task S005_R8_ListarComStatusInativoEmQualquerCaixa_RetornaOsInativos()
     {
-        await CriarAsync(new { nome = "Ana Souza" });
-        await CriarAsync(new { nome = "Carlos Lima", status = "Inativo" });
+        await CriarAsync(new { Vend_nome = "Ana Souza" });
+        await CriarAsync(new { Vend_nome = "Carlos Lima", Vend_status = "Inativo" });
 
-        var resposta = await _cliente.GetAsync("/api/vendedores?status=iNaTiVo");
+        var resposta = await _cliente.GetAsync("/api/vendedores?vend_status=iNaTiVo");
 
         var vendedores = await resposta.Content.ReadFromJsonAsync<List<VendedorResposta>>();
         Assert.Equal(new List<VendedorResposta> { new VendedorResposta(2, "Carlos Lima", "Inativo") }, vendedores);
@@ -374,8 +374,8 @@ public class S005VendedoresTests : IDisposable
     [Fact]
     public async Task S005_R9_ExcluirVendedor_RemoveDaListagem()
     {
-        await CriarAsync(new { nome = "Ana Souza" });
-        await CriarAsync(new { nome = "Carlos Lima" });
+        await CriarAsync(new { Vend_nome = "Ana Souza" });
+        await CriarAsync(new { Vend_nome = "Carlos Lima" });
 
         var resposta = await _cliente.DeleteAsync("/api/vendedores/2");
 
@@ -384,7 +384,7 @@ public class S005VendedoresTests : IDisposable
         Assert.Equal(new List<VendedorResposta> { new VendedorResposta(1, "Ana Souza", "Ativo") }, vendedores);
     }
 
-    // ----- Excluir id inexistente (R10) -----
+    // ----- Excluir Vend_id inexistente (R10) -----
 
     [Fact]
     public async Task S005_R10_ExcluirIdInexistente_NaoEncontrado()
@@ -400,8 +400,8 @@ public class S005VendedoresTests : IDisposable
     [Fact]
     public async Task S005_R11_ObterDepoisDeExcluido_NaoEncontrado()
     {
-        await CriarAsync(new { nome = "Ana Souza" });
-        await CriarAsync(new { nome = "Carlos Lima" });
+        await CriarAsync(new { Vend_nome = "Ana Souza" });
+        await CriarAsync(new { Vend_nome = "Carlos Lima" });
         await _cliente.DeleteAsync("/api/vendedores/2");
 
         var resposta = await _cliente.GetAsync("/api/vendedores/2");
@@ -413,11 +413,11 @@ public class S005VendedoresTests : IDisposable
     [Fact]
     public async Task S005_R11_AlterarDepoisDeExcluido_NaoEncontrado()
     {
-        await CriarAsync(new { nome = "Ana Souza" });
-        await CriarAsync(new { nome = "Carlos Lima" });
+        await CriarAsync(new { Vend_nome = "Ana Souza" });
+        await CriarAsync(new { Vend_nome = "Carlos Lima" });
         await _cliente.DeleteAsync("/api/vendedores/2");
 
-        var resposta = await AlterarAsync(2, new { nome = "Marcos Reis" });
+        var resposta = await AlterarAsync(2, new { Vend_nome = "Marcos Reis" });
 
         Assert.Equal(HttpStatusCode.NotFound, resposta.StatusCode);
         Assert.Contains("Vendedor não encontrado.", await TextoErroAsync(resposta));
@@ -425,9 +425,9 @@ public class S005VendedoresTests : IDisposable
 
     // ----- Auxiliares -----
 
-    private Task<HttpResponseMessage> AlterarAsync(int id, object corpo)
+    private Task<HttpResponseMessage> AlterarAsync(int vend_id, object corpo)
     {
-        return _cliente.PutAsJsonAsync($"/api/vendedores/{id}", corpo);
+        return _cliente.PutAsJsonAsync($"/api/vendedores/{vend_id}", corpo);
     }
 
     private Task<HttpResponseMessage> IncluirAsync(object corpo)
@@ -448,7 +448,7 @@ public class S005VendedoresTests : IDisposable
         return ReunirTextos(documento.RootElement);
     }
 
-    private record VendedorResposta(int Id, string Nome, string Status);
+    private record VendedorResposta(int Vend_id, string Vend_nome, string Vend_status);
 
     private static string ReunirTextos(JsonElement elemento)
     {

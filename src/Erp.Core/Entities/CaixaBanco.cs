@@ -2,7 +2,7 @@ namespace Erp.Core.Entities;
 
 public class CaixaBanco
 {
-    public int Id { get; set; }
-    public string Descricao { get; set; } = "";
-    public string Status { get; set; } = "";
+    public int Caix_id { get; set; }
+    public string Caix_descricao { get; set; } = "";
+    public string Caix_status { get; set; } = "";
 }

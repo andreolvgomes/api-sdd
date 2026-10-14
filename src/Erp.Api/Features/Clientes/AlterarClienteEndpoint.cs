@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.Clientes;
 
-[HttpPut("api/clientes/{Id}")]
+[HttpPut("api/clientes/{Clie_id}")]
 [AllowAnonymous()]
 [Tags("Clientes")]
 public class AlterarClienteEndpoint : EndpointBase<AlterarClienteRequest>

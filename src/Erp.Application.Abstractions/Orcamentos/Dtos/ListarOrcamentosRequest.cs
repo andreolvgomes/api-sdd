@@ -2,6 +2,6 @@ namespace Erp.Application.Abstractions.Orcamentos.Dtos;
 
 public class ListarOrcamentosRequest
 {
-    public int? ClienteId { get; set; }
-    public int? VendedorId { get; set; }
+    public int? Clie_id { get; set; }
+    public int? Vend_id { get; set; }
 }

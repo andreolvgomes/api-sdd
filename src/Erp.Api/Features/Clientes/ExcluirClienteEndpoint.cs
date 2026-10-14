@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Erp.Api.Features.Clientes;
 
-[HttpDelete("api/clientes/{Id}")]
+[HttpDelete("api/clientes/{Clie_id}")]
 [Tags("Clientes")]
 [AllowAnonymous()]
 public class ExcluirClienteEndpoint : EndpointBase<ExcluirClienteRequest>

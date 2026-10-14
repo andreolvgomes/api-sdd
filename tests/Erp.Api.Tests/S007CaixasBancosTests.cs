@@ -22,24 +22,24 @@ public class S007CaixasBancosTests : IDisposable
         _api.Dispose();
     }
 
-    // ----- Id sequencial gerado pelo sistema (R1) -----
+    // ----- Caix_id sequencial gerado pelo sistema (R1) -----
 
     [Fact]
     public async Task S007_R1_IncluirCaixasBancos_IdSequencialComecandoEmUm()
     {
-        var primeiro = await CriarAsync(new { descricao = "Caixa Loja Centro" });
-        var segundo = await CriarAsync(new { descricao = "Banco do Brasil" });
+        var primeiro = await CriarAsync(new { Caix_descricao = "Caixa Loja Centro" });
+        var segundo = await CriarAsync(new { Caix_descricao = "Banco do Brasil" });
 
-        Assert.Equal(1, primeiro.Id);
-        Assert.Equal(2, segundo.Id);
+        Assert.Equal(1, primeiro.Caix_id);
+        Assert.Equal(2, segundo.Caix_id);
     }
 
     [Fact]
     public async Task S007_R1_IncluirInformandoId_IdEhIgnorado()
     {
-        var caixa = await CriarAsync(new { id = 50, descricao = "Caixa Loja Centro" });
+        var caixa = await CriarAsync(new { Caix_id = 50, Caix_descricao = "Caixa Loja Centro" });
 
-        Assert.Equal(1, caixa.Id);
+        Assert.Equal(1, caixa.Caix_id);
     }
 
     // ----- Descrição obrigatória, entre 3 e 100 caracteres (R2) -----
@@ -47,7 +47,7 @@ public class S007CaixasBancosTests : IDisposable
     [Fact]
     public async Task S007_R2_IncluirComDescricaoVazia_Recusada()
     {
-        var resposta = await IncluirAsync(new { descricao = "" });
+        var resposta = await IncluirAsync(new { Caix_descricao = "" });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Descrição é obrigatória.", await TextoErroAsync(resposta));
@@ -56,7 +56,7 @@ public class S007CaixasBancosTests : IDisposable
     [Fact]
     public async Task S007_R2_IncluirComDescricaoSoComEspacos_Recusada()
     {
-        var resposta = await IncluirAsync(new { descricao = "   " });
+        var resposta = await IncluirAsync(new { Caix_descricao = "   " });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Descrição é obrigatória.", await TextoErroAsync(resposta));
@@ -65,7 +65,7 @@ public class S007CaixasBancosTests : IDisposable
     [Fact]
     public async Task S007_R2_IncluirComDoisCaracteresAposTrim_Recusada()
     {
-        var resposta = await IncluirAsync(new { descricao = "  Ca  " });
+        var resposta = await IncluirAsync(new { Caix_descricao = "  Ca  " });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Descrição deve ter entre 3 e 100 caracteres.", await TextoErroAsync(resposta));
@@ -74,7 +74,7 @@ public class S007CaixasBancosTests : IDisposable
     [Fact]
     public async Task S007_R2_IncluirComCentoEUmCaracteres_Recusada()
     {
-        var resposta = await IncluirAsync(new { descricao = new string('A', 101) });
+        var resposta = await IncluirAsync(new { Caix_descricao = new string('A', 101) });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Descrição deve ter entre 3 e 100 caracteres.", await TextoErroAsync(resposta));
@@ -83,19 +83,19 @@ public class S007CaixasBancosTests : IDisposable
     [Fact]
     public async Task S007_R2_IncluirComTresECemCaracteres_Aceita()
     {
-        var tres = await CriarAsync(new { descricao = "Caixa" });
-        var cem = await CriarAsync(new { descricao = new string('A', 100) });
+        var tres = await CriarAsync(new { Caix_descricao = "Caixa" });
+        var cem = await CriarAsync(new { Caix_descricao = new string('A', 100) });
 
-        Assert.Equal("Caixa", tres.Descricao);
-        Assert.Equal(100, cem.Descricao.Length);
+        Assert.Equal("Caixa", tres.Caix_descricao);
+        Assert.Equal(100, cem.Caix_descricao.Length);
     }
 
     [Fact]
     public async Task S007_R2_IncluirComEspacosNasPontas_SalvaDescricaoSemEspacos()
     {
-        var caixa = await CriarAsync(new { descricao = "  Caixa Loja Centro  " });
+        var caixa = await CriarAsync(new { Caix_descricao = "  Caixa Loja Centro  " });
 
-        Assert.Equal("Caixa Loja Centro", caixa.Descricao);
+        Assert.Equal("Caixa Loja Centro", caixa.Caix_descricao);
     }
 
     // ----- Descrição única sem diferenciar maiúsculas (R3) -----
@@ -103,9 +103,9 @@ public class S007CaixasBancosTests : IDisposable
     [Fact]
     public async Task S007_R3_IncluirComDescricaoJaCadastrada_Recusada()
     {
-        await CriarAsync(new { descricao = "Caixa Loja Centro" });
+        await CriarAsync(new { Caix_descricao = "Caixa Loja Centro" });
 
-        var resposta = await IncluirAsync(new { descricao = "Caixa Loja Centro" });
+        var resposta = await IncluirAsync(new { Caix_descricao = "Caixa Loja Centro" });
 
         Assert.Equal(HttpStatusCode.Conflict, resposta.StatusCode);
         Assert.Contains("Já existe um caixa ou banco com esta descrição.", await TextoErroAsync(resposta));
@@ -114,9 +114,9 @@ public class S007CaixasBancosTests : IDisposable
     [Fact]
     public async Task S007_R3_IncluirComDescricaoIgualSemDiferenciarMaiusculas_Recusada()
     {
-        await CriarAsync(new { descricao = "Caixa Loja Centro" });
+        await CriarAsync(new { Caix_descricao = "Caixa Loja Centro" });
 
-        var resposta = await IncluirAsync(new { descricao = "caixa loja centro" });
+        var resposta = await IncluirAsync(new { Caix_descricao = "caixa loja centro" });
 
         Assert.Equal(HttpStatusCode.Conflict, resposta.StatusCode);
         Assert.Contains("Já existe um caixa ou banco com esta descrição.", await TextoErroAsync(resposta));
@@ -125,20 +125,20 @@ public class S007CaixasBancosTests : IDisposable
     [Fact]
     public async Task S007_R3_IncluirComDescricaoDiferente_Aceita()
     {
-        await CriarAsync(new { descricao = "Caixa Loja Centro" });
+        await CriarAsync(new { Caix_descricao = "Caixa Loja Centro" });
 
-        var caixa = await CriarAsync(new { descricao = "Caixa Loja Centro 2" });
+        var caixa = await CriarAsync(new { Caix_descricao = "Caixa Loja Centro 2" });
 
-        Assert.Equal("Caixa Loja Centro 2", caixa.Descricao);
+        Assert.Equal("Caixa Loja Centro 2", caixa.Caix_descricao);
     }
 
     [Fact]
     public async Task S007_R3_AlterarParaDescricaoJaUsadaPorOutro_Recusada()
     {
-        await CriarAsync(new { descricao = "Caixa Loja Centro" });
-        await CriarAsync(new { descricao = "Banco do Brasil" });
+        await CriarAsync(new { Caix_descricao = "Caixa Loja Centro" });
+        await CriarAsync(new { Caix_descricao = "Banco do Brasil" });
 
-        var resposta = await AlterarAsync(2, new { descricao = "Caixa Loja Centro" });
+        var resposta = await AlterarAsync(2, new { Caix_descricao = "Caixa Loja Centro" });
 
         Assert.Equal(HttpStatusCode.Conflict, resposta.StatusCode);
         Assert.Contains("Já existe um caixa ou banco com esta descrição.", await TextoErroAsync(resposta));
@@ -147,54 +147,54 @@ public class S007CaixasBancosTests : IDisposable
     [Fact]
     public async Task S007_R3_AlterarMantendoAPropriaDescricaoComOutraCaixa_Aceita()
     {
-        await CriarAsync(new { descricao = "Caixa Loja Centro" });
+        await CriarAsync(new { Caix_descricao = "Caixa Loja Centro" });
 
-        var resposta = await AlterarAsync(1, new { descricao = "CAIXA LOJA CENTRO" });
+        var resposta = await AlterarAsync(1, new { Caix_descricao = "CAIXA LOJA CENTRO" });
 
         Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
     }
 
-    // ----- Status Ativo ou Inativo, padrão Ativo (R4) -----
+    // ----- Caix_status Ativo ou Inativo, padrão Ativo (R4) -----
 
     [Fact]
     public async Task S007_R4_IncluirSemStatus_EntraComoAtivo()
     {
-        var caixa = await CriarAsync(new { descricao = "Caixa Loja Centro" });
+        var caixa = await CriarAsync(new { Caix_descricao = "Caixa Loja Centro" });
 
-        Assert.Equal("Ativo", caixa.Status);
+        Assert.Equal("Ativo", caixa.Caix_status);
     }
 
     [Fact]
     public async Task S007_R4_IncluirComStatusInativo_SalvaInativo()
     {
-        var caixa = await CriarAsync(new { descricao = "Banco do Brasil", status = "Inativo" });
+        var caixa = await CriarAsync(new { Caix_descricao = "Banco do Brasil", Caix_status = "Inativo" });
 
-        Assert.Equal("Inativo", caixa.Status);
+        Assert.Equal("Inativo", caixa.Caix_status);
     }
 
     [Theory]
     [InlineData("ativo")]
     [InlineData("ATIVO")]
     [InlineData("atiVO")]
-    public async Task S007_R4_IncluirComStatusAtivoEmQualquerCaixa_SalvaAtivo(string status)
+    public async Task S007_R4_IncluirComStatusAtivoEmQualquerCaixa_SalvaAtivo(string Caix_status)
     {
-        var caixa = await CriarAsync(new { descricao = "Caixa Loja Centro", status });
+        var caixa = await CriarAsync(new { Caix_descricao = "Caixa Loja Centro", Caix_status });
 
-        Assert.Equal("Ativo", caixa.Status);
+        Assert.Equal("Ativo", caixa.Caix_status);
     }
 
     [Fact]
     public async Task S007_R4_IncluirComStatusInativoEmMinusculas_SalvaInativo()
     {
-        var caixa = await CriarAsync(new { descricao = "Banco do Brasil", status = "inativo" });
+        var caixa = await CriarAsync(new { Caix_descricao = "Banco do Brasil", Caix_status = "inativo" });
 
-        Assert.Equal("Inativo", caixa.Status);
+        Assert.Equal("Inativo", caixa.Caix_status);
     }
 
     [Fact]
     public async Task S007_R4_IncluirComStatusInvalido_Recusada()
     {
-        var resposta = await IncluirAsync(new { descricao = "Caixa Filial", status = "Pendente" });
+        var resposta = await IncluirAsync(new { Caix_descricao = "Caixa Filial", Caix_status = "Pendente" });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Status inválido.", await TextoErroAsync(resposta));
@@ -203,9 +203,9 @@ public class S007CaixasBancosTests : IDisposable
     [Fact]
     public async Task S007_R4_AlterarComStatusInvalido_Recusada()
     {
-        await CriarAsync(new { descricao = "Caixa Loja Centro" });
+        await CriarAsync(new { Caix_descricao = "Caixa Loja Centro" });
 
-        var resposta = await AlterarAsync(1, new { status = "Pendente" });
+        var resposta = await AlterarAsync(1, new { Caix_status = "Pendente" });
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Status inválido.", await TextoErroAsync(resposta));
@@ -216,21 +216,21 @@ public class S007CaixasBancosTests : IDisposable
     [Fact]
     public async Task S007_R5_IncluirCaixaBanco_RetornaIdDescricaoEStatus()
     {
-        var resposta = await IncluirAsync(new { descricao = "Banco do Brasil", status = "Inativo" });
+        var resposta = await IncluirAsync(new { Caix_descricao = "Banco do Brasil", Caix_status = "Inativo" });
 
         Assert.Equal(HttpStatusCode.Created, resposta.StatusCode);
         var caixa = await resposta.Content.ReadFromJsonAsync<CaixaBancoResposta>();
         Assert.Equal(new CaixaBancoResposta(1, "Banco do Brasil", "Inativo"), caixa);
     }
 
-    // ----- Alterar descrição e/ou status pelo id (R6) -----
+    // ----- Alterar descrição e/ou Caix_status pelo Caix_id (R6) -----
 
     [Fact]
     public async Task S007_R6_AlterarSoADescricao_MantemOStatus()
     {
-        await CriarAsync(new { descricao = "Caixa Loja Centro" });
+        await CriarAsync(new { Caix_descricao = "Caixa Loja Centro" });
 
-        var resposta = await AlterarAsync(1, new { descricao = "Caixa Loja Centro 2" });
+        var resposta = await AlterarAsync(1, new { Caix_descricao = "Caixa Loja Centro 2" });
 
         Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
         var caixa = await resposta.Content.ReadFromJsonAsync<CaixaBancoResposta>();
@@ -240,9 +240,9 @@ public class S007CaixasBancosTests : IDisposable
     [Fact]
     public async Task S007_R6_AlterarSoOStatus_MantemADescricao()
     {
-        await CriarAsync(new { descricao = "Caixa Loja Centro" });
+        await CriarAsync(new { Caix_descricao = "Caixa Loja Centro" });
 
-        var resposta = await AlterarAsync(1, new { status = "Inativo" });
+        var resposta = await AlterarAsync(1, new { Caix_status = "Inativo" });
 
         Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
         var caixa = await resposta.Content.ReadFromJsonAsync<CaixaBancoResposta>();
@@ -252,7 +252,7 @@ public class S007CaixasBancosTests : IDisposable
     [Fact]
     public async Task S007_R6_AlterarInexistente_NaoEncontrado()
     {
-        var resposta = await AlterarAsync(999, new { descricao = "Caixa Filial" });
+        var resposta = await AlterarAsync(999, new { Caix_descricao = "Caixa Filial" });
 
         Assert.Equal(HttpStatusCode.NotFound, resposta.StatusCode);
         Assert.Contains("Caixa ou banco não encontrado.", await TextoErroAsync(resposta));
@@ -261,21 +261,21 @@ public class S007CaixasBancosTests : IDisposable
     [Fact]
     public async Task S007_R6_AlteracaoPersisteNoBanco()
     {
-        await CriarAsync(new { descricao = "Caixa Loja Centro" });
-        await AlterarAsync(1, new { descricao = "Caixa Loja Centro 2", status = "Inativo" });
+        await CriarAsync(new { Caix_descricao = "Caixa Loja Centro" });
+        await AlterarAsync(1, new { Caix_descricao = "Caixa Loja Centro 2", Caix_status = "Inativo" });
 
         var caixa = await (await _cliente.GetAsync("/api/caixas-bancos/1")).Content.ReadFromJsonAsync<CaixaBancoResposta>();
 
         Assert.Equal(new CaixaBancoResposta(1, "Caixa Loja Centro 2", "Inativo"), caixa);
     }
 
-    // ----- Obter pelo id (R7) -----
+    // ----- Obter pelo Caix_id (R7) -----
 
     [Fact]
     public async Task S007_R7_ObterCaixaExistente_RetornaSeusDados()
     {
-        await CriarAsync(new { descricao = "Caixa Loja Centro" });
-        await CriarAsync(new { descricao = "Banco do Brasil", status = "Inativo" });
+        await CriarAsync(new { Caix_descricao = "Caixa Loja Centro" });
+        await CriarAsync(new { Caix_descricao = "Banco do Brasil", Caix_status = "Inativo" });
 
         var resposta = await _cliente.GetAsync("/api/caixas-bancos/2");
 
@@ -293,13 +293,13 @@ public class S007CaixasBancosTests : IDisposable
         Assert.Contains("Caixa ou banco não encontrado.", await TextoErroAsync(resposta));
     }
 
-    // ----- Listar com filtro opcional por status (R8) -----
+    // ----- Listar com filtro opcional por Caix_status (R8) -----
 
     [Fact]
     public async Task S007_R8_ListarSemFiltro_MostraTodosOrdenadosPorId()
     {
-        await CriarAsync(new { descricao = "Caixa Loja Centro" });
-        await CriarAsync(new { descricao = "Banco do Brasil", status = "Inativo" });
+        await CriarAsync(new { Caix_descricao = "Caixa Loja Centro" });
+        await CriarAsync(new { Caix_descricao = "Banco do Brasil", Caix_status = "Inativo" });
 
         var resposta = await _cliente.GetAsync("/api/caixas-bancos");
 
@@ -315,10 +315,10 @@ public class S007CaixasBancosTests : IDisposable
     [Fact]
     public async Task S007_R8_ListarComStatusInativo_RetornaSomenteOsInativos()
     {
-        await CriarAsync(new { descricao = "Caixa Loja Centro" });
-        await CriarAsync(new { descricao = "Banco do Brasil", status = "Inativo" });
+        await CriarAsync(new { Caix_descricao = "Caixa Loja Centro" });
+        await CriarAsync(new { Caix_descricao = "Banco do Brasil", Caix_status = "Inativo" });
 
-        var caixas = await (await _cliente.GetAsync("/api/caixas-bancos?status=Inativo")).Content.ReadFromJsonAsync<List<CaixaBancoResposta>>();
+        var caixas = await (await _cliente.GetAsync("/api/caixas-bancos?caix_status=Inativo")).Content.ReadFromJsonAsync<List<CaixaBancoResposta>>();
 
         Assert.Equal(new List<CaixaBancoResposta> { new CaixaBancoResposta(2, "Banco do Brasil", "Inativo") }, caixas);
     }
@@ -326,10 +326,10 @@ public class S007CaixasBancosTests : IDisposable
     [Fact]
     public async Task S007_R8_ListarComStatusInativoEmQualquerCaixa_RetornaOsInativos()
     {
-        await CriarAsync(new { descricao = "Caixa Loja Centro" });
-        await CriarAsync(new { descricao = "Banco do Brasil", status = "Inativo" });
+        await CriarAsync(new { Caix_descricao = "Caixa Loja Centro" });
+        await CriarAsync(new { Caix_descricao = "Banco do Brasil", Caix_status = "Inativo" });
 
-        var caixas = await (await _cliente.GetAsync("/api/caixas-bancos?status=iNaTiVo")).Content.ReadFromJsonAsync<List<CaixaBancoResposta>>();
+        var caixas = await (await _cliente.GetAsync("/api/caixas-bancos?caix_status=iNaTiVo")).Content.ReadFromJsonAsync<List<CaixaBancoResposta>>();
 
         Assert.Equal(new List<CaixaBancoResposta> { new CaixaBancoResposta(2, "Banco do Brasil", "Inativo") }, caixas);
     }
@@ -337,7 +337,7 @@ public class S007CaixasBancosTests : IDisposable
     [Fact]
     public async Task S007_R8_ListarComStatusInvalido_Recusada()
     {
-        var resposta = await _cliente.GetAsync("/api/caixas-bancos?status=Pendente");
+        var resposta = await _cliente.GetAsync("/api/caixas-bancos?caix_status=Pendente");
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
         Assert.Contains("Status inválido.", await TextoErroAsync(resposta));
@@ -358,8 +358,8 @@ public class S007CaixasBancosTests : IDisposable
     [Fact]
     public async Task S007_R9_ExcluirCaixaBanco_RemoveDaListagem()
     {
-        await CriarAsync(new { descricao = "Caixa Loja Centro" });
-        await CriarAsync(new { descricao = "Banco do Brasil" });
+        await CriarAsync(new { Caix_descricao = "Caixa Loja Centro" });
+        await CriarAsync(new { Caix_descricao = "Banco do Brasil" });
 
         var resposta = await _cliente.DeleteAsync("/api/caixas-bancos/2");
 
@@ -368,7 +368,7 @@ public class S007CaixasBancosTests : IDisposable
         Assert.Equal(new List<CaixaBancoResposta> { new CaixaBancoResposta(1, "Caixa Loja Centro", "Ativo") }, caixas);
     }
 
-    // ----- Excluir id inexistente (R10) -----
+    // ----- Excluir Caix_id inexistente (R10) -----
 
     [Fact]
     public async Task S007_R10_ExcluirIdInexistente_NaoEncontrado()
@@ -384,8 +384,8 @@ public class S007CaixasBancosTests : IDisposable
     [Fact]
     public async Task S007_R11_ObterDepoisDeExcluido_NaoEncontrado()
     {
-        await CriarAsync(new { descricao = "Caixa Loja Centro" });
-        await CriarAsync(new { descricao = "Banco do Brasil" });
+        await CriarAsync(new { Caix_descricao = "Caixa Loja Centro" });
+        await CriarAsync(new { Caix_descricao = "Banco do Brasil" });
         await _cliente.DeleteAsync("/api/caixas-bancos/2");
 
         var resposta = await _cliente.GetAsync("/api/caixas-bancos/2");
@@ -397,11 +397,11 @@ public class S007CaixasBancosTests : IDisposable
     [Fact]
     public async Task S007_R11_AlterarDepoisDeExcluido_NaoEncontrado()
     {
-        await CriarAsync(new { descricao = "Caixa Loja Centro" });
-        await CriarAsync(new { descricao = "Banco do Brasil" });
+        await CriarAsync(new { Caix_descricao = "Caixa Loja Centro" });
+        await CriarAsync(new { Caix_descricao = "Banco do Brasil" });
         await _cliente.DeleteAsync("/api/caixas-bancos/2");
 
-        var resposta = await AlterarAsync(2, new { descricao = "Caixa Filial" });
+        var resposta = await AlterarAsync(2, new { Caix_descricao = "Caixa Filial" });
 
         Assert.Equal(HttpStatusCode.NotFound, resposta.StatusCode);
         Assert.Contains("Caixa ou banco não encontrado.", await TextoErroAsync(resposta));
@@ -409,9 +409,9 @@ public class S007CaixasBancosTests : IDisposable
 
     // ----- Auxiliares -----
 
-    private Task<HttpResponseMessage> AlterarAsync(int id, object corpo)
+    private Task<HttpResponseMessage> AlterarAsync(int caix_id, object corpo)
     {
-        return _cliente.PutAsJsonAsync($"/api/caixas-bancos/{id}", corpo);
+        return _cliente.PutAsJsonAsync($"/api/caixas-bancos/{caix_id}", corpo);
     }
 
     private Task<HttpResponseMessage> IncluirAsync(object corpo)
@@ -432,7 +432,7 @@ public class S007CaixasBancosTests : IDisposable
         return ReunirTextos(documento.RootElement);
     }
 
-    private record CaixaBancoResposta(int Id, string Descricao, string Status);
+    private record CaixaBancoResposta(int Caix_id, string Caix_descricao, string Caix_status);
 
     private static string ReunirTextos(JsonElement elemento)
     {
