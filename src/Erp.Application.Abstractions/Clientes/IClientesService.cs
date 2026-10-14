@@ -15,6 +15,8 @@ public interface IClientesService
 
     Task AtivarAsync(AtivarClienteRequest request);
 
+    Task<ClienteResponse> AlterarBloqueioAsync(AlterarBloqueioClienteRequest request);
+
     Task<ClienteDetalheResponse> ObterAsync(ObterClienteRequest request);
 
     Task<List<Cliente>> ListarAsync(ListarClientesRequest request);

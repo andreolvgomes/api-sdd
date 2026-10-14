@@ -24,7 +24,8 @@ public static class Banco
                 clie_nome text not null,
                 clie_endereco text not null,
                 clie_telefone text not null,
-                clie_status text not null default 'ativo'
+                clie_status text not null default 'ativo',
+                clie_bloqueio text not null default 'liberado'
             )");
 
         await conexao.ExecuteAsync(@"
@@ -112,6 +113,12 @@ public static class Banco
             await conexao.ExecuteAsync("alter table orcamento add column orca_total_com_desconto decimal(12,2) not null default 0");
             await RecalcularTotaisAsync(conexao);
         }
+
+        IEnumerable<string> colunasBloqueio = await conexao.QueryAsync<string>(
+            "select name from pragma_table_info('cliente') where name = 'clie_bloqueio'");
+
+        if (!colunasBloqueio.Any())
+            await conexao.ExecuteAsync("alter table cliente add column clie_bloqueio text not null default 'liberado'");
     }
 
     private static async Task RecalcularTotaisAsync(SqliteConnection conexao)

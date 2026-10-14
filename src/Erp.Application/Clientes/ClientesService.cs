@@ -72,7 +72,8 @@ public class ClientesService : IClientesService
             Clie_nome = nome!,
             Clie_endereco = endereco!,
             Clie_telefone = telefone!,
-            Clie_status = status
+            Clie_status = status,
+            Clie_bloqueio = "liberado"
         };
 
         cliente.Clie_id = await _repositorio.InserirAsync(cliente);
@@ -106,7 +107,8 @@ public class ClientesService : IClientesService
             Clie_nome = nome!,
             Clie_endereco = endereco!,
             Clie_telefone = telefone!,
-            Clie_status = status
+            Clie_status = status,
+            Clie_bloqueio = existente.Clie_bloqueio
         };
 
         await _repositorio.AtualizarAsync(cliente);
@@ -148,6 +150,25 @@ public class ClientesService : IClientesService
         cliente.Clie_status = "ativo";
 
         await _repositorio.AtualizarAsync(cliente);
+    }
+
+    public async Task<ClienteResponse> AlterarBloqueioAsync(AlterarBloqueioClienteRequest request)
+    {
+        Cliente? cliente = await _repositorio.ObterPorIdAsync(request.Clie_id);
+
+        if (cliente == null)
+            throw new ErroDeNegocio("Cliente não encontrado", TipoErroDeNegocio.NaoEncontrado);
+
+        string? erro = ClienteValidacao.ValidarBloqueio(request.Clie_bloqueio);
+
+        if (erro != null)
+            throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+
+        cliente.Clie_bloqueio = request.Clie_bloqueio;
+
+        await _repositorio.AtualizarAsync(cliente);
+
+        return ClienteMapeamento.ParaResposta(cliente);
     }
 
     public async Task<ClienteDetalheResponse> ObterAsync(ObterClienteRequest request)

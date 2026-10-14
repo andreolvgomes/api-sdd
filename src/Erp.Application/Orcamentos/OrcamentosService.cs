@@ -257,8 +257,13 @@ public class OrcamentosService : IOrcamentosService
         if (erro != null)
             throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
 
-        await ValidarFormaPagamentoAsync(request.Form_id.Value);
+        FormaPagamento forma = await ValidarFormaPagamentoAsync(request.Form_id.Value);
         await ValidarCaixaBancoAsync(request.Caix_id.Value);
+
+        Cliente? cliente = await _clientes.ObterPorIdAsync(orcamento.Clie_id);
+
+        if (cliente != null && cliente.Clie_bloqueio == "bloqueado" && !OrcamentoValidacao.FormaPermitidaParaClienteBloqueado(forma.Form_tipo))
+            throw new ErroDeNegocio("Cliente bloqueado só pode pagar à vista (dinheiro ou Pix)", TipoErroDeNegocio.Validacao);
 
         OrcamentoPagamento pagamento = new OrcamentoPagamento
         {

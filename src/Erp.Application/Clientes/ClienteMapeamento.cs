@@ -14,7 +14,8 @@ public static class ClienteMapeamento
             Clie_nome = cliente.Clie_nome,
             Clie_endereco = cliente.Clie_endereco,
             Clie_telefone = cliente.Clie_telefone,
-            Clie_status = cliente.Clie_status
+            Clie_status = cliente.Clie_status,
+            Clie_bloqueio = cliente.Clie_bloqueio
         };
 
         foreach (EnderecoAdicional endereco in enderecos)
@@ -31,7 +32,8 @@ public static class ClienteMapeamento
             Clie_nome = cliente.Clie_nome,
             Clie_endereco = cliente.Clie_endereco,
             Clie_telefone = cliente.Clie_telefone,
-            Clie_status = cliente.Clie_status
+            Clie_status = cliente.Clie_status,
+            Clie_bloqueio = cliente.Clie_bloqueio
         };
     }
 }

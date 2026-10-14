@@ -7,5 +7,6 @@ public class ClienteDetalheResponse
     public string Clie_endereco { get; set; } = "";
     public string Clie_telefone { get; set; } = "";
     public string Clie_status { get; set; } = "";
+    public string Clie_bloqueio { get; set; } = "";
     public List<EnderecoAdicionalResponse> EnderecosAdicionais { get; set; } = new();
 }

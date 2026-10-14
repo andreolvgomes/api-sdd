@@ -7,7 +7,7 @@ namespace Erp.Infra.Data.Repositories;
 
 public class ClienteRepository : IClienteRepository
 {
-    private const string Colunas = "clie_id, clie_nome, clie_endereco, clie_telefone, clie_status";
+    private const string Colunas = "clie_id, clie_nome, clie_endereco, clie_telefone, clie_status, clie_bloqueio";
 
     private readonly IDbConnection _conexao;
 
@@ -40,7 +40,7 @@ public class ClienteRepository : IClienteRepository
     public async Task<bool> AtualizarAsync(Cliente cliente)
     {
         int linhas = await _conexao.ExecuteAsync(
-            "update cliente set clie_nome = @Clie_nome, clie_endereco = @Clie_endereco, clie_telefone = @Clie_telefone, clie_status = @Clie_status where clie_id = @Clie_id",
+            "update cliente set clie_nome = @Clie_nome, clie_endereco = @Clie_endereco, clie_telefone = @Clie_telefone, clie_status = @Clie_status, clie_bloqueio = @Clie_bloqueio where clie_id = @Clie_id",
             cliente);
 
         return linhas > 0;

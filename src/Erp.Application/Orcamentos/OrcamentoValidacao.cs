@@ -1,3 +1,5 @@
+using Erp.Core.Enums;
+
 namespace Erp.Application.Orcamentos;
 
 public static class OrcamentoValidacao
@@ -44,6 +46,11 @@ public static class OrcamentoValidacao
             return "Valor do pagamento deve ter até 2 casas decimais.";
 
         return null;
+    }
+
+    public static bool FormaPermitidaParaClienteBloqueado(int tipo)
+    {
+        return tipo == (int)TipoFormaPagamento.Dinheiro || tipo == (int)TipoFormaPagamento.Pix;
     }
 
     public static bool EhAtivo(string status)

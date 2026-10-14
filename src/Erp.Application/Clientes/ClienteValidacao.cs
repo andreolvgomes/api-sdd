@@ -69,6 +69,14 @@ public static class ClienteValidacao
         return null;
     }
 
+    public static string? ValidarBloqueio(string? bloqueio)
+    {
+        if (bloqueio != "liberado" && bloqueio != "bloqueado")
+            return "Nível de bloqueio deve ser liberado ou bloqueado";
+
+        return null;
+    }
+
     public static string? ValidarFiltroStatus(string? status)
     {
         if (status != "ativo" && status != "inativo" && status != "todos")

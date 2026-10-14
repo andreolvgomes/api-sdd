@@ -99,6 +99,9 @@ Ao final, mostre exatamente neste formato, sem repetir o conteúdo da spec:
 ```
 Spec: NNN-<nome-curto>
 Caminho: <caminho completo até o spec.md>
+Link: file:///<o mesmo caminho completo, com barras />
 Regras: <quantidade> | Exemplos: <quantidade>
-Próximo passo: /sdd-design NNN
+Próximo passo: /sdd-design NNN (se criar ou alterar tabela, coluna ou rota) ou /sdd-implementar NNN
 ```
+
+Para o caminho completo, use o diretório atual do projeto (obtido com `Get-Location`) seguido de `specs\em-andamento\NNN-<nome-curto>\spec.md`.

@@ -79,6 +79,40 @@ public class BancoTests
         }
     }
 
+    [Fact]
+    public async Task S012_R1_BancoAntigoSemBloqueio_ClientesExistentesFicamLiberados()
+    {
+        string arquivo = Path.Combine(Path.GetTempPath(), $"erp-migracao-{Guid.NewGuid()}.db");
+        string connectionString = $"Data Source={arquivo}";
+
+        try
+        {
+            using (var conexao = new SqliteConnection(connectionString))
+            {
+                conexao.Execute(@"
+                    create table cliente (
+                        clie_id integer primary key autoincrement,
+                        clie_nome text not null,
+                        clie_endereco text not null,
+                        clie_telefone text not null,
+                        clie_status text not null default 'ativo'
+                    )");
+                conexao.Execute("insert into cliente (clie_nome, clie_endereco, clie_telefone, clie_status) values ('Maria Silva', 'Rua A, 1', '11 90000-0001', 'ativo')");
+            }
+
+            await Banco.CriarTabelasAsync(connectionString);
+
+            using var conferencia = new SqliteConnection(connectionString);
+            string bloqueio = await conferencia.QuerySingleAsync<string>("select clie_bloqueio from cliente where clie_id = 1");
+            Assert.Equal("liberado", bloqueio);
+        }
+        finally
+        {
+            SqliteConnection.ClearAllPools();
+            File.Delete(arquivo);
+        }
+    }
+
     // O SQLite devolve colunas NUMERIC como double.
     private record TotaisGravados(double Orca_total, double Orca_total_com_desconto);
 }
