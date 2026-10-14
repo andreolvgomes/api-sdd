@@ -11,6 +11,7 @@ disable-model-invocation: true
 4. Cubra todos os Exemplos da spec com testes. Todo teste começa com o número da spec e da regra (ex.: S004_R2_DesativarCliente_...).
 5. Ao final, rode a API e chame os endpoints com pelo menos um Exemplo da spec, mostrando a requisição e a resposta.
 6. Ao concluir todas as tarefas, mova a pasta inteira da spec de `specs/em-andamento/` para `specs/`. Se a implementação for interrompida, a pasta permanece em `specs/em-andamento/`.
-7. Informe: regras implementadas, testes, decisões tomadas e pendências.
+7. Só mova a pasta da spec de `specs/em-andamento/` para `specs/` se todas as regras estiverem implementadas, todos os testes passando e não houver pendências. Caso contrário, a pasta permanece em `specs/em-andamento/`.
+8. Informe: regras implementadas, testes, decisões tomadas e pendências.
 
 Não implemente nada que esteja em "Fora do escopo".

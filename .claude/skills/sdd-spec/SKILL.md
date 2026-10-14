@@ -20,7 +20,7 @@ Se a ideia acima estiver vazia, peça ao usuário que descreva a feature em uma 
 1. Verifique se existe alguma pasta em `specs/em-andamento/`. Se a pasta `specs/em-andamento/` não existir, crie-a.
 2. Se não existir nenhuma pasta dentro de `specs/em-andamento/`, siga para a Etapa 1.
 3. Se existir uma pasta (NNN-titulo) em `specs/em-andamento/`:
-   - Se o pedido for outra funcionalidade, pare e responda exatamente: "A spec NNN (titulo) ainda não foi concluída. Implemente com /sdd-implementar antes de criar uma nova spec."
+      - Se o pedido for outra funcionalidade, pare e responda exatamente: "A spec NNN (titulo) ainda não foi concluída. Conclua com /sdd-design e /sdd-implementar antes de criar uma nova spec."
    - Se o pedido for um ajuste ou complemento da spec ativa, siga para a Etapa 1. Na Etapa 3, edite o `spec.md` dessa spec em vez de criar uma nova.
    - Se não estiver claro se é ajuste ou outra funcionalidade, pergunte ao usuário antes de seguir.
 
@@ -91,14 +91,14 @@ Só depois que o usuário responder (mesmo que seja "pode seguir com as sugestõ
 - **Decisões** registra as respostas do usuário que fixaram comportamento e as respostas sugeridas que ele aceitou. Se algo ficou em aberto, escreva como "Em aberto: ..." em vez de inventar.
 - **Specs concluídas não são editadas.** Ficam direto em `specs/`. Mudança em algo já concluído vira uma nova spec, com o próximo número, citando a spec anterior em Decisões (ex.: "Altera a R3 da spec 001").
 - **Spec ativa pode ser editada** quando o pedido for um ajuste ou complemento. Registre em Decisões o que mudou e o motivo.
+- Se a spec ativa já tiver design.md e o ajuste mudar regras, avise no final: "O design.md precisa ser revisto: rode /sdd-design NNN."
 
 ## Etapa 4 — Confirmar
-- Ao final, mostre exatamente neste formato, sem repetir o conteúdo da spec:
-- Exibir link para visualizar spec:
+Ao final, mostre exatamente neste formato, sem repetir o conteúdo da spec:
 
 ```
 Spec: NNN-<nome-curto>
-Caminho: <caminho até o spec.md>
+Caminho: <caminho completo até o spec.md>
 Regras: <quantidade> | Exemplos: <quantidade>
-Próximo passo: /sdd-implementar NNN
+Próximo passo: /sdd-design NNN
 ```
