@@ -38,6 +38,14 @@ public static class EndpointExtensions
             cancellation: ct);
     }
 
+    public static async Task<object?> ConflictAsync(this IEndpoint ep, string message, CancellationToken ct = default)
+    {
+        return await ep.HttpContext.Response.SendAsync(
+            new { messages = new List<string> { message } },
+            statusCode: 409,
+            cancellation: ct);
+    }
+
     public static async Task<object?> NotFoundAsync(this IEndpoint ep, string message = "", CancellationToken ct = default)
     {
         if (string.IsNullOrEmpty(message))
