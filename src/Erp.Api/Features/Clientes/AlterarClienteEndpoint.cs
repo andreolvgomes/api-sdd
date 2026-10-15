@@ -20,6 +20,6 @@ public class AlterarClienteEndpoint : EndpointBase<AlterarClienteRequest>
 
     public override async Task<object?> ExecuteAsync(AlterarClienteRequest req, CancellationToken ct)
     {
-        return await Ok(await _clientesService.AlterarAsync(req), ct);
+        return await Response(await _clientesService.AlterarAsync(req), ct);
     }
 }

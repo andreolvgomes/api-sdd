@@ -20,6 +20,6 @@ public class CancelarOrcamentoEndpoint : EndpointBase<CancelarOrcamentoRequest>
 
     public override async Task<object?> ExecuteAsync(CancelarOrcamentoRequest req, CancellationToken ct)
     {
-        return await Ok(await _orcamentosService.CancelarAsync(req), ct);
+        return await Response(await _orcamentosService.CancelarAsync(req), ct);
     }
 }

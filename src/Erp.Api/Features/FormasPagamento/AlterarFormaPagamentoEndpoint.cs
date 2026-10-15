@@ -20,6 +20,6 @@ public class AlterarFormaPagamentoEndpoint : EndpointBase<AlterarFormaPagamentoR
 
     public override async Task<object?> ExecuteAsync(AlterarFormaPagamentoRequest req, CancellationToken ct)
     {
-        return await Ok(await _formasPagamentoService.AlterarAsync(req), ct);
+        return await Response(await _formasPagamentoService.AlterarAsync(req), ct);
     }
 }

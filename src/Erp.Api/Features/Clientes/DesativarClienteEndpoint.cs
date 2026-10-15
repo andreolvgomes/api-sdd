@@ -20,8 +20,6 @@ public class DesativarClienteEndpoint : EndpointBase<DesativarClienteRequest>
 
     public override async Task<object?> ExecuteAsync(DesativarClienteRequest req, CancellationToken ct)
     {
-        await _clientesService.DesativarAsync(req);
-
-        return await Ok(ct);
+        return await NoContent(await _clientesService.DesativarAsync(req), ct);
     }
 }

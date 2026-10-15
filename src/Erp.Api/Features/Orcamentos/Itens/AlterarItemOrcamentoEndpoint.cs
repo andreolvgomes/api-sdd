@@ -20,6 +20,6 @@ public class AlterarItemOrcamentoEndpoint : EndpointBase<AlterarItemOrcamentoReq
 
     public override async Task<object?> ExecuteAsync(AlterarItemOrcamentoRequest req, CancellationToken ct)
     {
-        return await Ok(await _orcamentosService.AlterarItemAsync(req), ct);
+        return await Response(await _orcamentosService.AlterarItemAsync(req), ct);
     }
 }

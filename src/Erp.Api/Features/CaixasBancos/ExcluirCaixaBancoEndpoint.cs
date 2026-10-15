@@ -20,8 +20,6 @@ public class ExcluirCaixaBancoEndpoint : EndpointBase<ExcluirCaixaBancoRequest>
 
     public override async Task<object?> ExecuteAsync(ExcluirCaixaBancoRequest req, CancellationToken ct)
     {
-        await _caixasBancosService.ExcluirAsync(req);
-
-        return await NoContent(ct: ct);
+        return await NoContent(await _caixasBancosService.ExcluirAsync(req), ct);
     }
 }

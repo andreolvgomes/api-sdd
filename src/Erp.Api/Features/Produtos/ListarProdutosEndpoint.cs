@@ -20,6 +20,6 @@ public class ListarProdutosEndpoint : EndpointBase<ListarProdutosRequest>
 
     public override async Task<object?> ExecuteAsync(ListarProdutosRequest req, CancellationToken ct)
     {
-        return await Ok(await _produtosService.ListarAsync(req), ct);
+        return await Response(await _produtosService.ListarAsync(req), ct);
     }
 }

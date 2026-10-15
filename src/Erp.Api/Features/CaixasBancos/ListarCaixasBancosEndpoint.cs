@@ -20,6 +20,6 @@ public class ListarCaixasBancosEndpoint : EndpointBase<ListarCaixasBancosRequest
 
     public override async Task<object?> ExecuteAsync(ListarCaixasBancosRequest req, CancellationToken ct)
     {
-        return await Ok(await _caixasBancosService.ListarAsync(req), ct);
+        return await Response(await _caixasBancosService.ListarAsync(req), ct);
     }
 }

@@ -20,6 +20,6 @@ public class AlterarEnderecoAdicionalEndpoint : EndpointBase<AlterarEnderecoAdic
 
     public override async Task<object?> ExecuteAsync(AlterarEnderecoAdicionalRequest req, CancellationToken ct)
     {
-        return await Ok(await _clientesService.AlterarEnderecoAdicionalAsync(req), ct);
+        return await Response(await _clientesService.AlterarEnderecoAdicionalAsync(req), ct);
     }
 }

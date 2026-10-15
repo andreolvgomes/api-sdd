@@ -68,6 +68,9 @@ public abstract class EndpointBase<TRequest> : Endpoint<TRequest, object?>
     public async Task<object?> Ok(object data, CancellationToken ct = default)
         => await this.OkAsync(data, ct);
 
+    public async Task<object?> Ok(CancellationToken ct = default)
+        => await this.OkAsync(ct);
+
     public async Task<object?> Created(object data, CancellationToken ct = default)
         => await this.CreatedAsync(data, ct);
 

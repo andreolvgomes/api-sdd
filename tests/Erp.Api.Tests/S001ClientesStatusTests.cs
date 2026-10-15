@@ -62,7 +62,7 @@ public class S001ClientesStatusTests : IDisposable
 
         var resposta = await _cliente.PostAsJsonAsync("/api/clientes/1/ativar", new { });
 
-        Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, resposta.StatusCode);
     }
 
     // ----- Ativar (R6, R7, R8, R9) -----
@@ -74,7 +74,7 @@ public class S001ClientesStatusTests : IDisposable
 
         var resposta = await _cliente.PostAsync("/api/clientes/1/ativar", null);
 
-        Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, resposta.StatusCode);
         Assert.Empty(await resposta.Content.ReadAsStringAsync());
         var cliente = await LerClienteAsync(await ObterAsync(1));
         Assert.Equal("ativo", cliente.Clie_status);
@@ -111,7 +111,7 @@ public class S001ClientesStatusTests : IDisposable
 
         var resposta = await _cliente.PostAsync("/api/clientes/1/desativar", null);
 
-        Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, resposta.StatusCode);
         var cliente = await LerClienteAsync(await ObterAsync(1));
         Assert.Equal("Maria Silva", cliente.Clie_nome);
         Assert.Equal("inativo", cliente.Clie_status);
@@ -146,7 +146,7 @@ public class S001ClientesStatusTests : IDisposable
 
         var resposta = await _cliente.PostAsync("/api/clientes/1/desativar", null);
 
-        Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, resposta.StatusCode);
         Assert.Empty(await resposta.Content.ReadAsStringAsync());
     }
 
@@ -157,7 +157,7 @@ public class S001ClientesStatusTests : IDisposable
 
         var resposta = await _cliente.PostAsJsonAsync("/api/clientes/1/desativar", new { });
 
-        Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, resposta.StatusCode);
     }
 
     // ----- Exclusão definitiva (R11, R12, R13) -----

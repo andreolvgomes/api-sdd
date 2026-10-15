@@ -20,6 +20,6 @@ public class FecharOrcamentoEndpoint : EndpointBase<FecharOrcamentoRequest>
 
     public override async Task<object?> ExecuteAsync(FecharOrcamentoRequest req, CancellationToken ct)
     {
-        return await Ok(await _orcamentosService.FecharAsync(req), ct);
+        return await Response(await _orcamentosService.FecharAsync(req), ct);
     }
 }

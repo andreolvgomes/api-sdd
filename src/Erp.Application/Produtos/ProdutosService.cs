@@ -1,4 +1,5 @@
 using Erp.Application.Abstractions.Common;
+using Erp.Application.Abstractions.Common.AppResults;
 using Erp.Application.Abstractions.Produtos;
 using Erp.Application.Abstractions.Produtos.Dtos;
 using Erp.Core.Entities;
@@ -15,20 +16,20 @@ public class ProdutosService : IProdutosService
         _repositorio = repositorio;
     }
 
-    public async Task<ProdutoResponse> IncluirAsync(IncluirProdutoRequest request)
+    public async Task<AppResult<ProdutoResponse>> IncluirAsync(IncluirProdutoRequest request)
     {
         if (request.Prod_estoque != null)
-            throw new ErroDeNegocio("Estoque não pode ser informado nesta operação", TipoErroDeNegocio.Validacao);
+            return new AppValidation("Estoque não pode ser informado nesta operação");
 
         string status = request.Prod_status ?? ProdutoValidacao.StatusAtivo;
 
         string? erro = ProdutoValidacao.Validar(request.Prod_codigo, request.Prod_descricao, request.Prod_precovenda, status);
 
         if (erro != null)
-            throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+            return new AppValidation(erro);
 
         if (await _repositorio.ExisteCodigoAsync(request.Prod_codigo!))
-            throw new ErroDeNegocio("Código já cadastrado", TipoErroDeNegocio.Conflito);
+            return new AppConflito("Código já cadastrado");
 
         Produto produto = new Produto
         {
@@ -43,18 +44,18 @@ public class ProdutosService : IProdutosService
         return ProdutoMapeamento.ParaResposta(produto);
     }
 
-    public async Task<ProdutoResponse> AlterarAsync(AlterarProdutoRequest request)
+    public async Task<AppResult<ProdutoResponse>> AlterarAsync(AlterarProdutoRequest request)
     {
         if (!await _repositorio.ExisteCodigoAsync(request.Prod_codigo))
-            throw new ErroDeNegocio("Produto não encontrado", TipoErroDeNegocio.NaoEncontrado);
+            return new ApplicationNotfound("Produto não encontrado");
 
         if (request.Prod_estoque != null)
-            throw new ErroDeNegocio("Estoque não pode ser informado nesta operação", TipoErroDeNegocio.Validacao);
+            return new AppValidation("Estoque não pode ser informado nesta operação");
 
         string? erro = ProdutoValidacao.ValidarAlteracao(request.Prod_descricao, request.Prod_precovenda, request.Prod_status);
 
         if (erro != null)
-            throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+            return new AppValidation(erro);
 
         Produto produto = new Produto
         {
@@ -69,60 +70,66 @@ public class ProdutosService : IProdutosService
         return ProdutoMapeamento.ParaResposta(produto);
     }
 
-    public async Task ExcluirAsync(ExcluirProdutoRequest request)
+    public async Task<AppResult<bool>> ExcluirAsync(ExcluirProdutoRequest request)
     {
         if (!await _repositorio.ExcluirAsync(request.Prod_codigo))
-            throw new ErroDeNegocio("Produto não encontrado", TipoErroDeNegocio.NaoEncontrado);
+            return new ApplicationNotfound("Produto não encontrado");
+
+        return true;
     }
 
-    public async Task DesativarAsync(DesativarProdutoRequest request)
+    public async Task<AppResult<bool>> DesativarAsync(DesativarProdutoRequest request)
     {
         Produto? produto = await _repositorio.ObterPorCodigoAsync(request.Prod_codigo);
 
         if (produto == null)
-            throw new ErroDeNegocio("Produto não encontrado", TipoErroDeNegocio.NaoEncontrado);
+            return new ApplicationNotfound("Produto não encontrado");
 
         if (produto.Prod_status == ProdutoValidacao.StatusInativo)
-            throw new ErroDeNegocio("Produto já está inativo", TipoErroDeNegocio.Validacao);
+            return new AppValidation("Produto já está inativo");
 
         produto.Prod_status = ProdutoValidacao.StatusInativo;
 
         await _repositorio.AtualizarAsync(produto);
+
+        return true;
     }
 
-    public async Task AtivarAsync(AtivarProdutoRequest request)
+    public async Task<AppResult<bool>> AtivarAsync(AtivarProdutoRequest request)
     {
         Produto? produto = await _repositorio.ObterPorCodigoAsync(request.Prod_codigo);
 
         if (produto == null)
-            throw new ErroDeNegocio("Produto não encontrado", TipoErroDeNegocio.NaoEncontrado);
+            return new ApplicationNotfound("Produto não encontrado");
 
         if (produto.Prod_status == ProdutoValidacao.StatusAtivo)
-            throw new ErroDeNegocio("Produto já está ativo", TipoErroDeNegocio.Validacao);
+            return new AppValidation("Produto já está ativo");
 
         produto.Prod_status = ProdutoValidacao.StatusAtivo;
 
         await _repositorio.AtualizarAsync(produto);
+
+        return true;
     }
 
-    public async Task<Produto> ObterAsync(ObterProdutoRequest request)
+    public async Task<AppResult<Produto>> ObterAsync(ObterProdutoRequest request)
     {
         Produto? produto = await _repositorio.ObterPorCodigoAsync(request.Prod_codigo);
 
         if (produto == null)
-            throw new ErroDeNegocio("Produto não encontrado", TipoErroDeNegocio.NaoEncontrado);
+            return new ApplicationNotfound("Produto não encontrado");
 
         return produto;
     }
 
-    public async Task<List<Produto>> ListarAsync(ListarProdutosRequest request)
+    public async Task<AppResult<List<Produto>>> ListarAsync(ListarProdutosRequest request)
     {
         if (request.Prod_status != null)
         {
             string? erro = ProdutoValidacao.ValidarStatus(request.Prod_status);
 
             if (erro != null)
-                throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+                return new AppValidation(erro);
         }
 
         return await _repositorio.ListarAsync(request.Prod_status);

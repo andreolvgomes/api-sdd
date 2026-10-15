@@ -20,6 +20,6 @@ public class ObterCaixaBancoEndpoint : EndpointBase<ObterCaixaBancoRequest>
 
     public override async Task<object?> ExecuteAsync(ObterCaixaBancoRequest req, CancellationToken ct)
     {
-        return await Ok(await _caixasBancosService.ObterAsync(req), ct);
+        return await Response(await _caixasBancosService.ObterAsync(req), ct);
     }
 }

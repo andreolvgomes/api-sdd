@@ -20,6 +20,6 @@ public class AlterarBloqueioClienteEndpoint : EndpointBase<AlterarBloqueioClient
 
     public override async Task<object?> ExecuteAsync(AlterarBloqueioClienteRequest req, CancellationToken ct)
     {
-        return await Ok(await _clientesService.AlterarBloqueioAsync(req), ct);
+        return await Response(await _clientesService.AlterarBloqueioAsync(req), ct);
     }
 }

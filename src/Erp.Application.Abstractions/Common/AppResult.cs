@@ -11,7 +11,12 @@ public class AppResult<T>
     private AppResult() { }
 
     public static implicit operator AppResult<T>(T valor)
-        => new AppResult<T> { Sucess = true, Data = valor };
+    {
+        if (valor == null)
+            return new AppResult<T> { Error = new ApplicationNotfound("Registro não encontrado.") };
+
+        return new AppResult<T> { Sucess = true, Data = valor };
+    }
 
     public static implicit operator AppResult<T>(ApplicationNotfound erro)
         => new AppResult<T> { Error = erro };
@@ -21,4 +26,7 @@ public class AppResult<T>
 
     public static implicit operator AppResult<T>(AppValidation erro)
         => new AppResult<T> { Error = erro };
+
+    public AppResult<TOutro> Propagar<TOutro>()
+        => new AppResult<TOutro> { Error = Error };
 }

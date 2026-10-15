@@ -20,6 +20,6 @@ public class ObterProdutoEndpoint : EndpointBase<ObterProdutoRequest>
 
     public override async Task<object?> ExecuteAsync(ObterProdutoRequest req, CancellationToken ct)
     {
-        return await Ok(await _produtosService.ObterAsync(req), ct);
+        return await Response(await _produtosService.ObterAsync(req), ct);
     }
 }

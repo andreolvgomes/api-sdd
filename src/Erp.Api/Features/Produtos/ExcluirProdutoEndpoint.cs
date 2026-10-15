@@ -20,8 +20,6 @@ public class ExcluirProdutoEndpoint : EndpointBase<ExcluirProdutoRequest>
 
     public override async Task<object?> ExecuteAsync(ExcluirProdutoRequest req, CancellationToken ct)
     {
-        await _produtosService.ExcluirAsync(req);
-
-        return await NoContent(ct: ct);
+        return await NoContent(await _produtosService.ExcluirAsync(req), ct);
     }
 }

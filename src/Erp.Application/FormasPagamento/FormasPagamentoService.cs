@@ -1,4 +1,5 @@
 using Erp.Application.Abstractions.Common;
+using Erp.Application.Abstractions.Common.AppResults;
 using Erp.Application.Abstractions.FormasPagamento;
 using Erp.Application.Abstractions.FormasPagamento.Dtos;
 using Erp.Core.Entities;
@@ -15,29 +16,29 @@ public class FormasPagamentoService : IFormasPagamentoService
         _repositorio = repositorio;
     }
 
-    public async Task<FormaPagamentoResponse> IncluirAsync(IncluirFormaPagamentoRequest request)
+    public async Task<AppResult<FormaPagamentoResponse>> IncluirAsync(IncluirFormaPagamentoRequest request)
     {
         string? erro = FormaPagamentoValidacao.ValidarDescricao(request.Form_descricao);
 
         if (erro != null)
-            throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+            return new AppValidation(erro);
 
         erro = FormaPagamentoValidacao.ValidarTipo(request.Form_tipo);
 
         if (erro != null)
-            throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+            return new AppValidation(erro);
 
         string status = request.Form_status ?? FormaPagamentoValidacao.StatusAtivo;
 
         erro = FormaPagamentoValidacao.ValidarStatus(status);
 
         if (erro != null)
-            throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+            return new AppValidation(erro);
 
         string descricao = request.Form_descricao!.Trim();
 
         if (await _repositorio.ExisteDescricaoAsync(descricao, 0))
-            throw new ErroDeNegocio("Já existe uma forma de pagamento com esta descrição.", TipoErroDeNegocio.Conflito);
+            return new AppConflito("Já existe uma forma de pagamento com esta descrição.");
 
         FormaPagamento formaPagamento = new FormaPagamento
         {
@@ -51,24 +52,24 @@ public class FormasPagamentoService : IFormasPagamentoService
         return FormaPagamentoMapeamento.ParaResposta(formaPagamento);
     }
 
-    public async Task<FormaPagamentoResponse> AlterarAsync(AlterarFormaPagamentoRequest request)
+    public async Task<AppResult<FormaPagamentoResponse>> AlterarAsync(AlterarFormaPagamentoRequest request)
     {
         FormaPagamento? formaPagamento = await _repositorio.ObterPorIdAsync(request.Form_id);
 
         if (formaPagamento == null)
-            throw new ErroDeNegocio("Forma de pagamento não encontrada.", TipoErroDeNegocio.NaoEncontrado);
+            return new ApplicationNotfound("Forma de pagamento não encontrada.");
 
         if (request.Form_descricao != null)
         {
             string? erro = FormaPagamentoValidacao.ValidarDescricao(request.Form_descricao);
 
             if (erro != null)
-                throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+                return new AppValidation(erro);
 
             string descricao = request.Form_descricao.Trim();
 
             if (await _repositorio.ExisteDescricaoAsync(descricao, formaPagamento.Form_id))
-                throw new ErroDeNegocio("Já existe uma forma de pagamento com esta descrição.", TipoErroDeNegocio.Conflito);
+                return new AppConflito("Já existe uma forma de pagamento com esta descrição.");
 
             formaPagamento.Form_descricao = descricao;
         }
@@ -78,7 +79,7 @@ public class FormasPagamentoService : IFormasPagamentoService
             string? erro = FormaPagamentoValidacao.ValidarTipo(request.Form_tipo);
 
             if (erro != null)
-                throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+                return new AppValidation(erro);
 
             formaPagamento.Form_tipo = request.Form_tipo.Value;
         }
@@ -88,7 +89,7 @@ public class FormasPagamentoService : IFormasPagamentoService
             string? erro = FormaPagamentoValidacao.ValidarStatus(request.Form_status);
 
             if (erro != null)
-                throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+                return new AppValidation(erro);
 
             formaPagamento.Form_status = FormaPagamentoValidacao.NormalizarStatus(request.Form_status);
         }
@@ -98,17 +99,17 @@ public class FormasPagamentoService : IFormasPagamentoService
         return FormaPagamentoMapeamento.ParaResposta(formaPagamento);
     }
 
-    public async Task<FormaPagamento> ObterAsync(ObterFormaPagamentoRequest request)
+    public async Task<AppResult<FormaPagamento>> ObterAsync(ObterFormaPagamentoRequest request)
     {
         FormaPagamento? formaPagamento = await _repositorio.ObterPorIdAsync(request.Form_id);
 
         if (formaPagamento == null)
-            throw new ErroDeNegocio("Forma de pagamento não encontrada.", TipoErroDeNegocio.NaoEncontrado);
+            return new ApplicationNotfound("Forma de pagamento não encontrada.");
 
         return formaPagamento;
     }
 
-    public async Task<List<FormaPagamento>> ListarAsync(ListarFormasPagamentoRequest request)
+    public async Task<AppResult<List<FormaPagamento>>> ListarAsync(ListarFormasPagamentoRequest request)
     {
         string? status = null;
 
@@ -117,7 +118,7 @@ public class FormasPagamentoService : IFormasPagamentoService
             string? erro = FormaPagamentoValidacao.ValidarStatus(request.Form_status);
 
             if (erro != null)
-                throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+                return new AppValidation(erro);
 
             status = FormaPagamentoValidacao.NormalizarStatus(request.Form_status);
         }
@@ -127,15 +128,17 @@ public class FormasPagamentoService : IFormasPagamentoService
             string? erro = FormaPagamentoValidacao.ValidarTipo(request.Form_tipo);
 
             if (erro != null)
-                throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+                return new AppValidation(erro);
         }
 
         return await _repositorio.ListarAsync(status, request.Form_tipo);
     }
 
-    public async Task ExcluirAsync(ExcluirFormaPagamentoRequest request)
+    public async Task<AppResult<bool>> ExcluirAsync(ExcluirFormaPagamentoRequest request)
     {
         if (!await _repositorio.ExcluirAsync(request.Form_id))
-            throw new ErroDeNegocio("Forma de pagamento não encontrada.", TipoErroDeNegocio.NaoEncontrado);
+            return new ApplicationNotfound("Forma de pagamento não encontrada.");
+
+        return true;
     }
 }

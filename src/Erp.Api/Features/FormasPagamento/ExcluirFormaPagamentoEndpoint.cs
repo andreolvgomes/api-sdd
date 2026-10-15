@@ -20,8 +20,6 @@ public class ExcluirFormaPagamentoEndpoint : EndpointBase<ExcluirFormaPagamentoR
 
     public override async Task<object?> ExecuteAsync(ExcluirFormaPagamentoRequest req, CancellationToken ct)
     {
-        await _formasPagamentoService.ExcluirAsync(req);
-
-        return await NoContent(ct: ct);
+        return await NoContent(await _formasPagamentoService.ExcluirAsync(req), ct);
     }
 }

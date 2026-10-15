@@ -20,6 +20,6 @@ public class ListarFormasPagamentoEndpoint : EndpointBase<ListarFormasPagamentoR
 
     public override async Task<object?> ExecuteAsync(ListarFormasPagamentoRequest req, CancellationToken ct)
     {
-        return await Ok(await _formasPagamentoService.ListarAsync(req), ct);
+        return await Response(await _formasPagamentoService.ListarAsync(req), ct);
     }
 }

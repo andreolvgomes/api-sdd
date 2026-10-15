@@ -20,6 +20,6 @@ public class ReativarItemOrcamentoEndpoint : EndpointBase<ReativarItemOrcamentoR
 
     public override async Task<object?> ExecuteAsync(ReativarItemOrcamentoRequest req, CancellationToken ct)
     {
-        return await Ok(await _orcamentosService.ReativarItemAsync(req), ct);
+        return await Response(await _orcamentosService.ReativarItemAsync(req), ct);
     }
 }

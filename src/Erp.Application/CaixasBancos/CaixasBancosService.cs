@@ -1,6 +1,7 @@
 using Erp.Application.Abstractions.CaixasBancos;
 using Erp.Application.Abstractions.CaixasBancos.Dtos;
 using Erp.Application.Abstractions.Common;
+using Erp.Application.Abstractions.Common.AppResults;
 using Erp.Core.Entities;
 using Erp.Core.Repositories;
 
@@ -15,24 +16,24 @@ public class CaixasBancosService : ICaixasBancosService
         _repositorio = repositorio;
     }
 
-    public async Task<CaixaBancoResponse> IncluirAsync(IncluirCaixaBancoRequest request)
+    public async Task<AppResult<CaixaBancoResponse>> IncluirAsync(IncluirCaixaBancoRequest request)
     {
         string? erro = CaixaBancoValidacao.ValidarDescricao(request.Caix_descricao);
 
         if (erro != null)
-            throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+            return new AppValidation(erro);
 
         string status = request.Caix_status ?? CaixaBancoValidacao.StatusAtivo;
 
         erro = CaixaBancoValidacao.ValidarStatus(status);
 
         if (erro != null)
-            throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+            return new AppValidation(erro);
 
         string descricao = request.Caix_descricao!.Trim();
 
         if (await _repositorio.ExisteDescricaoAsync(descricao, 0))
-            throw new ErroDeNegocio("Já existe um caixa ou banco com esta descrição.", TipoErroDeNegocio.Conflito);
+            return new AppConflito("Já existe um caixa ou banco com esta descrição.");
 
         CaixaBanco caixaBanco = new CaixaBanco
         {
@@ -45,24 +46,24 @@ public class CaixasBancosService : ICaixasBancosService
         return CaixaBancoMapeamento.ParaResposta(caixaBanco);
     }
 
-    public async Task<CaixaBancoResponse> AlterarAsync(AlterarCaixaBancoRequest request)
+    public async Task<AppResult<CaixaBancoResponse>> AlterarAsync(AlterarCaixaBancoRequest request)
     {
         CaixaBanco? caixaBanco = await _repositorio.ObterPorIdAsync(request.Caix_id);
 
         if (caixaBanco == null)
-            throw new ErroDeNegocio("Caixa ou banco não encontrado.", TipoErroDeNegocio.NaoEncontrado);
+            return new ApplicationNotfound("Caixa ou banco não encontrado.");
 
         if (request.Caix_descricao != null)
         {
             string? erro = CaixaBancoValidacao.ValidarDescricao(request.Caix_descricao);
 
             if (erro != null)
-                throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+                return new AppValidation(erro);
 
             string descricao = request.Caix_descricao.Trim();
 
             if (await _repositorio.ExisteDescricaoAsync(descricao, caixaBanco.Caix_id))
-                throw new ErroDeNegocio("Já existe um caixa ou banco com esta descrição.", TipoErroDeNegocio.Conflito);
+                return new AppConflito("Já existe um caixa ou banco com esta descrição.");
 
             caixaBanco.Caix_descricao = descricao;
         }
@@ -72,7 +73,7 @@ public class CaixasBancosService : ICaixasBancosService
             string? erro = CaixaBancoValidacao.ValidarStatus(request.Caix_status);
 
             if (erro != null)
-                throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+                return new AppValidation(erro);
 
             caixaBanco.Caix_status = CaixaBancoValidacao.NormalizarStatus(request.Caix_status);
         }
@@ -82,17 +83,17 @@ public class CaixasBancosService : ICaixasBancosService
         return CaixaBancoMapeamento.ParaResposta(caixaBanco);
     }
 
-    public async Task<CaixaBanco> ObterAsync(ObterCaixaBancoRequest request)
+    public async Task<AppResult<CaixaBanco>> ObterAsync(ObterCaixaBancoRequest request)
     {
         CaixaBanco? caixaBanco = await _repositorio.ObterPorIdAsync(request.Caix_id);
 
         if (caixaBanco == null)
-            throw new ErroDeNegocio("Caixa ou banco não encontrado.", TipoErroDeNegocio.NaoEncontrado);
+            return new ApplicationNotfound("Caixa ou banco não encontrado.");
 
         return caixaBanco;
     }
 
-    public async Task<List<CaixaBanco>> ListarAsync(ListarCaixasBancosRequest request)
+    public async Task<AppResult<List<CaixaBanco>>> ListarAsync(ListarCaixasBancosRequest request)
     {
         string? status = null;
 
@@ -101,7 +102,7 @@ public class CaixasBancosService : ICaixasBancosService
             string? erro = CaixaBancoValidacao.ValidarStatus(request.Caix_status);
 
             if (erro != null)
-                throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+                return new AppValidation(erro);
 
             status = CaixaBancoValidacao.NormalizarStatus(request.Caix_status);
         }
@@ -109,9 +110,11 @@ public class CaixasBancosService : ICaixasBancosService
         return await _repositorio.ListarAsync(status);
     }
 
-    public async Task ExcluirAsync(ExcluirCaixaBancoRequest request)
+    public async Task<AppResult<bool>> ExcluirAsync(ExcluirCaixaBancoRequest request)
     {
         if (!await _repositorio.ExcluirAsync(request.Caix_id))
-            throw new ErroDeNegocio("Caixa ou banco não encontrado.", TipoErroDeNegocio.NaoEncontrado);
+            return new ApplicationNotfound("Caixa ou banco não encontrado.");
+
+        return true;
     }
 }

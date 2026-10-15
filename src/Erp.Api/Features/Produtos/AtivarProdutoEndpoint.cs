@@ -20,8 +20,6 @@ public class AtivarProdutoEndpoint : EndpointBase<AtivarProdutoRequest>
 
     public override async Task<object?> ExecuteAsync(AtivarProdutoRequest req, CancellationToken ct)
     {
-        await _produtosService.AtivarAsync(req);
-
-        return await Ok(ct);
+        return await NoContent(await _produtosService.AtivarAsync(req), ct);
     }
 }

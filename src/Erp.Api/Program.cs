@@ -1,11 +1,8 @@
 using System.Diagnostics;
-using Erp.Api.Common;
-using Erp.Application.Abstractions.Common;
 using Erp.Infra.CrossCutting.IoC;
 using Erp.Infra.Data;
 using FastEndpoints;
 using FastEndpoints.Swagger;
-using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,15 +22,6 @@ var app = builder.Build();
 
 app.UseExceptionHandler(erroApp => erroApp.Run(async contexto =>
 {
-    Exception? erro = contexto.Features.Get<IExceptionHandlerFeature>()?.Error;
-
-    if (erro is ErroDeNegocio erroDeNegocio)
-    {
-        contexto.Response.StatusCode = StatusHttp.Obter(erroDeNegocio.Tipo);
-        await contexto.Response.WriteAsJsonAsync(new { messages = new List<string> { erroDeNegocio.Message } });
-        return;
-    }
-
     contexto.Response.StatusCode = 500;
 }));
 

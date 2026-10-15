@@ -20,8 +20,6 @@ public class ExcluirEnderecoAdicionalEndpoint : EndpointBase<ExcluirEnderecoAdic
 
     public override async Task<object?> ExecuteAsync(ExcluirEnderecoAdicionalRequest req, CancellationToken ct)
     {
-        await _clientesService.ExcluirEnderecoAdicionalAsync(req);
-
-        return await NoContent(ct: ct);
+        return await NoContent(await _clientesService.ExcluirEnderecoAdicionalAsync(req), ct);
     }
 }

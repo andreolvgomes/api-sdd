@@ -31,7 +31,7 @@ public class S002ProdutosStatusTests : IDisposable
 
         var resposta = await _cliente.PostAsync("/api/produtos/P001/desativar", null);
 
-        Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, resposta.StatusCode);
         var produto = await LerProdutoAsync(await ObterAsync("P001"));
         Assert.Equal("Caneta azul", produto.Prod_descricao);
         Assert.Equal("inativo", produto.Prod_status);
@@ -59,7 +59,7 @@ public class S002ProdutosStatusTests : IDisposable
 
         var resposta = await _cliente.PostAsync("/api/produtos/P001/ativar", null);
 
-        Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, resposta.StatusCode);
         var produto = await LerProdutoAsync(await ObterAsync("P001"));
         Assert.Equal("ativo", produto.Prod_status);
     }
@@ -117,7 +117,7 @@ public class S002ProdutosStatusTests : IDisposable
 
         var resposta = await _cliente.PostAsync("/api/produtos/P001/desativar", null);
 
-        Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, resposta.StatusCode);
         Assert.Empty(await resposta.Content.ReadAsStringAsync());
     }
 
@@ -128,7 +128,7 @@ public class S002ProdutosStatusTests : IDisposable
 
         var resposta = await _cliente.PostAsync("/api/produtos/P001/ativar", null);
 
-        Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, resposta.StatusCode);
         Assert.Empty(await resposta.Content.ReadAsStringAsync());
     }
 
@@ -139,7 +139,7 @@ public class S002ProdutosStatusTests : IDisposable
 
         var resposta = await _cliente.PostAsJsonAsync("/api/produtos/P001/desativar", new { });
 
-        Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, resposta.StatusCode);
     }
 
     [Fact]
@@ -149,7 +149,7 @@ public class S002ProdutosStatusTests : IDisposable
 
         var resposta = await _cliente.PostAsJsonAsync("/api/produtos/P001/ativar", new { });
 
-        Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, resposta.StatusCode);
     }
 
     // ----- Exclusão definitiva (R8) e alteração de Prod_status (R9) -----

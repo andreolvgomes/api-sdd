@@ -21,6 +21,6 @@ public class ListarClientesEndpoint : EndpointBase<ListarClientesRequest>
 
     public override async Task<object?> ExecuteAsync(ListarClientesRequest req, CancellationToken ct)
     {
-        return await Ok(await _clientesService.ListarAsync(req), ct);
+        return await Response(await _clientesService.ListarAsync(req), ct);
     }
 }
