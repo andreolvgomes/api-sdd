@@ -38,7 +38,7 @@ public abstract class EndpointBase : EndpointWithoutRequest<object?>
         if (result.Sucess)
             return await Ok(result.Data!, ct);
 
-        if (result.Error is ApplicationNotfound)
+        if (result.Error is AppNotFound)
             return await NotFound(result.Error.Mensagem, ct);
 
         if (result.Error is AppConflito)
@@ -97,7 +97,7 @@ public abstract class EndpointBase<TRequest> : Endpoint<TRequest, object?>
         if (result.Sucess)
             return await Ok(result.Data!, ct);
 
-        if (result.Error is ApplicationNotfound)
+        if (result.Error is AppNotFound)
             return await NotFound(result.Error.Mensagem, ct);
 
         if (result.Error is AppConflito)

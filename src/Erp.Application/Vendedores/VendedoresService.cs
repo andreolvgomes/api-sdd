@@ -51,7 +51,7 @@ public class VendedoresService : IVendedoresService
         Vendedor? vendedor = await _repositorio.ObterPorIdAsync(request.Vend_id);
 
         if (vendedor == null)
-            return new ApplicationNotfound("Vendedor não encontrado.");
+            return new AppNotFound("Vendedor não encontrado.");
 
         if (request.Vend_nome != null)
         {
@@ -88,7 +88,7 @@ public class VendedoresService : IVendedoresService
         Vendedor? vendedor = await _repositorio.ObterPorIdAsync(request.Vend_id);
 
         if (vendedor == null)
-            return new ApplicationNotfound("Vendedor não encontrado.");
+            return new AppNotFound("Vendedor não encontrado.");
 
         return vendedor;
     }
@@ -113,7 +113,7 @@ public class VendedoresService : IVendedoresService
     public async Task<AppResult<bool>> ExcluirAsync(ExcluirVendedorRequest request)
     {
         if (!await _repositorio.ExcluirAsync(request.Vend_id))
-            return new ApplicationNotfound("Vendedor não encontrado.");
+            return new AppNotFound("Vendedor não encontrado.");
 
         return true;
     }

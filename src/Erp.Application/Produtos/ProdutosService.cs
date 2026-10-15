@@ -47,7 +47,7 @@ public class ProdutosService : IProdutosService
     public async Task<AppResult<ProdutoResponse>> AlterarAsync(AlterarProdutoRequest request)
     {
         if (!await _repositorio.ExisteCodigoAsync(request.Prod_codigo))
-            return new ApplicationNotfound("Produto não encontrado");
+            return new AppNotFound("Produto não encontrado");
 
         if (request.Prod_estoque != null)
             return new AppValidation("Estoque não pode ser informado nesta operação");
@@ -73,7 +73,7 @@ public class ProdutosService : IProdutosService
     public async Task<AppResult<bool>> ExcluirAsync(ExcluirProdutoRequest request)
     {
         if (!await _repositorio.ExcluirAsync(request.Prod_codigo))
-            return new ApplicationNotfound("Produto não encontrado");
+            return new AppNotFound("Produto não encontrado");
 
         return true;
     }
@@ -83,7 +83,7 @@ public class ProdutosService : IProdutosService
         Produto? produto = await _repositorio.ObterPorCodigoAsync(request.Prod_codigo);
 
         if (produto == null)
-            return new ApplicationNotfound("Produto não encontrado");
+            return new AppNotFound("Produto não encontrado");
 
         if (produto.Prod_status == ProdutoValidacao.StatusInativo)
             return new AppValidation("Produto já está inativo");
@@ -100,7 +100,7 @@ public class ProdutosService : IProdutosService
         Produto? produto = await _repositorio.ObterPorCodigoAsync(request.Prod_codigo);
 
         if (produto == null)
-            return new ApplicationNotfound("Produto não encontrado");
+            return new AppNotFound("Produto não encontrado");
 
         if (produto.Prod_status == ProdutoValidacao.StatusAtivo)
             return new AppValidation("Produto já está ativo");
@@ -117,7 +117,7 @@ public class ProdutosService : IProdutosService
         Produto? produto = await _repositorio.ObterPorCodigoAsync(request.Prod_codigo);
 
         if (produto == null)
-            return new ApplicationNotfound("Produto não encontrado");
+            return new AppNotFound("Produto não encontrado");
 
         return produto;
     }

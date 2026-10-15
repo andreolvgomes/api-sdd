@@ -57,7 +57,7 @@ public class FormasPagamentoService : IFormasPagamentoService
         FormaPagamento? formaPagamento = await _repositorio.ObterPorIdAsync(request.Form_id);
 
         if (formaPagamento == null)
-            return new ApplicationNotfound("Forma de pagamento não encontrada.");
+            return new AppNotFound("Forma de pagamento não encontrada.");
 
         if (request.Form_descricao != null)
         {
@@ -104,7 +104,7 @@ public class FormasPagamentoService : IFormasPagamentoService
         FormaPagamento? formaPagamento = await _repositorio.ObterPorIdAsync(request.Form_id);
 
         if (formaPagamento == null)
-            return new ApplicationNotfound("Forma de pagamento não encontrada.");
+            return new AppNotFound("Forma de pagamento não encontrada.");
 
         return formaPagamento;
     }
@@ -137,7 +137,7 @@ public class FormasPagamentoService : IFormasPagamentoService
     public async Task<AppResult<bool>> ExcluirAsync(ExcluirFormaPagamentoRequest request)
     {
         if (!await _repositorio.ExcluirAsync(request.Form_id))
-            return new ApplicationNotfound("Forma de pagamento não encontrada.");
+            return new AppNotFound("Forma de pagamento não encontrada.");
 
         return true;
     }

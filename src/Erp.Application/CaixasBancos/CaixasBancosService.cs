@@ -51,7 +51,7 @@ public class CaixasBancosService : ICaixasBancosService
         CaixaBanco? caixaBanco = await _repositorio.ObterPorIdAsync(request.Caix_id);
 
         if (caixaBanco == null)
-            return new ApplicationNotfound("Caixa ou banco não encontrado.");
+            return new AppNotFound("Caixa ou banco não encontrado.");
 
         if (request.Caix_descricao != null)
         {
@@ -88,7 +88,7 @@ public class CaixasBancosService : ICaixasBancosService
         CaixaBanco? caixaBanco = await _repositorio.ObterPorIdAsync(request.Caix_id);
 
         if (caixaBanco == null)
-            return new ApplicationNotfound("Caixa ou banco não encontrado.");
+            return new AppNotFound("Caixa ou banco não encontrado.");
 
         return caixaBanco;
     }
@@ -113,7 +113,7 @@ public class CaixasBancosService : ICaixasBancosService
     public async Task<AppResult<bool>> ExcluirAsync(ExcluirCaixaBancoRequest request)
     {
         if (!await _repositorio.ExcluirAsync(request.Caix_id))
-            return new ApplicationNotfound("Caixa ou banco não encontrado.");
+            return new AppNotFound("Caixa ou banco não encontrado.");
 
         return true;
     }

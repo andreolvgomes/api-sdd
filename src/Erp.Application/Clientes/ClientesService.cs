@@ -23,7 +23,7 @@ public class ClientesService : IClientesService
     public async Task<AppResult<EnderecoAdicionalResponse>> IncluirEnderecoAdicionalAsync(IncluirEnderecoAdicionalRequest request)
     {
         if (await _repositorio.ObterPorIdAsync(request.Clie_id) == null)
-            return new ApplicationNotfound("Cliente não encontrado");
+            return new AppNotFound("Cliente não encontrado");
 
         string? rotulo = Limpar(request.Ende_rotulo);
         string? endereco = Limpar(request.Ende_endereco);
@@ -88,7 +88,7 @@ public class ClientesService : IClientesService
         Cliente? existente = await _repositorio.ObterPorIdAsync(request.Clie_id);
 
         if (existente == null)
-            return new ApplicationNotfound("Cliente não encontrado");
+            return new AppNotFound("Cliente não encontrado");
 
         string? nome = Limpar(request.Clie_nome);
         string? endereco = Limpar(request.Clie_endereco);
@@ -121,7 +121,7 @@ public class ClientesService : IClientesService
     public async Task<AppResult<bool>> ExcluirAsync(ExcluirClienteRequest request)
     {
         if (!await _repositorio.ExcluirAsync(request.Clie_id))
-            return new ApplicationNotfound("Cliente não encontrado");
+            return new AppNotFound("Cliente não encontrado");
 
         return true;
     }
@@ -131,7 +131,7 @@ public class ClientesService : IClientesService
         Cliente? cliente = await _repositorio.ObterPorIdAsync(request.Clie_id);
 
         if (cliente == null)
-            return new ApplicationNotfound("Cliente não encontrado");
+            return new AppNotFound("Cliente não encontrado");
 
         if (cliente.Clie_status == "inativo")
             return new AppValidation("Cliente já está inativo");
@@ -148,7 +148,7 @@ public class ClientesService : IClientesService
         Cliente? cliente = await _repositorio.ObterPorIdAsync(request.Clie_id);
 
         if (cliente == null)
-            return new ApplicationNotfound("Cliente não encontrado");
+            return new AppNotFound("Cliente não encontrado");
 
         if (cliente.Clie_status == "ativo")
             return new AppValidation("Cliente já está ativo");
@@ -165,7 +165,7 @@ public class ClientesService : IClientesService
         Cliente? cliente = await _repositorio.ObterPorIdAsync(request.Clie_id);
 
         if (cliente == null)
-            return new ApplicationNotfound("Cliente não encontrado");
+            return new AppNotFound("Cliente não encontrado");
 
         string? erro = ClienteValidacao.ValidarBloqueio(request.Clie_bloqueio);
 
@@ -184,7 +184,7 @@ public class ClientesService : IClientesService
         Cliente? cliente = await _repositorio.ObterPorIdAsync(request.Clie_id);
 
         if (cliente == null)
-            return new ApplicationNotfound("Cliente não encontrado");
+            return new AppNotFound("Cliente não encontrado");
 
         List<EnderecoAdicional> enderecos = await _enderecosRepositorio.ListarPorClienteAsync(request.Clie_id);
 
@@ -211,12 +211,12 @@ public class ClientesService : IClientesService
     public async Task<AppResult<EnderecoAdicionalResponse>> AlterarEnderecoAdicionalAsync(AlterarEnderecoAdicionalRequest request)
     {
         if (await _repositorio.ObterPorIdAsync(request.Clie_id) == null)
-            return new ApplicationNotfound("Cliente não encontrado");
+            return new AppNotFound("Cliente não encontrado");
 
         EnderecoAdicional? existente = await _enderecosRepositorio.ObterAsync(request.Clie_id, request.Ende_id);
 
         if (existente == null)
-            return new ApplicationNotfound("Endereço não encontrado");
+            return new AppNotFound("Endereço não encontrado");
 
         string? rotulo = Limpar(request.Ende_rotulo);
         string? endereco = Limpar(request.Ende_endereco);
@@ -240,10 +240,10 @@ public class ClientesService : IClientesService
     public async Task<AppResult<bool>> ExcluirEnderecoAdicionalAsync(ExcluirEnderecoAdicionalRequest request)
     {
         if (await _repositorio.ObterPorIdAsync(request.Clie_id) == null)
-            return new ApplicationNotfound("Cliente não encontrado");
+            return new AppNotFound("Cliente não encontrado");
 
         if (!await _enderecosRepositorio.ExcluirAsync(request.Clie_id, request.Ende_id))
-            return new ApplicationNotfound("Endereço não encontrado");
+            return new AppNotFound("Endereço não encontrado");
 
         return true;
     }

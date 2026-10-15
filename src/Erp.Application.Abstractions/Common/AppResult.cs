@@ -2,6 +2,25 @@ using Erp.Application.Abstractions.Common.AppResults;
 
 namespace Erp.Application.Abstractions.Common;
 
+//public class AppResult
+//{
+//    public bool Sucess { get; private set; }
+//    public IApplicationError? Error { get; private set; }
+
+//    private AppResult() { }
+
+//    public static AppResult Result => new AppResult { Sucess = true };
+
+//    public static implicit operator AppResult(AppNotFound erro)
+//        => new AppResult { Error = erro };
+
+//    public static implicit operator AppResult(AppConflito erro)
+//        => new AppResult { Error = erro };
+
+//    public static implicit operator AppResult(AppValidation erro)
+//        => new AppResult { Error = erro };
+//}
+
 public class AppResult<T>
 {
     public bool Sucess { get; private set; }
@@ -13,12 +32,12 @@ public class AppResult<T>
     public static implicit operator AppResult<T>(T valor)
     {
         if (valor == null)
-            return new AppResult<T> { Error = new ApplicationNotfound("Registro não encontrado.") };
+            return new AppResult<T> { Error = new AppNotFound("Registro não encontrado.") };
 
         return new AppResult<T> { Sucess = true, Data = valor };
     }
 
-    public static implicit operator AppResult<T>(ApplicationNotfound erro)
+    public static implicit operator AppResult<T>(AppNotFound erro)
         => new AppResult<T> { Error = erro };
 
     public static implicit operator AppResult<T>(AppConflito erro)

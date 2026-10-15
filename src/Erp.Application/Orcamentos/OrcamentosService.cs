@@ -390,7 +390,7 @@ public class OrcamentosService : IOrcamentosService
         OrcamentoPagamento? pagamento = await _repositorio.ObterPagamentoAsync(orcamento.Orca_id, request.Orcp_numero_pagamento);
 
         if (pagamento == null)
-            return new ApplicationNotfound("Pagamento não encontrado.");
+            return new AppNotFound("Pagamento não encontrado.");
 
         if (pagamento.Orcp_cancelado)
             return new AppValidation("Pagamento já está cancelado.");
@@ -451,7 +451,7 @@ public class OrcamentosService : IOrcamentosService
         Orcamento? orcamento = await _repositorio.ObterPorIdAsync(id);
 
         if (orcamento == null)
-            return new ApplicationNotfound("Orçamento não encontrado.");
+            return new AppNotFound("Orçamento não encontrado.");
 
         return orcamento;
     }
@@ -499,7 +499,7 @@ public class OrcamentosService : IOrcamentosService
         OrcamentoItem? item = await _repositorio.ObterItemAsync(orcamentoId, numeroItem);
 
         if (item == null)
-            return new ApplicationNotfound("Item não encontrado.");
+            return new AppNotFound("Item não encontrado.");
 
         return item;
     }
@@ -509,7 +509,7 @@ public class OrcamentosService : IOrcamentosService
         Cliente? cliente = await _clientes.ObterPorIdAsync(id);
 
         if (cliente == null)
-            return new ApplicationNotfound("Cliente não encontrado.");
+            return new AppNotFound("Cliente não encontrado.");
 
         if (!OrcamentoValidacao.EhAtivo(cliente.Clie_status))
             return new AppValidation("Cliente inativo não pode ser usado.");
@@ -522,7 +522,7 @@ public class OrcamentosService : IOrcamentosService
         Vendedor? vendedor = await _vendedores.ObterPorIdAsync(id);
 
         if (vendedor == null)
-            return new ApplicationNotfound("Vendedor não encontrado.");
+            return new AppNotFound("Vendedor não encontrado.");
 
         if (!OrcamentoValidacao.EhAtivo(vendedor.Vend_status))
             return new AppValidation("Vendedor inativo não pode ser usado.");
@@ -535,7 +535,7 @@ public class OrcamentosService : IOrcamentosService
         Produto? produto = await _produtos.ObterPorCodigoAsync(codigo);
 
         if (produto == null)
-            return new ApplicationNotfound("Produto não encontrado.");
+            return new AppNotFound("Produto não encontrado.");
 
         if (!OrcamentoValidacao.EhAtivo(produto.Prod_status))
             return new AppValidation(mensagemInativo);
@@ -548,7 +548,7 @@ public class OrcamentosService : IOrcamentosService
         FormaPagamento? forma = await _formasPagamento.ObterPorIdAsync(id);
 
         if (forma == null)
-            return new ApplicationNotfound("Forma de pagamento não encontrada.");
+            return new AppNotFound("Forma de pagamento não encontrada.");
 
         if (!OrcamentoValidacao.EhAtivo(forma.Form_status))
             return new AppValidation("Forma de pagamento inativa não pode ser usada.");
@@ -561,7 +561,7 @@ public class OrcamentosService : IOrcamentosService
         CaixaBanco? caixa = await _caixas.ObterPorIdAsync(id);
 
         if (caixa == null)
-            return new ApplicationNotfound("Caixa ou banco não encontrado.");
+            return new AppNotFound("Caixa ou banco não encontrado.");
 
         if (!OrcamentoValidacao.EhAtivo(caixa.Caix_status))
             return new AppValidation("Caixa ou banco inativo não pode ser usado.");
