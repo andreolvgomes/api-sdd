@@ -1,4 +1,5 @@
 using Erp.Application.Abstractions.Common;
+using Erp.Application.Abstractions.Common.AppResults;
 using Erp.Application.Abstractions.Vendedores;
 using Erp.Application.Abstractions.Vendedores.Dtos;
 using Erp.Core.Entities;
@@ -15,24 +16,24 @@ public class VendedoresService : IVendedoresService
         _repositorio = repositorio;
     }
 
-    public async Task<VendedorResponse> IncluirAsync(IncluirVendedorRequest request)
+    public async Task<AppResult<VendedorResponse>> IncluirAsync(IncluirVendedorRequest request)
     {
         string? erro = VendedorValidacao.ValidarNome(request.Vend_nome);
 
         if (erro != null)
-            throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+            return new AppValidation(erro);
 
         string status = request.Vend_status ?? VendedorValidacao.StatusAtivo;
 
         erro = VendedorValidacao.ValidarStatus(status);
 
         if (erro != null)
-            throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+            return new AppValidation(erro);
 
         string nome = request.Vend_nome!.Trim();
 
         if (await _repositorio.ExisteNomeAsync(nome, 0))
-            throw new ErroDeNegocio("Já existe um vendedor com este nome.", TipoErroDeNegocio.Conflito);
+            return new AppConflito("Já existe um vendedor com este nome.");
 
         Vendedor vendedor = new Vendedor
         {
@@ -45,24 +46,24 @@ public class VendedoresService : IVendedoresService
         return VendedorMapeamento.ParaResposta(vendedor);
     }
 
-    public async Task<VendedorResponse> AlterarAsync(AlterarVendedorRequest request)
+    public async Task<AppResult<VendedorResponse>> AlterarAsync(AlterarVendedorRequest request)
     {
         Vendedor? vendedor = await _repositorio.ObterPorIdAsync(request.Vend_id);
 
         if (vendedor == null)
-            throw new ErroDeNegocio("Vendedor não encontrado.", TipoErroDeNegocio.NaoEncontrado);
+            return new ApplicationNotfound("Vendedor não encontrado.");
 
         if (request.Vend_nome != null)
         {
             string? erro = VendedorValidacao.ValidarNome(request.Vend_nome);
 
             if (erro != null)
-                throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+                return new AppValidation(erro);
 
             string nome = request.Vend_nome.Trim();
 
             if (await _repositorio.ExisteNomeAsync(nome, vendedor.Vend_id))
-                throw new ErroDeNegocio("Já existe um vendedor com este nome.", TipoErroDeNegocio.Conflito);
+                return new AppConflito("Já existe um vendedor com este nome.");
 
             vendedor.Vend_nome = nome;
         }
@@ -72,7 +73,7 @@ public class VendedoresService : IVendedoresService
             string? erro = VendedorValidacao.ValidarStatus(request.Vend_status);
 
             if (erro != null)
-                throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+                return new AppValidation(erro);
 
             vendedor.Vend_status = VendedorValidacao.NormalizarStatus(request.Vend_status);
         }
@@ -82,17 +83,17 @@ public class VendedoresService : IVendedoresService
         return VendedorMapeamento.ParaResposta(vendedor);
     }
 
-    public async Task<Vendedor> ObterAsync(ObterVendedorRequest request)
+    public async Task<AppResult<Vendedor>> ObterAsync(ObterVendedorRequest request)
     {
         Vendedor? vendedor = await _repositorio.ObterPorIdAsync(request.Vend_id);
 
         if (vendedor == null)
-            throw new ErroDeNegocio("Vendedor não encontrado.", TipoErroDeNegocio.NaoEncontrado);
+            return new ApplicationNotfound("Vendedor não encontrado.");
 
         return vendedor;
     }
 
-    public async Task<List<Vendedor>> ListarAsync(ListarVendedoresRequest request)
+    public async Task<AppResult<List<Vendedor>>> ListarAsync(ListarVendedoresRequest request)
     {
         string? status = null;
 
@@ -101,7 +102,7 @@ public class VendedoresService : IVendedoresService
             string? erro = VendedorValidacao.ValidarStatus(request.Vend_status);
 
             if (erro != null)
-                throw new ErroDeNegocio(erro, TipoErroDeNegocio.Validacao);
+                return new AppValidation(erro);
 
             status = VendedorValidacao.NormalizarStatus(request.Vend_status);
         }
@@ -109,9 +110,11 @@ public class VendedoresService : IVendedoresService
         return await _repositorio.ListarAsync(status);
     }
 
-    public async Task ExcluirAsync(ExcluirVendedorRequest request)
+    public async Task<AppResult<bool>> ExcluirAsync(ExcluirVendedorRequest request)
     {
         if (!await _repositorio.ExcluirAsync(request.Vend_id))
-            throw new ErroDeNegocio("Vendedor não encontrado.", TipoErroDeNegocio.NaoEncontrado);
+            return new ApplicationNotfound("Vendedor não encontrado.");
+
+        return true;
     }
 }

@@ -41,10 +41,24 @@ public abstract class EndpointBase : EndpointWithoutRequest<object?>
         if (result.Error is ApplicationNotfound)
             return await NotFound(result.Error.Mensagem, ct);
 
-        if (result.Error is ApplicationConflito)
+        if (result.Error is AppConflito)
             return await Conflict(result.Error.Mensagem, ct);
 
         return await BadRequest(result.Error!.Mensagem, ct);
+    }
+
+    protected async Task<object?> NoContent<T>(AppResult<T> result, CancellationToken ct = default)
+    {
+        if (!result.Sucess)
+            return await Response(result, ct);
+        return await NoContent(ct: ct);
+    }
+
+    protected async Task<object?> Created<T>(AppResult<T> result, CancellationToken ct = default)
+    {
+        if (!result.Sucess)
+            return await Response(result, ct);
+        return await Created(result.Data!, ct);
     }
 }
 
@@ -83,9 +97,23 @@ public abstract class EndpointBase<TRequest> : Endpoint<TRequest, object?>
         if (result.Error is ApplicationNotfound)
             return await NotFound(result.Error.Mensagem, ct);
 
-        if (result.Error is ApplicationConflito)
+        if (result.Error is AppConflito)
             return await Conflict(result.Error.Mensagem, ct);
 
         return await BadRequest(result.Error!.Mensagem, ct);
+    }
+
+    protected async Task<object?> NoContent<T>(AppResult<T> result, CancellationToken ct = default)
+    {
+        if (!result.Sucess)
+            return await Response(result, ct);
+        return await NoContent(ct: ct);
+    }
+
+    protected async Task<object?> Created<T>(AppResult<T> result, CancellationToken ct = default)
+    {
+        if (!result.Sucess)
+            return await Response(result, ct);
+        return await Created(result.Data!, ct);
     }
 }

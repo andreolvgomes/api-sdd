@@ -16,9 +16,9 @@ public class AppResult<T>
     public static implicit operator AppResult<T>(ApplicationNotfound erro)
         => new AppResult<T> { Error = erro };
 
-    public static implicit operator AppResult<T>(ApplicationConflito erro)
+    public static implicit operator AppResult<T>(AppConflito erro)
         => new AppResult<T> { Error = erro };
 
-    public static implicit operator AppResult<T>(ApplicationValidation erro)
+    public static implicit operator AppResult<T>(AppValidation erro)
         => new AppResult<T> { Error = erro };
 }
